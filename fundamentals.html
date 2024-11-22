@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 1&nbsp; Fundamentals of Dynamics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./singledof.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./fundamentals.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-Basic_Definitions" id="toc-sec-Basic_Definitions" class="nav-link active" data-scroll-target="#sec-Basic_Definitions"><span class="header-section-number">1.1</span> Basic Definitions</a></li>
+  <li><a href="#sec-dof" id="toc-sec-dof" class="nav-link" data-scroll-target="#sec-dof"><span class="header-section-number">1.2</span> Degree of Freedom</a></li>
+  <li><a href="#sec-Fundamental_Laws" id="toc-sec-Fundamental_Laws" class="nav-link" data-scroll-target="#sec-Fundamental_Laws"><span class="header-section-number">1.3</span> Fundamental Laws</a>
+  <ul class="collapse">
+  <li><a href="#sec-NewtonEuler_Formulation" id="toc-sec-NewtonEuler_Formulation" class="nav-link" data-scroll-target="#sec-NewtonEuler_Formulation"><span class="header-section-number">1.3.1</span> Newton-Euler Formulation</a></li>
+  <li><a href="#sec-Virtual_Work" id="toc-sec-Virtual_Work" class="nav-link" data-scroll-target="#sec-Virtual_Work"><span class="header-section-number">1.3.2</span> <span class="math inline">\(\mathrm{d}\)</span>’Alembert’s Principle and Virtual Work</a></li>
+  <li><a href="#sec-Lagranges_Equations" id="toc-sec-Lagranges_Equations" class="nav-link" data-scroll-target="#sec-Lagranges_Equations"><span class="header-section-number">1.3.3</span> Lagrange’s Equations</a></li>
+  <li><a href="#sec-Constraint_Forces" id="toc-sec-Constraint_Forces" class="nav-link" data-scroll-target="#sec-Constraint_Forces"><span class="header-section-number">1.3.4</span> Constraint Forces</a></li>
+  <li><a href="#sec-Wrapping_Up" id="toc-sec-Wrapping_Up" class="nav-link" data-scroll-target="#sec-Wrapping_Up"><span class="header-section-number">1.3.5</span> Wrapping Up</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-Fundamentals_of_Dynamics" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Dynamics focuses on understanding how systems evolve in time. The modern definition of the term <em>dynamical systems</em> encompasses a broad range of social to physical systems with time-varying properties, but initially dynamics emerged as the study of motion of celestial and terrestrial bodies. In the study of such motion, the main objectives are the modeling of the dynamical system, i.e.&nbsp;formulating the equations that govern the motion of the system, and the prediction of response parameters that are to be observed during the motion, i.e.&nbsp;the solution of the equations of motion. The basic principles that govern the investigations to be presented in this text are the fundamental pillars of classical mechanics.</p>
+<p>Classical mechanics differs from relativistic and quantum mechanics on a few fundamental assumptions pertaining to motion. A system is described as classical if all motion investigated occurs at speeds much less than the speed of light so that relativistic effects may be neglected. At the length and time scales relevant to classical mechanics, quantum effects such as those that require explicit description of the dynamics of electrons are deemed negligible as well. We will assume both restrictions to hold for all the systems to be investigated throughout this text. In this introductory chapter, we will review some of the basic principles of classical mechanics upon which the theory of structural dynamics rests.</p>
+<section id="sec-Basic_Definitions" class="level2" data-number="1.1">
+<h2 data-number="1.1" data-anchor-id="sec-Basic_Definitions"><span class="header-section-number">1.1</span> Basic Definitions</h2>
+<p>The fundamental framework that will be used throughout will be Newtonian and there are certain a priori concepts in this framework that we generally take for granted.</p>
+<p>In classical mechanics, motion of a body is geometrically described by the positions (locations) of its constituents in <span class="math inline">\(\mem{space}\)</span>, and the variation of these positions in <span class="math inline">\(\mem{time}\)</span>. The existence of space and time as two independent, ‘absolute’ entities are accepted without proof; these are intuitive concepts that lay the foundations for all that is to follow, as the geometric description of motion depends solely on these two concepts.</p>
+<p>To define the position of an object, we need a reliable reference, for instance a stationary set of rigid “rulers” against which to measure distances, and a clock with which to measure time. Such a combination is called a <span class="math inline">\(\mem{frame of reference}\)</span>. The acceptance of space and time as absolute quantities is equivalent to assuming the existence of at least one <span class="math inline">\(\mem{inertial frame of reference}\)</span> in which the laws of motion as stated by Newton are valid. In fact, any reference frame that is in a state of pure translation with constant velocity relative to this initial, absolute(ly standing still) frame would serve equally well as an inertial frame of reference. The key here is to use a non-accelerating (with respect to the ‘absolute’ space) frame of reference. Motion on a curved line, even with constant speed, and rotations lead to centripetal accelerations and hence reference frames undergoing such motions will generally not serve as inertial frames.</p>
+<p>But then again, the earth, of course, is one such rotating and translating frame. So how come we use it, as we do in most earthbound dynamical analysis in engineering, as our frame of reference? The answer to this may not be given a priori but the validity of the choice must be evaluated a posteriori. It may be said that for many earthbound problems that involve distances and time spans comparable to those we commonly encounter in our everyday experiences, treating the earth as an inertial frame does not lead to significant errors, at least not significant enough to have any impact on the predictions deduced. We accept to err but we hope it is inconsequential. Hoping to err less, we can take into account the earth’s rotation about its polar axis, then expand further to take into account the earth’s rotation around the sun, then expand further to include the motion of the whole solar system in the milky way, then expand … How far one should go will depend on the specific problem studied. Unless otherwise explicitly stated, we will assume that the reference frames we use in our discussions are inertial (or may be treated as such for the particular problem at hand).</p>
+<p><span class="math inline">\(\mem{Mass}\)</span> is another prior that we take for granted based on our experiences with weight. One definition of mass is to say that it is a measure of a body’s resistance to motion. This definition does implicitly refer to Newton’s equation of motion - force is equal to mass times acceleration - but it serves to hint at a difference between what are called gravitational mass and inertial mass. No difference between these two have been detected experimentally and so mass as far as we are concerned will be the quantity of matter that we can measure through its weight.</p>
+<p>A fundamental idealization of dynamics is that of a <span class="math inline">\(\mem{particle}\)</span>, a geometric point, devoid of size but endowed with mass. The fundamental Newtonian law governing the motion of a particle is the well known (more on this later) <span class="math display">\[
+\fvec = \totm \avec
+\]</span> with <span class="math inline">\(\totm\)</span> denoting the mass of the particle, <span class="math inline">\(\avec\)</span> denoting its acceleration, and <span class="math inline">\(\fvec\)</span> denoting the resultant force acting on the particle. Please note that this is a vector equation, with underlined miniscule roman letters denoting vectors and italic miniscule roman letters denoting scalar variables. This is a convention we will adhere to throughout the text.</p>
+<p>A body may be defined as a collection of particles. Legitimate objections are raised against this definition challenging the coherency of extending a geometrically non-dimensional entity to a geometrically finite dimensional system, and it may be preferred to define a body through a continuous medium to address this issue. If the distances between the particles are constant throughout the motion, or in other words if there is no deformation in the body, then the model is called a <span class="math inline">\(\mem{rigid body}\)</span>. The rigid body is another fundamental idealization of dynamics, used in the analysis of many problems. The main advantage brought about by this idealization is the significant reduction in the number of variables required to describe motion. Whenever deformations may be estimated to be negligible compared with the size of the body and such deformations have very limited impact on the motion of the whole, the body may be idealized as rigid to analyze its overall motion.</p>
+</section>
+<section id="sec-dof" class="level2" data-number="1.2">
+<h2 data-number="1.2" data-anchor-id="sec-dof"><span class="header-section-number">1.2</span> Degree of Freedom</h2>
+<p>We define the <span class="math inline">\(\mem{degree of freedom}\)</span> of a system to be the number of <em>independent</em> ways a system may move; equivalently, it is the dimension of the system’s configuration space. Mechanical systems may translate and rotate. A particle unconstrained in any way has three degrees of freedom as it can, for example, translate independently along the three coordinate axes of a rectangular coordinate system. Consider now two particles, connected by an inextensible rod: even though one needs 6 coordinates to locate both particles, these coordinates are not all independent since the inextensible rod will always make sure that the distance between the particles will not change, and so the particles may not move independently. In this case, then, the system of two particles will have a smaller number of degrees of freedom. A <em>constraint</em> is any kinematic relationship that prescribes limitations on the motion of the system or any of its parts; the inextensibility of the rod in the two particle system, enforcing that the distance between the particles remains constant, is a constraint. Such constraints may be in the form of algebraic equations, in which case they are called holonomic, or they may be in differential, non-integrable forms, in which case they are called non-holonomic. We limit all our discussions to holonomic systems.</p>
+<p><span class="math inline">\(\mem{Generalized coordinates}\)</span> are the specific variables that are used to describe the motion; accordingly, any kinematic quantity pertaining to a system (such as the position, velocity and/or acceleration of any point in the system) may be expressed as functions of the generalized coordinates (and their derivatives) chosen to model that system. The choice of generalized coordinates for a specific system is not unique and different sets of variables may serve equally well to formulate the system’s dynamics. The term generalized is historically used to note that these variables do not necessarily have to be directly associated with a coordinate basis. For any system with holonomic constraints one can always find a set of independent generalized coordinates, as many as the degree of freedom of the system, to describe all of kinematics.</p>
+<div id="fig-partoncirc" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/partoncirc.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:40.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.1: Particle constrained to move on a circle lying on the <span class="math inline">\(xy\)</span>-plane.</figcaption><p></p>
+</figure>
+</div>
+<p>To elucidate these definitions, consider, for example, a particle constrained to move on a circular path as shown in <a href="#fig-partoncirc">Figure&nbsp;<span>1.1</span></a>. Assume that the circular path’s center is located at <span class="math inline">\((x=0,y=0,z=0)\)</span> so that the path lies on the <span class="math inline">\(xy\)</span>-plane. Then at any time <span class="math inline">\(t\)</span> the particle is constrained to move on the <span class="math inline">\(xy\)</span>-plane so that: <span class="math display">\[
+z(t) = 0 \qquad \forall t
+\]</span> This is a constraint equation. The second constraint equation for this particle would have to specify that it is moving on a circular path of radius <span class="math inline">\(R\)</span>: <span class="math display">\[
+x^2(t) + y^2(t)= R^2 \qquad \forall t
+\]</span> What remains is essentially just one degree of freedom (the particle may only rotate about the <span class="math inline">\(z\)</span>-axis while it remains in the <span class="math inline">\(xy\)</span>-plane), and the particle’s position can be located with only one generalized coordinate. For example, if one knows the value of <span class="math inline">\(x(t)\)</span> at some time <span class="math inline">\(t\)</span> then the other two rectangular coordinates may be calculated via the constraint equations as <span class="math inline">\(z(t)=0\)</span> and <span class="math inline">\(y(t) = \pm \sqrt{R^2 - x^2(t)}\)</span> (the sign is surprisingly not trivial but we’ll not dwell on it). One could easily well choose <span class="math inline">\(y(t)\)</span> as the independent variable and treat the others as dependent. Better yet, one could define the angle <span class="math inline">\(0 \leq \theta(t) &lt; 2\pi\)</span> between the line <span class="math inline">\(op\)</span> and the <span class="math inline">\(x\)</span>-axis as the generalized coordinate, so that knowing <span class="math inline">\(\theta(t)\)</span> one can locate wherever the particle is on the circle. In any case, for the single particle system of this example, its degree of freedom is <span class="math display">\[
+3 - (\text{number of constraint equations}) = 3 - 2 = 1
+\]</span> If the system comprises <span class="math inline">\(n_p\)</span> particles and there are <span class="math inline">\(b\)</span> many constraint equations, then the degree of freedom <span class="math inline">\(N\)</span> of the system is given by <span class="math display">\[
+N = 3n_p - b
+\]</span></p>
+<div id="fig-rigidbody2D" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rigidbody2D.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.2: A rigid body constrained to move on the <span class="math inline">\(xy\)</span>-plane.</figcaption><p></p>
+</figure>
+</div>
+<p>It may be shown that an unconstrained rigid body has <span class="math inline">\(6\)</span> degrees of freedom. Generally the motion is described through translations of a single point, most often the center of mass which we will denote by <span class="math inline">\(\com\)</span>, and three rotations of the rigid body about that point. If the rigid body is constrained so that its motion is planar<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, as seen in <a href="#fig-rigidbody2D">Figure&nbsp;<span>1.2</span></a>, then at most 3 degrees of freedom are possible. The location of all points on such a rigid body may be determined by tracking the translation of one point on it and the body’s rotation about the axis perpendicular to the plane in which that translation takes place.</p>
+<p>In holonomic systems use of the phrases ‘generalized coordinate’ and ‘degree of freedom’ tend to intertwine such that ‘degree of freedom’ is sometimes used to refer to a specific generalized coordinate and the phrase ‘number of degrees of freedom’ is used to signify our original definition of degree of freedom. We’ll try to maintain the distinction but say that a system has <span class="math inline">\(N\)</span> degrees of freedom (that it is an <span class="math inline">\(N\)</span>-DOF system), if <span class="math inline">\(N\)</span> independent variables suffice to completely describe the configuration of the system, and we will need <span class="math inline">\(N\)</span> generalized coordinates to model the dynamics. To emphasize the independence of the generalized coordinates from specific coordinate systems, it is customary to denote a generalized coordinate by the letter <span class="math inline">\(\gc\)</span>. Employing this symbolism and based on the terminology elaborated above, if, in this text, a system is said to have <span class="math inline">\(N\)</span>-DOFs, then its dynamics will be governed by the <span class="math inline">\(N\)</span> generalized coordinates <span class="math display">\[
+\gc_1(t), \gc_2(t), \ldots, \gc_N(t)
+\]</span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Planar motion is the name given to motion of rigid bodies in which the velocity (vector) of any point on the rigid body always remains parallel to a fixed plane.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Fundamental_Laws" class="level2" data-number="1.3">
+<h2 data-number="1.3" data-anchor-id="sec-Fundamental_Laws"><span class="header-section-number">1.3</span> Fundamental Laws</h2>
+<p>Formulating the governing equations of motion for any system in classical mechanics is possible through a few different formulations and principles that may be shown to be equivalent. Throughout this text we will employ the Newton-Euler formulation, the virtual work formulation with d’Alembert’s principle, and/or the Lagrangian formulation. In this section we will present the fundamental issues without going into the details of the derivations for which the reader may consult various books on classical mechanics.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> It is important to note that the differences that will strike the reader are more procedural than essential in that all formulations will lead to identical (possibly up to a linear transformation) equations of motion for a given system. The choice of which method to use in the context of a specific problem is generally a matter of ease of application, personal experience and preference.</p>
+<section id="sec-NewtonEuler_Formulation" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" data-anchor-id="sec-NewtonEuler_Formulation"><span class="header-section-number">1.3.1</span> Newton-Euler Formulation</h3>
+<p>It is only natural to start with this formulation since historically Newton<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> is the first scientist to have formulated some laws of motion, still used today, in a rigorous, mathematical manner and apply them for the solution of various problems. These laws as stated by Newton read as follows:</p>
+<!-- rewrote items -->
+<ol type="I">
+<li>Every body perseveres in its state of rest, or of uniform motion in a right line, unless it is compelled to change that state by forces impressed thereon.</li>
+<li>The alteration of motion is ever proportional to the motive force impressed; and is made in the direction of the right line in which that force is impressed.</li>
+<li>To every action there is always opposed an equal reaction: or the mutual actions of two bodies upon each other are always equal, and directed to contrary parts.</li>
+</ol>
+<p>It is generally accepted that by <em>body</em>, Newton implies a <em>particle</em> or a finite sized body that could be treated as a particle; by <em>motion</em>, what we currently call (linear) <em>momentum</em>, i.e.&nbsp;the product of mass with velocity.</p>
+<p>The first law is essentially a statement about the existence of an <em>inertial frame</em> in which the second law is applicable, and defines uniform motion (motion with a constant velocity along a straight line) as a state equivalent to that of rest.</p>
+<p>The second law, in modern vectorial notation, postulates <span id="eq-newton"><span class="math display">\[
+\fvec = \divt{\linmom} = \divt{(\totm \vvec)}  = \totm \avec
+\qquad(1.1)\]</span></span> where the last equality follows for closed systems in which there is no mass transfer in and out of the system boundaries so that <span class="math inline">\(\totm\)</span> is constant in time. We have introduced the notation <span class="math inline">\(\linmom = \totm \vvec\)</span> to denote the linear momentum of a particle and we will use the same notation when we are talking about the linear momentum of a system comprising more than one particle. It is important to emphasize again that the velocity <span class="math inline">\(\vvec\)</span> of the particle is measured in an inertial frame, as is its acceleration <span class="math inline">\(\avec\)</span>; otherwise, this law does not hold in its current form.</p>
+<p>The third law states that when two particles interact, they do so through a pair of forces, equal in magnitude but opposite in direction, acting along the central line hypothetically connecting the two particles; its validity is generally accepted unless the velocities considered are so large that the velocity of propagation of interaction may have to be taken into account. In structural dynamics we assume this law is always valid.</p>
+<p>The generalization of the laws of particles to bodies of finite sizes is generally attributed to Euler, who discussed governing equations of motion of rigid bodies in various works starting in the 1750s<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> until the middle of the 1770s<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. To somewhat economize on the notation, let us denote time derivatives by dots placed over the variables so that <span class="math inline">\(\pdivt{\upsilon}\)</span> denotes the first derivative in an inertial frame, with respect to time, of some variable <span class="math inline">\({\upsilon}\)</span>, and <span class="math inline">\(\pddivt{\upsilon}\)</span> denotes its second derivative. In modern language, the laws governing the dynamics of a <em>closed system of particles</em>, including rigid bodies, may be expressed as follows:</p>
+<!--rewrote items-->
+<ol type="I">
+<li><p>: The time derivative of the linear momentum of a system of particles is equal to the net resultant force of all the external forces acting on the particles composing the system. In a closed system with total mass <span class="math inline">\(\totm\)</span>, this law may be stated as: <span id="eq-linmom2"><span class="math display">\[
+\dlinmom = \fvec = \totm \avec_{\com}
+\qquad(1.2)\]</span></span> where <span class="math inline">\(\avec_{\com}\)</span> is the acceleration of the center of mass of the system and the last equality will be demonstrated below.</p></li>
+<li><p>: The time derivative of the angular momentum of a system of particles, with respect to a stationary point <span class="math inline">\(o\)</span> or the center of mass of the system <span class="math inline">\(\com\)</span>, is equal to the resultant moment at the same point all the external forces acting on the system: <span id="eq-angmom6"><span class="math display">\[
+\dangmom{o} = \moment{o} \quad \text{or} \quad \dangmom{\com} = \moment{\com}
+\qquad(1.3)\]</span></span> where <span class="math inline">\(\dangmom{o}\)</span> and <span class="math inline">\(\dangmom{\com}\)</span> are the angular momenta of the system about points <span class="math inline">\(o\)</span> and <span class="math inline">\(\com\)</span>, respectively, and <span class="math inline">\(\moment{o}\)</span> and <span class="math inline">\(\moment{\com}\)</span> are the resultant moments of the external forces and couples at the same points.</p></li>
+</ol>
+<p>There are many details involved in applying these principles to a specific system but it may be best to define some of the quantities specified in these laws through illustration.</p>
+<p>Consider the rigid body <span class="math inline">\(\RB{B}\)</span> shown in <a href="#fig-rigidbodydef">Figure&nbsp;<span>1.3</span></a>.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> An arbitrary point on the rigid body, having an infinitesimal mass <span class="math inline">\(\dm\)</span>, is located at position <span class="math inline">\(\pvec\)</span> at some time <span class="math inline">\(t\)</span>, relative to a stationary observer in an inertial frame of reference. The linear momentum of this infinitesimal piece is defined as <span class="math inline">\(\vvec \dm\)</span>, where <span class="math inline">\(\vvec = \pdivt{\pvec}\)</span> is the (absolute) velocity of <span class="math inline">\(\dm\)</span> in the inertial frame. The linear momentum of the whole body is then defined as the sum (integral) of the linear momenta of all the infinitesimal masses:</p>
+<p><span id="eq-ulinmom1"><span class="math display">\[
+\linmom \equiv \int_{\RB{B}} \vvec \dm
+\qquad(1.4)\]</span></span></p>
+<p>The center of mass of a system of particles turns out to be a significant point of reference. The location of the center of mass of the rigid body <span class="math inline">\(\RB{B}\)</span> relative to a point, say in this case the stationary point <span class="math inline">\(o\)</span>, is defined through <span id="eq-ulocation"><span class="math display">\[
+    \pvec_{\com} \equiv \frac{\int_{\RB{B}} \pvec \dm}{\int_{\RB{B}} \dm} = \frac{\int_{\RB{B}} \pvec \dm}{\totm}  
+\qquad(1.5)\]</span></span> where <span class="math inline">\(\totm\)</span> is the <em>mass of the whole body</em>. For a closed system with no mass transfer and constant mass, the direct time derivative of this expression may be used to define the velocity and acceleration of the center of mass in the inertial frame of reference as <span id="eq-uva"><span class="math display">\[
+    \vvec_{\com}=\frac{\int_{\RB{B}} \vvec \dm}{\totm}, \qquad   \avec_{\com}=\frac{\int_{\RB{B}} \avec \dm}{\totm}
+\qquad(1.6)\]</span></span> where <span class="math inline">\(\avec\)</span> is the acceleration of the infinitesimal mass <span class="math inline">\(\dm\)</span> in the inertial frame. With these definitions, the linear momentum of the whole body may be shown to be equal to <span id="eq-ulinmom2"><span class="math display">\[
+\linmom = \int_{\RB{B}} \vvec \dm = \totm \vvec_{\com}
+\qquad(1.7)\]</span></span> and that its time derivative in the inertial frame may be shown, using Newton’s second and third laws, to yield, <span id="eq-udlinmom1"><span class="math display">\[
+\dlinmom = \totm \avec_{\com} = \fvec
+\qquad(1.8)\]</span></span> where <span class="math inline">\(\fvec\)</span> is the force resultant of all the external forces. The principle of linear momentum for a rigid body therefore boils down to the analysis of a single hypothetical particle, of mass equal to the total mass of the rigid body, which is located at the center of mass of the body and onto which acts the force resultant of all the external forces that act on whole rigid body.</p>
+<div id="fig-rigidbodydef" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rigidbodydef.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.3: An arbitrary rigid body.</figcaption><p></p>
+</figure>
+</div>
+<p>Angular momentum is defined as the “moment of momentum”. The angular momentum of the infinitesimal mass <span class="math inline">\(\dm\)</span>, relative to a stationary point <span class="math inline">\(o\)</span>, is therefore defined as <span class="math inline">\(\pvec \times \vvec \dm\)</span>, and the angular momentum of the whole body is given by <span id="eq-uangmom1"><span class="math display">\[
+    \angmom{o} \equiv \int_{\RB{B}} \pvec \times \vvec \dm
+\qquad(1.9)\]</span></span> It may be shown, using Newton’s second and third laws, that the time derivative of the angular momentum in the inertial frame yields <span id="eq-dangmomo"><span class="math display">\[
+    \dangmom{o} = \moment{o}
+\qquad(1.10)\]</span></span> where <span class="math inline">\(\moment{o}\)</span> is the resultant moment, at point <span class="math inline">\(o\)</span>, of all the external forces and couples.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> It turns out that even though <span class="math inline">\(\com\)</span> is in general non-stationary, the principle of angular momentum leads to analogous results when <span class="math inline">\(\com\)</span> is taken as the reference point. If the position of the infinitesimal mass <span class="math inline">\(\dm\)</span> relative to <span class="math inline">\(\com\)</span> is denoted by <span class="math inline">\(\prelcom\)</span>, then the angular momentum of the rigid body with respect to its center of mass may be defined in two equivalent ways as <span id="eq-angmomcom"><span class="math display">\[
+    \angmom{\com} = \int_{\RB{B}} \prelcom \vprod \vvec \dm = \int_{\RB{B}} \prelcom \vprod \vrelcom \dm
+\qquad(1.11)\]</span></span> where the last equality is not immediate but may quickly be arrived at through the definition of the center or mass.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> It may be shown that the time derivative, in the inertial frame, of the angular momentum with respect to the center of mass leads to a result analogous to <a href="#eq-dangmomo">Equation&nbsp;<span>1.10</span></a>: <span id="eq-dangmomc"><span class="math display">\[
+\dangmom{\com} = \moment{\com}
+\qquad(1.12)\]</span></span></p>
+<p>For general three dimensional motion of a rigid body, the principle of angular momentum will in general lead to nonlinear first order differential equations in angular velocities. For the simpler case of two dimensional motion, however, the equations simplify significantly: it may be shown that for a two dimensional rigid body motion that takes place in some plane with normal <span class="math inline">\(\widehat{\vctr{n}}\)</span>, the principle of angular momentum leads, through <a href="#eq-dangmomo">Equation&nbsp;<span>1.10</span></a> or <a href="#eq-dangmomc">Equation&nbsp;<span>1.12</span></a>, to a relationship of the form <span id="eq-usmoment1"><span class="math display">\[
+    \smoment_{o} \widehat{\vctr{n}} = \inertia{o} \dtangvel \widehat{\vctr{n}} \qquad \mathrm{or} \qquad \smoment_{\com} \widehat{\vctr{n}} = \inertia{\com} \dtangvel \widehat{\vctr{n}}
+\qquad(1.13)\]</span></span> where <span class="math inline">\(\inertia{o}\)</span> and <span class="math inline">\(\inertia{\com}\)</span> are moments of inertia<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> of the body, with respect to the axes perpendicular to the plane at points <span class="math inline">\(o\)</span> and <span class="math inline">\(\com\)</span>, respectively, <span class="math inline">\(\angvel\)</span> is the angular velocity (rate of rotation) of the body, and its time derivative <span class="math inline">\(\dtangvel\)</span> is the body’s angular acceleration.</p>
+<p>To present an application of this formulation, let us work on deriving the equation of motion of a pendulum made of a rigid, homogeneous bar, as shown in <a href="#fig-pendulumbar">Figure&nbsp;<span>1.4</span></a>(a). The bar has mass per unit length <span class="math inline">\(\mlen\)</span> and total mass <span class="math inline">\(m=\mlen \ell\)</span>. It is pinned to a stationary point <span class="math inline">\(o\)</span> (in an inertial frame) and is acted upon by gravity <span class="math inline">\(\gravity\)</span> along the vertical direction, directed downward. This is a single degree of freedom since essentially the only thing that the whole body may do is rotate about point <span class="math inline">\(o\)</span>; therefore, knowing, for example, the angle <span class="math inline">\(\gc\)</span> the bar makes with the vertical, it is possible to locate all the points in the body and hence define its configuration. Let us choose this angle <span class="math inline">\(\gc\)</span> as our generalized coordinate and formulate the equation of motion of the bar in terms of this variable.</p>
+<div id="fig-pendulumbar" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/pendulumbar.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.4: A homogeneous bar pinned to an inertial frame.</figcaption><p></p>
+</figure>
+</div>
+<p>One of the fundamental steps in the analysis of dynamical problems is the sketch of appropriate free body diagrams, which is an isolated sketch of the body, from which all geometric constraints are removed but the constraint forces are shown, along with all other external forces and geometrical dimensions. There is, however, a difference in the analysis of most systems in static equilibrium and the analysis of systems moving. When analyzing static equilibrium problems in structural mechanics, especially those focusing on linear elastic systems, the free body diagrams are often sketched assuming that the systems retain their initial configuration.<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> The premise is that when displacements remain comparatively very small, it may be assumed that the difference between the deformed and the undeformed configurations will be negligible, and that equilibrium analysis may be conducted using the undeformed configuration. When motion is analyzed, however, the <em>free body diagram must necessarily be sketched for a displaced and deformed configuration</em> such that all forces that act on the system, some of which may be caused or modified by the motion itself, may be observed. We generally consider an instant such that the the generalized coordinates and their time derivatives have non-zero, positive values to ensure consistency in algebraic signs of variables.</p>
+<p>The free body diagram of our bar is shown in <a href="#fig-pendulumbar">Figure&nbsp;<span>1.4</span></a>(b). Included in this figure are the unit vectors we will employ in our formulations, <span class="math inline">\(\vctr{n}\)</span> and <span class="math inline">\(\vctr{t}\)</span>, which are attached to the bar and hence are moving with it.<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> With the third unit vector <span class="math inline">\(\zuvec\)</span> defined through <span class="math inline">\(\zuvec = \vctr{n} \vprod \vctr{t}\)</span>, we have a right handed orthogonal vector basis, with the angular velocity expressed as <span class="math inline">\(\angvelvec = \omega \pvctr{k}\)</span>.</p>
+<p>Since this is a single degree of freedom system, all kinematic quantities should be expressible in terms of <span class="math inline">\(\gc\)</span>. The center of mass of the bar will be located at the middle of the bar since the bar is homogeneous, and its acceleration may be derived as <span class="math display">\[\begin{align*}
+\pvec_{\com} &amp; = \frac{\ell}{2} \pvctr{n} \\
+\vvec_{\com} &amp; = \frac{\ell}{2}  \pdivt{\pvctr{n}} = \frac{\ell}{2}  (\angvelvec \vprod \pvctr{n}) = \frac{\ell}{2} \dgc \pvctr{t} \\
+\avec_{\com} &amp; = \frac{\ell}{2} \ddgc \pvctr{t}  + \frac{\ell}{2} \dgc \pdivt{\pvctr{t}} = \frac{\ell}{2} \ddgc \pvctr{t} + \frac{\ell}{2}\dgc (\angvelvec \vprod \vctr{t}) = - \frac{\ell}{2} \dgc^2 \pvctr{n} + \frac{\ell}{2} \ddgc \pvctr{t}
+\end{align*}\]</span> The principle of linear momentum for this system may now be expressed as <span id="eq-eombarpend"><span class="math display">\[
+m \avec_{\com} = - m \frac{\ell}{2} \dgc^2 \pvctr{n} + m \frac{\ell}{2} \ddgc \pvctr{t}
+= \fvec = ( m \gravity \cos \gc -R_{n})\pvctr{n} + (R_{t} - m \gravity \sin \gc) \pvctr{t}
+\qquad(1.14)\]</span></span> These two equations, one for each direction, include three unknowns: <span class="math inline">\(R_{n}\)</span>, <span class="math inline">\(R_{t}\)</span> and <span class="math inline">\(\gc\)</span>. A third equation may be obtained via the principle of angular momentum. To apply this principle to the system at hand, we may either try to evaluate the time derivative of the angular momentum from basic principles, or use previously derived results regarding moments of inertia. To go over the steps involved, let us choose the first option and try to find out the angular momentum of the system relative to the stationary point <span class="math inline">\(o\)</span>. The infinitesimal segment <span class="math inline">\(\dm = \mlen \diff s\)</span> shown in <a href="#fig-pendulumbar">Figure&nbsp;<span>1.4</span></a>(c), located at <span class="math inline">\(\pvec = s \pvctr{n}\)</span> relative to <span class="math inline">\(o\)</span>, has velocity <span class="math inline">\(\vvec = s \dgc \pvctr{t}\)</span> so that its angular momentum is given by <span class="math display">\[
+\pvec \vprod \vvec \dm = s^2 \dgc (\vctr{n} \vprod \vctr{t}) \dm = s^2 \dgc \mlen \diff s \zuvec
+\]</span> When integrated over the whole bar, the angular momentum of the system about point <span class="math inline">\(o\)</span> will be obtained as <span id="eq-eombarpendb"><span class="math display">\[
+\angmom{o} = \int \pvec \vprod \vvec \dm = \int_{0}^{\ell} s^2 \dgc \mlen \diff s \zuvec = \frac{\mlen \ell^3}{3} \dgc \zuvec = \frac{m \ell^2}{3} \dgc \zuvec
+\qquad(1.15)\]</span></span> Noting that the unit vector <span class="math inline">\(\zuvec\)</span> maintains its magnitude (unit vector by definition) and direction at all times, the time derivative of the angular momentum yields <span id="eq-eombarpendc"><span class="math display">\[
+\dangmom{o} = \frac{m \ell^2}{3} \ddgc \zuvec
+\qquad(1.16)\]</span></span> and the principle of angular momentum gives <span id="eq-eombarpendd"><span class="math display">\[
+\dangmom{o} = \moment{o} \quad \rightarrow \quad \frac{m \ell^2}{3} \ddgc \zuvec = - \frac{\ell}{2} m \gravity \sin \gc  \zuvec
+\qquad(1.17)\]</span></span> so that the equation of motion governing the time evolution of <span class="math inline">\(\gc\)</span> is found to be <span id="eq-eombarpende"><span class="math display">\[
+\frac{m \ell^2}{3} \ddgc =  - \frac{\ell}{2} m \gravity \sin \gc \quad \rightarrow \quad \ddgc + \frac{3 \gravity}{2 \ell} \sin \gc = 0
+\qquad(1.18)\]</span></span> Point <span class="math inline">\(o\)</span> was a somewhat obvious choice to refer to since the unknown reaction forces <span class="math inline">\(R_{n}\)</span> and <span class="math inline">\(R_{t}\)</span> do not contribute to the resultant moment at <span class="math inline">\(o\)</span> and hence an equation addressing only <span class="math inline">\(\gc\)</span> is constructed directly.</p>
+<p>The Newton-Euler approach and the other methods that we will discuss differ mainly in this initial step, i.e.&nbsp;constructing the governing equation of motion. The solution procedure is likely to proceed as follows: the governing equation of motion, <span id="eq-eombarpendf"><span class="math display">\[
+\ddgc + \frac{3 \gravity}{2 \ell} \sin \gc = 0
+\qquad(1.19)\]</span></span> will have to be solved to find <span class="math inline">\(\gc (t)\)</span>. As this is a second order nonlinear differential equation, its solution is not trivial. On the other hand, if the motion takes place in the vicinity of the equilibrium configuration so that <span class="math inline">\(\gc\)</span> and <span class="math inline">\(\dgc\)</span> remain relatively small, then <span class="math inline">\(\sin \gc\)</span> may be approximated by <span class="math inline">\(\sin \gc \approx \gc\)</span>, and the <em>linearized</em> equation of motion will be obtained as <span id="eq-eombarpendg"><span class="math display">\[
+\ddgc + \frac{3 \gravity}{2 \ell} \gc = 0
+\qquad(1.20)\]</span></span> Once <span class="math inline">\(\gc (t)\)</span> is obtained, the unknown reaction forces may be calculated via the principle of linear momentum.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="2">
+<li id="fn2"><p>see, for example, H. Goldstein’s <em>Classical Mechanics</em>, first published in 1950 by Addison-Wesley Publishing Company, or D.T. Greenwoods’s <em>Classical Dynamics</em>, first published by Prentice-Hall in 1997.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>I. Newton, <em>Philosophiae Naturalis Principia Mathematica</em>, or simply <em>the Principia</em> as it has come to be known. The original, published in 1687, is in Latin and here we will be quoting from its translation by A. Motte, specifically the version published in 1846 in New York by D. Adee.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>L. Euler, “Découverte d’un nouveau principe de mécanique.” <em>Mémoires de l’académie des sciences de Berlin</em>, Vol. 6, pp.&nbsp;185-217, 1752.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>L. Euler, L, “Nova Methodus Motum Corporum Rigidorum Determinandi.” <em>Novi Commentarii Academiae Scientiarum Petropolitanae</em>, Vol. 20, pp.&nbsp;208-238, 1776.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>To minimize the details, we just discuss the expressions that pertain to rigid bodies. Most of the results discussed, in particular the fundamental laws, are valid for systems comprising discrete particle masses, with summations over all the particles replacing the integrals pertaining to rigid bodies.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Note that moment of a momentum (angular momentum) or a force will depend on the point with respect to which it is calculated. The angular momentum of a particle with respect to some point is in general not equal to its angular momentum with respect to some other point. This is not the case for linear momentum in that a particle will have a unique linear momentum in a given inertial frame.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>As <span class="math inline">\(\vrelcom\)</span> is essentially the relative velocity of <span class="math inline">\(\dm\)</span> with respect to <span class="math inline">\(\com\)</span> in the inertial frame, the last integral is sometimes referred to as the <em>relative angular momentum</em>. The difference may be important for an arbitrary reference point but for the center of mass the two integrals in <a href="#eq-angmomcom">Equation&nbsp;<span>1.11</span></a> yield the same result.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Recall that the moment of inertia of a body <span class="math inline">\(\RB{B}\)</span> with respect to some axis is defined as <span class="math inline">\(\inrt \equiv \int_{\RB{B}} r^2 \dm\)</span> where <span class="math inline">\(r\)</span> is the distance between the axis and <span class="math inline">\(\dm\)</span>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Some systems do in fact require that deformed configuration be considered in static analysis as well but structural analysis of many systems do indeed consider small deformations and deformation gradients so that force equilibrium is established in the undeformed configuration.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>When unit vectors are rotating in an inertial frame, their time derivatives are non-zero since their direction changes. If <span class="math inline">\(\vctr{u}\)</span> is such a unit vector which is rotating with angular velocity $ $ in an inertial frame, then its time derivative in that frame is given by <span class="math inline">\(\pdivt{\vctr{u}} =\angvelvec \vprod \vctr{u}\)</span>.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Virtual_Work" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" data-anchor-id="sec-Virtual_Work"><span class="header-section-number">1.3.2</span> <span class="math inline">\(\mathrm{d}\)</span>’Alembert’s Principle and Virtual Work</h3>
+<p>Even though it is within the realm of the Newton-Euler formulations, d’Alembert’s principle has proven to be quite a useful rephrasing, especially for those well trained in static analysis. There are slightly different variations of the statement and here we phrase it in the form most conducive to static analysis tools: <em>If one considers a hypothetical force to act on a particle, acting in opposite direction to the particle’s acceleration and with magnitude equal to the product of the particle’s mass with its acceleration, then the particle would be in static equilibrium instantaneously under the joint action of this hypothetical force and all the external forces acting on it.</em></p>
+<p>For a single particle, this statement amounts to saying <span id="eq-unewton2"><span class="math display">\[
+\fvec - m \avec = \zerovec
+\qquad(1.21)\]</span></span> where it seems the only thing we have done is to move the right hand side of <a href="#eq-newton">Equation&nbsp;<span>1.1</span></a> to the left of the equality sign. While it may be so, the emphasis is not on the algebra but rather on the treatment of the problem.</p>
+<p>The real benefit of this rephrasing will generally be more pronounced for systems of rigid bodies. For ease of reference, let us call the aforementioned hypothetical force the <em>d’Alembert force</em>. When the corresponding d’Alembert forces are acted on at each point in a system of particles or even a rigid body, each particle, and consequently the whole system, will instantaneously be in a state of static equilibrium. It may be shown that when these forces are taken into account, one can write the following equations for the instantaneous static equilibrium of a two dimensional rigid body: <span id="eq-unewton3"><span class="math display">\[
+    \fvec - \totm \avec_{\com} = \zerovec, \qquad \begin{array}{c} \smoment_{o} - \inertia{o}  \dtangvel = 0 \\ \text{or} \\ \smoment_{\com} - \inertia{\com} \dtangvel = 0 \end{array}
+\qquad(1.22)\]</span></span> The term <span class="math inline">\(- \totm \avec_{\com}\)</span> is the force resultant and <span class="math inline">\(- \inertia{o} \dtangvel\)</span> is the moment resultant, at point <span class="math inline">\(o\)</span>, of all the d’Alembert forces that should be acting on the system; similarly, <span class="math inline">\(- \inertia{\com} \dtangvel\)</span> is their moment resultant at point <span class="math inline">\(\com\)</span>.</p>
+<div id="fig-pendulumbar2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/pendulumbar2.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.5: Accelerations and d’Alembert forces on the rigid bar pendulum.</figcaption><p></p>
+</figure>
+</div>
+<p>Let us go back to the pendulum example, sketched again in <a href="#fig-pendulumbar2">Figure&nbsp;<span>1.5</span></a>. The acceleration of the infinitesimal piece of mass <span class="math inline">\(\dm\)</span>, located at a distance of <span class="math inline">\(s\)</span> to the stationary point <span class="math inline">\(o\)</span> is given by<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></p>
+<p><span class="math display">\[
+\avec = -s \dgc^2 \vctr{n} + s \ddgc \vctr{t}
+\]</span> and the components are shown in <a href="#fig-pendulumbar2">Figure&nbsp;<span>1.5</span></a> (a). For each of these infinitesimal segments, we could add the corresponding d’Alembert forces so that each segment may be considered to be instantaneously in static equilibrium. When all the d’Alembert forces are included in the free body diagram, as shown in <a href="#fig-pendulumbar2">Figure&nbsp;<span>1.5</span></a> (b), the whole system may now be considered to be in static equilibrium at the instant considered. The d’Alembert forces shown with dotted lines and arrows are distributed loads per unit length, acting in the directions indicated by the arrows. Therefore we now have, from static equilibrium equations, <span id="eq-rbpendalemberta"><span class="math display">\[
+\sum \sforce_{t} = 0  \quad \rightarrow \quad     R_{t} - \frac{1}{2} (\mlen\ell\ddgc)(\ell) - m \gravity \sin \gc = 0
+\qquad(1.23)\]</span></span> <span id="eq-rbpendalembertb"><span class="math display">\[
+\sum \sforce_{n} = 0  \quad \rightarrow \quad     R_{n} - \frac{1}{2} (\mlen\ell\dgc^2)(\ell) - m \gravity \cos \gc = 0
+\qquad(1.24)\]</span></span> <span id="eq-rbpendalembertc"><span class="math display">\[
+\sum \smoment_{o} = 0 \quad \rightarrow \quad  - \frac{\ell}{2} m \gravity \sin \gc  - \frac{2 \ell}{3}\frac{1}{2} (\mlen\ell\ddgc)(\ell)= 0
+\qquad(1.25)\]</span></span> which leads, after some rearranging, to the following equation of motion for <span class="math inline">\(\gc\)</span>: <span id="eq-rbpendalemberteom"><span class="math display">\[
+\ddgc - \frac{3}{2} \frac{\gravity}{\ell} \sin \gc  = 0
+\qquad(1.26)\]</span></span> It must be noted that this equation is identical to <a href="#eq-eombarpendf">Equation&nbsp;<span>1.19</span></a>. <!-- \end{quation} --></p>
+<p>d’Alembert’s principle finds its full potential when virtual work is used in complex systems usually involving multiple degrees of freedom. In order to focus on the general principle we will define and briefly present the application of the virtual work approach to the simple pendulum problem we have been studying, but there will be ample opportunities to revisit the principle in latter chapters.</p>
+<p>In modern language, the <span class="math inline">\(\rem{principle of virtual work}\)</span> states that <em>if a system is in static equilibrium, then the internal virtual work that would be done by the system, if it were to go through some virtual displacements and deformations consistent with the imposed constraints, would have to be equal to the work done by the external forces as the system moves through such displacements and deformations.</em> This statement is more appropriately called the <em>principle of virtual displacements</em>; there is also an alternative statement of virtual work in which the forces rather than the displacements are fictitious. Since we want to emphasize the concept of work, we will refer to the more general principle of virtual work.<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></p>
+<p>To apply the principle of virtual work to our rigid bar pendulum, we must consider a virtual variation in the generalized coordinate <span class="math inline">\(\gc\)</span>. Let us denote this virtual variation as <span class="math inline">\(\vgc\)</span>, as shown in <a href="#fig-pendulumbar3">Figure&nbsp;<span>1.6</span></a>. Since the inclusion of d’Alembert forces allows us to treat the dynamic problem as an equivalent static problem, the principal of virtual work leads to <span id="eq-vwork"><span class="math display">\[
+\vwork_{int} = \vwork_{ext}
+\qquad(1.27)\]</span></span> where <span class="math inline">\(\vwork_{int}\)</span> is the virtual work done by the internal forces during the virtual displacement <span class="math inline">\(\vgc\)</span>, and <span class="math inline">\(\vwork_{ext}\)</span> is the external forces during the same virtual displacement.</p>
+<div id="fig-pendulumbar3" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/pendulumbar3.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.6: The bar going through virtual displacement <span class="math inline">\(\vgc\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>Since the bar is rigid and there is no deformation in any of the components during the virtual displacement, the internal virtual work is zero for the system., i.e.&nbsp;<span class="math inline">\(\vwork_{int} = 0\)</span>. As for the external virtual work, the only external forces that will do work during the virtual displacement are the tangential d’Alembert forces and the tangential component of the weight. The reaction forces <span class="math inline">\(R_{n}\)</span> and <span class="math inline">\(R_{t}\)</span> do no work since no displacement results at the point of application of these forces during the virtual displacement: this is a direct consequence of our choice of imposing virtual displacements consistent with the kinematic constraints. The d’Alembert forces along the radial direction will do no work either since the displacements that will occur, due to the virtual displacement <span class="math inline">\(\vgc\)</span>, at the points of application of these forces will be perpendicular to the forces; the same is true for the radial component of the weight of the bar. Since the single force resultant of the triangular distribution of tangential d’Alembert forces is given by <span class="math inline">\(\mlen \ell^2 \ddgc / 2 = m\ell \ddgc / 2\)</span> and this resultant acts at a distance <span class="math inline">\(2\ell/3\)</span> to the center of rotation, as shown in <a href="#fig-pendulumbar3">Figure&nbsp;<span>1.6</span></a> (b), the virtual work done by the external forces as the bar goes through <span class="math inline">\(\vgc\)</span> is given by <span class="math display">\[
+\vwork_{ext} = - (m \gravity \sin \gc)\left(\frac{\ell}{2} \vgc \right) - \left(\frac{m\ell \ddgc}{2} \right)\left(\frac{2\ell}{3} \vgc \right)
+\]</span> where we have assumed <span class="math inline">\(\vgc\)</span> is small enough so the paths travelled by the points of application of the forces involved, which would be circular arcs for large values of <span class="math inline">\(\vgc\)</span>, may be approximated by straight lines of the tangents, given by <span class="math inline">\(\ell \vgc /2\)</span> and <span class="math inline">\(2 \ell \vgc /3\)</span>. The principal of virtual work for this system therefore leads to <span class="math display">\[
+\vwork_{ext} = - \left(m \gravity \frac{\ell}{2} \sin \gc + m\frac{\ell^2}{3} \ddgc \right) \vgc  = 0
+\]</span> and since this result must be valid for arbitrary values of <span class="math inline">\(\vgc\)</span>, the term in the parentheses must be zero, leading to <span class="math display">\[
+m\frac{\ell^2}{3} \ddgc + m \gravity \frac{\ell}{2} \sin \gc = 0 \quad \rightarrow \quad  \ddgc + \frac{3 \gravity}{2 \ell} \sin \gc = 0
+\]</span> The final equation is, of course, identical to the ones previously derived through alternative methods.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="12">
+<li id="fn12"><p>One can start with the position vector <span class="math inline">\(\pvec = s \vctr{n}\)</span>, take its time derivative to get to the velocity as <span class="math inline">\(\vvec = \pdivt{\pvec} = s \pdivt{\vctr{n}} = s (\angvelvec \vprod \vctr{n}) = s \dgc \vctr{t}\)</span>, and then take the time derivative of the velocity to get <span class="math inline">\(\avec = \pdivt{\vvec} = s \ddgc \vctr{t} + s \dgc \pdivt{t} = -s \dgc^2 \vctr{n} + s \ddgc \vctr{t}\)</span>. Note that the time derivative of <span class="math inline">\(s\)</span> is zero on virtue of the body being rigid so that the distance between any two points on the body does not change with time.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>“Virtual,” because this is essentially a thought experiment; these displacements and deformations do not actually take place in some finite time as real displacements do, they are assumed to hypothetically take place with time frozen at some instant. Although not absolutely necessary, the virtual displacements and deformations are generally taken to be (very) “small” so that the geometry is not highly deformed during these deformations, and the variations in the force field do not alter conditions of equilibrium.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Lagranges_Equations" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" data-anchor-id="sec-Lagranges_Equations"><span class="header-section-number">1.3.3</span> Lagrange’s Equations</h3>
+<p>Lagrange<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> is credited for transforming mechanics from the realm of geometry to the realm of analysis in his seminal work ‘Analytical Mechanics’ published almost exactly after one hundred years from the Principia. His equations of motion, referred to as Lagrange’s equations, may be derived via virtual work and d’Alembert’s principle, as well as the principle of least action. In this section we will not provide the derivation of these famous equations but will just aim to highlight the fundamental issues and equations.</p>
+<p>At the heart of Lagrangian formulation is the concept of energy. Let us assume that a (holonomic) system has <span class="math inline">\(N\)</span>-DOFs, with its kinematics defined by generalized coordinates <span class="math inline">\(\gc_{1}, \gc_{2}, \ldots, \gc_{N}\)</span>. The kinetic energy <span class="math inline">\(\ke\)</span> of the system will in general be an explicit function of these generalized coordinates as well as their time derivatives, called the generalized velocities, and possibly also of time: <span class="math display">\[
+\ke = \ke(\gc_{1}, \gc_{2}, \ldots, \gc_{N}, \dgc_{1}, \dgc_{2}, \ldots, \dgc_{N}, t)
+\]</span> The forces that act on the system are generally classified as those that may be derived from a potential, i.e.&nbsp;conservative forces, and those that may not, i.e.&nbsp;non-conservative forces. The potential <span class="math inline">\(\pe\)</span> of the conservative forces will in general will be an explicit function of the generalize coordinates and possibly also of time: <span class="math display">\[
+\pe = \pe(\gc_{1}, \gc_{2}, \ldots, \gc_{N}, t)
+\]</span> If there are no non-conservative forces acting on the system, then Lagrange’s equations may be expressed in the following form: <span id="eq-lagrange1"><span class="math display">\[
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc_{i}}\right) - \frac{\partial \ke}{\partial \gc_{i}} + \frac{\partial \pe}{\partial \gc_{i}} = 0 \qquad \text{for} \quad i=1,2,\ldots,N
+\qquad(1.28)\]</span></span> Note that these represent <span class="math inline">\(N\)</span> equations, one for each generalized coordinate <span class="math inline">\(i=1,2,\ldots,N\)</span>, but each equation may contain all the other generalized coordinates as well so that the resulting equations are in general coupled.</p>
+<p>If there are non-conservative forces as well, then the equations in <a href="#eq-lagrange1">Equation&nbsp;<span>1.28</span></a> will have to be modified. Let <span class="math inline">\(\vwnc\)</span> denote the work done by the non-conservative forces during virtual displacements <span class="math inline">\(\vgc_{1}, \vgc_{2}, \ldots, \vgc_{N}\)</span>. In a holonomic system this work will be a simple linear function of the virtual displacements that may be expressed as <span class="math display">\[
+\vwnc = \vforce_{1} \vgc_{1} + \vforce_{2} \vgc_{2} + \ldots + \vforce_{N} \vgc_{N}
+\]</span> where the coefficients of the virtual displacements, <span class="math inline">\(\vforce_{i}\)</span>, are called <em>generalized forces</em>. It may be shown that in this case, Lagrange’s equations will be of the form:<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> <span id="eq-lagrange2"><span class="math display">\[
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc_{i}}\right) - \frac{\partial \ke}{\partial \gc_{i}} + \frac{\partial \pe}{\partial \gc_{i}} = \vforce_{i} \qquad \text{for} \quad i=1,2,\ldots,N
+\qquad(1.29)\]</span></span></p>
+<p>Finally, using the Lagrangian <span class="math inline">\(\lagrangian\)</span>, defined conventionally as <span class="math inline">\(\lagrangian = \ke - \pe\)</span>, the equations may also be expressed as <span id="eq-lagrange3"><span class="math display">\[
+\frac{\diff}{\diff t} \left(\frac{\partial \lagrangian}{\partial \dgc_{i}}\right) - \frac{\partial \lagrangian}{\partial \gc_{i}} = \vforce_{i} \qquad \text{for} \quad i=1,2,\ldots,N
+\qquad(1.30)\]</span></span> since <span class="math inline">\(\pe\)</span> is not a function of the generalized velocities <span class="math inline">\(\dgc_{i}\)</span>.</p>
+<p>Before discussing further details, let us apply this approach to the rigid bar pendulum we have been studying. Consider the sketch shown in <a href="#fig-pendulumbar4">Figure&nbsp;<span>1.7</span></a>. The velocity of an infinitesimal segment of the bar, located at a distance <span class="math inline">\(s\)</span> to the center of rotation <span class="math inline">\(o\)</span>, is given by <span class="math inline">\(\vvec = s \dgc \pvctr{t}\)</span>. The kinetic energy of this segment will then be equal to <span class="math inline">\(\frac{1}{2}(\vvec \sprod \vvec) \dm = \frac{1}{2}(\vvec \sprod \vvec) \mlen \diff s\)</span>. The kinetic energy of the whole bar is calculated by summing the contributions of all the segments that make up the bar so that <span class="math display">\[
+\ke = \int_{0}^{\ell} \frac{1}{2}(\vvec \sprod \vvec) \mlen \diff s = \int_{0}^{\ell} \frac{\mlen}{2} \dgc^2 s^2 \diff s =  \frac{m\ell^2}{6} \dgc^2
+\]</span> As for the potential energy, we first note that the conservative force acting on the system is the weight. Let us assume that the potential energy of the system when <span class="math inline">\(\gc = 0\)</span> is some unknown value <span class="math inline">\(\pe_o\)</span>; there is always the possibility that the system possesses some potential even if it is not moving but this initial value would have to be independent of the generalized coordinates. As the bar moves, the center of mass, which we assume to coincide with the center of gravity when the variations in the gravitational field may be neglected, rises by an amount of <span class="math inline">\((\frac{\ell}{2} - \frac{\ell}{2}\cos \gc)\)</span>, and so the potential energy of the system at some arbitrary instant is given by: <span class="math display">\[
+\pe = \pe_o + m \gravity \left(\frac{\ell}{2} - \frac{\ell}{2}\cos \gc\right)
+\]</span></p>
+<div id="fig-pendulumbar4" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/pendulumbar4.png" class="img-fluid figure-img" style="width:40.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.7: Rigid bar pendulum revisited.</figcaption><p></p>
+</figure>
+</div>
+<p>Note that there are no non-conservative forces acting except perhaps the constraint forces, i.e.&nbsp;the support reactions <span class="math inline">\(R_{n}\)</span> and <span class="math inline">\(R_{t}\)</span>. One of the characteristics of the Lagrangian approach is that such constraint forces never do work through any virtual displacements so that constraint forces never contribute to the generalized forces. Therefore we may simply use the form of the Lagrange’s equations given by <a href="#eq-lagrange1">Equation&nbsp;<span>1.28</span></a> for this system. Evaluating the individual terms yields <span class="math display">\[
+\frac{\partial \ke}{\partial \dgc} = \frac{m\ell^2}{3} \dgc, \quad \frac{\diff}{\diff t}\left(\frac{\partial \ke}{\partial \dgc}\right) = \frac{m\ell^2}{3} \ddgc, \quad \frac{\partial \ke}{\partial \gc} =0, \quad \frac{\partial \pe}{\partial \gc} = \frac{m \gravity \ell}{2} \sin \gc
+\]</span> so that <a href="#eq-lagrange1">Equation&nbsp;<span>1.28</span></a> leads to: <span class="math display">\[
+\frac{m\ell^2}{3} \ddgc + \frac{m \gravity \ell}{2} \sin \gc = 0 \quad \rightarrow \quad \ddgc + \frac{3 \gravity}{2\ell} \sin \gc = 0
+\]</span></p>
+<p>When working with rigid bodies, it may not be necessary to calculate the kinetic energy from basic principles. In fact, it may be shown that the kinetic energy of a rigid body may be expressed as <span id="eq-kerb1"><span class="math display">\[
+\ke = \frac{1}{2} \totm (\vvec_{\com} \sprod \vvec_{\com}) + \frac{1}{2} \angmom{\com} \sprod \angvelvec
+\qquad(1.31)\]</span></span> where <span class="math inline">\(\totm\)</span> is the total mass of the body, <span class="math inline">\(\vvec_{\com}\)</span> is the velocity of the body’s center of mass, <span class="math inline">\(\angmom{\com}\)</span> is the body’s angular momentum about its center of mass, and <span class="math inline">\(\angvelvec\)</span> is its angular velocity. When the body is planar, as for example we may assume a floor plate to be, with planar dimensions much bigger than the depth and the plate moving in that plane, the kinetic energy expression will simplify to <span id="eq-kerb2"><span class="math display">\[
+\ke = \frac{1}{2} \totm \vel_{\com}^2  + \frac{1}{2} \inertia{\com} \angvel^2
+\qquad(1.32)\]</span></span> where <span class="math inline">\(\vel_{\com}\)</span> is the speed with which the center of mass moves, <span class="math inline">\(\inertia{\com}\)</span> is the moment of inertia of the body about the axis perpendicular to the plane of motion and passing through point <span class="math inline">\(\com\)</span>, and <span class="math inline">\(\angvel\)</span> is the angular speed. Finally, if the planar body is simply rotating in a plane about a fixed point <span class="math inline">\(o\)</span>, then the kinetic energy expression further simplifies to <span id="eq-kerb3"><span class="math display">\[
+\ke =  \frac{1}{2} \inertia{o} \angvel^2
+\qquad(1.33)\]</span></span> where <span class="math inline">\(\inertia{o}\)</span> is the moment of inertia of the body about the axis perpendicular to the plane of motion and passing through point <span class="math inline">\(o\)</span>. Since the moments of inertia of most regularly shaped homogeneous bodies are tabulated in many references, the use of these expressions may be most beneficial. For example, if we look up the moment of inertia of a homogeneous rod, of length <span class="math inline">\(\ell\)</span> and total mass <span class="math inline">\(\totm\)</span>, about a perpendicular axis passing through one of its ends, we’ll see that it is given by <span class="math inline">\(\inertia{o} = \totm \ell^2 / 3\)</span>. Since the angular speed of our rigid bar pendulum is <span class="math inline">\(\omega = \dgc\)</span>, use of <a href="#eq-kerb3">Equation&nbsp;<span>1.33</span></a> for our rigid bar pendulum will simply lead to <span class="math display">\[
+\ke =  \frac{1}{2} \inertia{o} \angvel^2 = \frac{m \ell^2}{6} \dgc^2
+\]</span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="14">
+<li id="fn14"><p>J.L. Lagrange, <em>Mécanique Analytique</em>, 1788. A famous quote from his preface to the first edition is: “No figures will be found in this work. The methods I present require neither constructions nor geometrical or mechanical arguments, but solely algebraic operations subject to a regular and uniform procedure.” We quote from the English translation by A. Boissonnade and V.N. Vagliente, 1997.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>Generalized force are not necessarily actual forces; if the generalized coordinate is a rotation, for example, the generalized force will have units of moment.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Constraint_Forces" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" data-anchor-id="sec-Constraint_Forces"><span class="header-section-number">1.3.4</span> Constraint Forces</h3>
+<p>The preceding presentation is too concise to include much of the finer details. In any case it should be clear that all the approaches discussed above will ultimately yield the same equations of motion (possibly up to a linear transformation) for a given system when one employs the same generalized coordinates to describe the kinematics. Which approach to use in the analysis of a particular problem will generally depend on the experience and personal preference of the analyst as well as the complexity of the system. There is, however, an important issue that must be brought to attention since it may have a significant affect on the choice, and that is whether or not the analyst is interested in calculation of constraint forces, which may actually be quite important for design purposes.</p>
+<p>While using the Newton-Euler approach, or static equilibrium equations via d’Alembert’s principle, the constraint forces appear explicitly in at least some of the equations of motion. Once the motion is solved for, the reaction forces may then be solved directly from these equations. Recall, for example, the equations we derived for the equilibrium of the rigid bar pendulum employing d’Alembert’s principle, i.e. <a href="#eq-rbpendalemberta">Equation&nbsp;<span>1.23</span></a>-<a href="#eq-rbpendalemberteom">Equation&nbsp;<span>1.26</span></a>. The motion of the pendulum is to be evaluated from the equation of motion, i.e. <a href="#eq-rbpendalemberteom">Equation&nbsp;<span>1.26</span></a>, by solving for <span class="math inline">\(\gc (t)\)</span>. Once the time history of <span class="math inline">\(\gc\)</span> is obtained, <a href="#eq-rbpendalemberta">Equation&nbsp;<span>1.23</span></a> and <a href="#eq-rbpendalembertb">Equation&nbsp;<span>1.24</span></a> may be used to solve for the reaction forces.</p>
+<p>These reaction forces, or any other constraint force for that matter, will not show up explicitly in the equations of motion when we use virtual work or Lagrange’s equations, since in both of these approaches, the virtual displacements will be chosen to be compatible with geometric constraints. If we want to evaluate constraint forces, then we will have to derive additional equations through other means after we solve the equation of motion that is obtained via these methods. This is not necessarily a drawback since we will see that derivation and solution of the equations of motion will be the main effort in structural dynamics, and most often not having the constraint forces appear explicitly in the equations will provide immense simplification.</p>
+<section id="sec-ex1" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-ex1">EXAMPLE 1 .1</h4>
+<p>As an exercise in a simple multi-DOF (MDOF) system, let us try to derive the equations of motion for the two horizontally moving blocks shown in <a href="#fig-dof2mk">Figure&nbsp;<span>1.8</span></a>.</p>
+<div id="fig-dof2mk" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2mk.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.8: A system of two horizontally moving blocks.</figcaption><p></p>
+</figure>
+</div>
+<p>This system comprises two masses, <span class="math inline">\(m_1\)</span> and <span class="math inline">\(m_2\)</span>, which are connected by two linear springs, with spring coefficients <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span>. The second mass is acted upon by an external force <span class="math inline">\(\sforce(t)\)</span>. The system has two degrees of freedom since both masses may translate only along the horizontal direction. We’ll use the translations <span class="math inline">\(\gc_1 (t)\)</span> and <span class="math inline">\(\gc_2 (t)\)</span> as our generalized coordinates. Both are defined positive towards the right, as indicated in the figure, of their respective references; these reference points correspond to the state when masses are standing still and there are no deformations in the springs. We assume friction to be negligible and gravity is acting downward so that it has no bearing on the horizontal internal or external forces. We will try to derive the equations that govern the motion of this system using all the methods we have been discussing above. In the following discussions we will omit explicit reference to time in most places to keep the symbolism as simple as possible.</p>
+<div id="fig-dof2mkfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2mkfbd.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.9: Free body diagrams of the horizontally moving blocks.</figcaption><p></p>
+</figure>
+</div>
+<p>Once the generalized coordinates are chosen, the free body diagrams of the components may be sketched. Since this system has two distinct bodies, each of which may be treated as a rectilinearly translating particle, we have to sketch two free body diagrams, one corresponding to each body. Such free body diagrams are shown in <a href="#fig-dof2mkfbd">Figure&nbsp;<span>1.9</span></a>. While sketching these free body diagrams, we have implicitly assumed a few key issues which we now verbalize. First and foremost, we have sketched the diagrams for an instant at which <span class="math inline">\(\gc_{1} &gt; 0\)</span> and <span class="math inline">\(\gc_{2} &gt; 0\)</span>; this is to ensure that the sign convention is properly established in the scalar variables (since we are not using vectors in this one dimensional problem); the implied directions of the forces are consistent with this initial assumption, and the forces that depend on the generalized coordinates will automatically reverse when the signs of the generalized coordinates reverse. Note that once the sign convention for the generalized coordinates is set, i.e.&nbsp;in this case <span class="math inline">\(\gc_{i}&gt;0\)</span> if it is to the right of the reference point, this choice also has consequences for the derivatives of the coordinates as well, so that velocities <span class="math inline">\(\dgc_{i}\)</span> and accelerations <span class="math inline">\(\ddgc_{i}\)</span> are now also positive if they are directed rightward. Secondly, we have not shown frictional forces since we had assumed friction was negligible, and we have simply not shown any forces in the vertical direction because the system is in static equilibrium in that direction, i.e.&nbsp;the masses do not move in the vertical direction and the vertical forces will not contribute to the horizontal equations of motion. The latter part of this clause is not necessary but is helpful in that it limits overcrowding of the sketches. Third, we have assumed, as indicated by the directions of the spring forces acting between the masses, that at this instant <span class="math inline">\(\gc_{2} &gt; \gc_{1}\)</span>; this assumption has no bearing on the results, and the only important issue is the compliance of the assumed directions of the forces with this assumption.</p>
+<p>Newton-Euler laws of motion demand that for each mass, we’ll have <span class="math inline">\(\fvec = \totm \avec\)</span>. Expressing this condition in the horizontal direction alone will lead to <span class="math display">\[\begin{align*}
+    - k_{1}  \gc_{1} + k_{2} (\gc_{2}-\gc_{1}) &amp; = m_{1} \ddgc_{1}\\
+    - k_{2} (\gc_{2}-\gc_{1}) + \sforce &amp; = m_{2} \ddgc_{2}
+\end{align*}\]</span> and when the equations are re-arranged, we’ll have <span class="math display">\[\begin{align*}
+    m_{1} \ddgc_{1}(t) + (k_{1}  + k_{2}) \gc_{1}(t) - k_{2} \gc_{2}(t) &amp; = 0 \\
+    m_{2} \ddgc_{2}(t) - k_{2} \gc_{1}(t) + k_{2} \gc_{2}(t)  &amp; = \sforce(t)
+\end{align*}\]</span> which could be written in matrix form as <span class="math display">\[
+\begin{bmatrix} m_1 &amp; 0 \\ 0 &amp; m_2 \end{bmatrix} \begin{Bmatrix} \ddgc_1 (t) \\ \ddgc_2 (t) \end{Bmatrix} + \begin{bmatrix} k_1 + k_2 &amp; -k_2 \\ -k_2 &amp; k_2 \end{bmatrix} \begin{Bmatrix} \gc_1 (t) \\ \gc_2 (t) \end{Bmatrix} = \begin{Bmatrix} 0 \\ \sforce (t) \end{Bmatrix}
+\]</span> or more generally as <span class="math display">\[
+\mmat \ddgcvec (t) + \kmat \gcvec (t) = \ldvec (t)
+\]</span> which, as we will so often see in the latter chapters, is one of the classical forms of the equations of motion for systems with multi degrees of freedom.</p>
+<p>To use virtual work with d’Alembert’s principle, we first have to sketch the free body diagrams with the d’Alembert’s forces that will bring each mass into instantaneous static equilibrium. Such free body diagrams are shown in <a href="#fig-dof2mkfbd2">Figure&nbsp;<span>1.10</span></a>. Since we have discarded all the springs and shown the spring forces as acting on the mass externally, all the forces shown in this free body diagram are external to the individual components. The virtual work done by the external forces through arbitrary virtual displacements <span class="math inline">\(\vgc_{1}\)</span> and <span class="math inline">\(\vgc_{2}\)</span> should therefore be equal to zero: <span class="math display">\[
+[- k_{1}  \gc_{1} + k_{2} (\gc_{2}-\gc_{1}) - m_{1} \ddgc_{1}] \vgc_{1} + [- k_{2} (\gc_{2}-\gc_{1}) + \sforce - m_{2} \ddgc_{2}] \vgc_{2} = 0
+\]</span> Since this condition must be satisfied for arbitrary virtual displacements, including when <span class="math inline">\(\vgc_{1} = 0\)</span> and <span class="math inline">\(\vgc_{2} &gt; 0\)</span> or vice versa, it must be true that the coefficients of the virtual displacements must be zero. Therefore we have <span class="math display">\[\begin{align*}
+- k_{1}  \gc_{1} + k_{2} (\gc_{2}-\gc_{1}) - m_{1} \ddgc_{1} &amp; = 0\\
+- k_{2} (\gc_{2}-\gc_{1}) + \sforce - m_{2} \ddgc_{2} &amp; = 0
+\end{align*}\]</span> and rearranging the equations leads again to <span class="math display">\[\begin{align*}
+    m_{1} \ddgc_{1}(t) + (k_{1}  + k_{2}) \gc_{1}(t) - k_{2} \gc_{2}(t) &amp; = 0 \\
+    m_{2} \ddgc_{2}(t) - k_{2} \gc_{1}(t) + k_{2} \gc_{2}(t)  &amp; = \sforce (t)
+\end{align*}\]</span></p>
+<div id="fig-dof2mkfbd2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2mkfbd2.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.10: Free body diagrams of the horizontally moving blocks, including d’Alembert forces.</figcaption><p></p>
+</figure>
+</div>
+<p>As for Lagrange’s equations, the spring forces, being conservative, may be derived from the following potential energy function <span class="math display">\[
+\pe = \frac{1}{2}k_{1} \gc^2_{1} + \frac{1}{2}k_{2}(\gc_{2}-\gc_{1})^2
+\]</span> since <span class="math inline">\(\gc_{1}\)</span> and <span class="math inline">\((\gc_{2}-\gc_{1})\)</span> are the elongations in the two springs. We have assumed <span class="math inline">\(\pe_{o} = 0\)</span> since it is independent of the generalized coordinates; it is just a constant value to be added so that it has no bearing on the final equations. The kinetic energy of the system is given by <span class="math display">\[
+\ke = \frac{1}{2} m_{1} (\vvec_{1}\sprod\vvec_{1}) + \frac{1}{2} m_{2} (\vvec_{2}\sprod\vvec_{2}) = \frac{1}{2} m_{1} \dgc^{2}_{1} + \frac{1}{2} m_{2} \dgc^{2}_{2}
+\]</span> The only non-conservative force, apart from any support reactions and constraint forces that do not contribute to the virtual work expression, is the external force <span class="math inline">\(\sforce\)</span>. The work done by the external non-conservative forces through virtual displacements <span class="math inline">\(\vgc_{1}\)</span> and <span class="math inline">\(\vgc_{2}\)</span> therefore becomes <span class="math display">\[
+\vwnc = (0) \vgc_{1} + (\sforce) \vgc_{2} = \vforce_{1} \vgc_{1} + \vforce_{2} \vgc_{2}
+\]</span> Lagrange’s equations now lead to, <span class="math display">\[\begin{gather*}
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc_{1}}\right) - \frac{\partial \ke}{\partial \gc_{1}} + \frac{\partial \pe}{\partial \gc_{1}} = m_1 \ddgc_{1} - 0 + (k_1 \gc_{1} - k_2 (\gc_{2}-\gc_{1})) = \vforce_{1} = 0 \\
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc_{2}}\right) - \frac{\partial \ke}{\partial \gc_{2}} + \frac{\partial \pe}{\partial \gc_{2}} = m_2 \ddgc_{2} - 0 + k_2 (\gc_{2}-\gc_{1}) = \vforce_{2} = \sforce
+\end{gather*}\]</span> and rearranging the terms once again leads to the following equations of motion: <span class="math display">\[\begin{align*}
+    m_{1} \ddgc_{1}(t) + (k_{1}  + k_{2}) \gc_{1}(t) - k_{2} \gc_{2}(t) &amp; = 0 \\
+    m_{2} \ddgc_{2}(t) - k_{2} \gc_{1}(t) + k_{2} \gc_{2}(t)  &amp; = \sforce(t)
+\end{align*}\]</span></p>
+</section>
+<section id="sec-ex2" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-ex2">EXAMPLE 1 .2</h4>
+<p>Let us try to derive the equation of motion that would govern the small amplitude vertical motion of the assembly shown in <a href="#fig-dof1rigidassembly">Figure&nbsp;<span>1.11</span></a>.</p>
+<div id="fig-dof1rigidassembly" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1rigidassembly.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.11: Assembly of massless rigid bars.</figcaption><p></p>
+</figure>
+</div>
+<p>The bars are rigid but massless, and the springs are linear with the coefficients indicated. Gravity is to be ignored in the analysis.</p>
+<p>For all its complex looking construct with multiple bars, this is a relatively simple single DOF system when one considers small amplitude motion around the initial equilibrium configuration shown. As the assembly moves, the two horizontal bars will rotate about their respective supports, and the vertical bar that connects the two will remain vertical and move along the vertical direction. One possible choice for the generalized coordinate is the vertical displacement of the end of the top bar. To refer to the components directly, let us consider the free body diagram of the whole system as shown in <a href="#fig-dof1rigidassemblyfbd">Figure&nbsp;<span>1.12</span></a>. With the specific points denoted by letters <span class="math inline">\(A\)</span> through <span class="math inline">\(F\)</span>, the free end of the top bar is point <span class="math inline">\(C\)</span>. Let us denote the vertical displacement of point <span class="math inline">\(C\)</span> by <span class="math inline">\(\gc\)</span> and try to formulate the equations governing its time evolution. We define a stationary rectangular set of axes <span class="math inline">\(xyz\)</span> originating at stationary point <span class="math inline">\(D\)</span> as shown; <span class="math inline">\(\xuvec\)</span> is the unit vector along <span class="math inline">\(x\)</span>, <span class="math inline">\(\yuvec\)</span> is the unit vector along <span class="math inline">\(y\)</span>, and <span class="math inline">\(\zuvec = \xuvec \vprod \yuvec\)</span> is the unit vector along <span class="math inline">\(z\)</span>.</p>
+<p>If we were to analyze the problem using the Newton-Euler approach, we might first locate the center of mass of the whole system, and then use the principle of linear momentum and the principle of angular momentum, most probably with reference to either the center of mass or a fixed point, and try to eliminate all unknowns but <span class="math inline">\(\gc\)</span>. Since there are only two concentrated masses, located at <span class="math inline">\(B\)</span> and <span class="math inline">\(E\)</span>, the center of mass of the system will lie along the vertical line connecting <span class="math inline">\(B\)</span> and <span class="math inline">\(E\)</span>. In fact, with regards to the origin of the coordinates, these two points are located at <span class="math display">\[
+\pvec_{B} = 3 \ell \xuvec + (\ell - \frac{3}{4}\gc) \yuvec, \qquad \pvec_{E} = 2 \ell \xuvec  - \frac{1}{2}\gc \yuvec
+\]</span> so that the center of mass <span class="math inline">\(\com\)</span> is located at<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></p>
+<p><span class="math display">\[
+\pvec_{\com} = \frac{m \pvec_{B} + 2m \pvec_{E}}{m + 2m} = \frac{7\ell}{3} \xuvec + \left(\frac{5 \ell}{3} - \frac{7}{12}\gc\right) \yuvec
+\]</span> and its velocity and acceleration are given by <span class="math display">\[
+\vvec_{\com} = \pdpvec_{\com} = - \frac{7}{12}\dgc \yuvec, \qquad \avec = \pdvvec_{\com} = - \frac{7}{12}\ddgc \yuvec
+\]</span> The principle of linear momentum for this assembly leads to <span class="math display">\[
+3m \avec_{\com} = - \frac{7}{4}m\ddgc \yuvec = (A_{x} + D_{x}) \xuvec + \left(A_{y} + D_{y} + \frac{5k}{2}\gc\right) \yuvec = \fvec
+\]</span></p>
+<div id="fig-dof1rigidassemblyfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1rigidassemblyfbd.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.12: Free body diagram of the rigid bar assembly.</figcaption><p></p>
+</figure>
+</div>
+<p>To use the principle of angular momentum with respect to the fixed point <span class="math inline">\(D\)</span>, let us first calculate the angular momentum of the system with respect to that same point. Since there are only two point masses in the system, its angular momentum <span class="math inline">\(\angmom{D}\)</span> is given by <span class="math display">\[
+\angmom{D} = \pvec_{B} \vprod (m \vvec_{B}) + \pvec_{E} \vprod (2m \vvec_{E})
+\]</span> where <span class="math inline">\(\vvec_{B} = \pdpvec_{B} = - \frac{3}{4}\dgc \yuvec\)</span> is the velocity of mass <span class="math inline">\(m\)</span> located at <span class="math inline">\(B\)</span>, and <span class="math inline">\(\vvec_{F} = \pdpvec_{F} = - \frac{1}{2}\dgc \yuvec\)</span> is the velocity of mass <span class="math inline">\(2m\)</span> located at <span class="math inline">\(E\)</span>. Evaluating the cross products in the angular momentum expression therefore leads to <span class="math display">\[
+\angmom{D} = - \frac{17}{4} m \ell \dgc \zuvec
+\]</span> and the principle of angular momentum yields <span class="math display">\[
+\dangmom{D} =  -\frac{17}{4} m \ell \ddgc \zuvec = (-\ell A_{x} + 9 k \ell \gc) \zuvec =\moment{D}
+\]</span> When the equations are written out separately for each vector component, it is easy to see that we have three equations in five unknowns: <span class="math display">\[\begin{equation*}\label{eq:Axa}
+0  = A_{x} + D_{x} \tag{Ex.1.2.a}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}\label{eq:Axb}
+-\frac{7}{4}m\ddgc = A_{y} + D_{y} + \frac{5k}{2}\gc \tag{Ex.1.2.b}
+\end{equation*}\]</span> <span class="math display">\[\begin{equation*}\label{eq:Axc}
+- \frac{17}{4} m \ell \ddgc  = -\ell A_{x} + 9 k \ell \gc \tag{Ex.1.2.c}
+\end{equation*}\]</span> from which we may deduce <span class="math display">\[\begin{equation*}\label{eq:Axd}
+A_{x} = \frac{17}{4} m \ddgc + 9 k  \gc = -D_{x} \tag{Ex.1.2.d}
+\end{equation*}\]</span> but this is as much as we can conclude with the information that we currently have. Note that another angular momentum equation, such as <span class="math inline">\(\dangmom{A}=\moment{A}\)</span>, will yield <em>no new (independent)</em> information and that whatever we may obtain through such an endeavour will be limited to some linear combination of the equations above.</p>
+<div id="fig-dof1rigidassemblyfbd2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1rigidassemblyfbd2.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.13: Free body diagrams of the individual bars in the assembly.</figcaption><p></p>
+</figure>
+</div>
+<p>Clearly more equations are needed to proceed further, and for such equations we may analyze each rigid bar in the assembly separately.<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a> The free body diagrams of the individual bars are presented in <a href="#fig-dof1rigidassemblyfbd2">Figure&nbsp;<span>1.13</span></a>. We can now apply Newton-Euler equations to each of the individual bars separately and try to eliminate some of the unknowns. Since the vertical bar <span class="math inline">\(CF\)</span> is massless, we know that static equilibrium equations hold for this bar at any instant (i.e.&nbsp;its linear and angular momenta are always zero by virtue of it having no mass), such that <span class="math display">\[\begin{align*}
+0 &amp; = C_{x} - F_{x} \\
+0 &amp; = C_{y} - F_{y} \\
+0 &amp; = \frac{\ell}{2} C_{x} + \frac{\ell}{2} F_{x}
+\end{align*}\]</span> where the first two equations are force equilibrium equations and the third one is moment equilibrium. We may deduce from these equations that <span class="math display">\[\begin{equation*}\label{eq:Axe}
+C_{x}=F_{x}= 0, \qquad C_{y} = F_{y} \tag{Ex.1.2.e}
+\end{equation*}\]</span></p>
+<p>Considering bar <span class="math inline">\(ABC\)</span>, application of the principle of linear momentum will yield <span class="math display">\[
+-m \frac{3}{4}\ddgc \yuvec = (A_{x}+C_{x}) \xuvec + \left(A_{y} - C_{y} + \frac{k}{2}\gc\right) \yuvec
+\]</span> whence we deduce, via Equation <span class="math inline">\(\ref{eq:Axe}\)</span>, that <span class="math display">\[\begin{equation*}\label{eq:Axf}
+A_{x}=- C_{x}= 0 \tag{Ex.1.2.f}
+\end{equation*}\]</span> and combining this information with Equation <span class="math inline">\(\ref{eq:Axd}\)</span> leads to <span class="math display">\[\begin{equation*}\label{eq:Axg}
+\frac{17}{4} m \ddgct + 9 k \gct = 0 \tag{Ex.1.2.g}
+\end{equation*}\]</span> This is an equation that governs the time evolution of the generalized coordinate <span class="math inline">\(\gct\)</span> with no other unknowns appearing in it; this is the equation of motion we were looking for. Note that we would get the same equation if we were to analyze bar <span class="math inline">\(DEF\)</span> instead. Once we solve this equation we can use the results to evaluate the unknown reaction forces. It may be shown, through applying the principles of linear momentum and angular momentum to bars <span class="math inline">\(ABC\)</span> and <span class="math inline">\(DEF\)</span>, that<a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a> <span class="math display">\[\begin{equation*}\label{eq:Axh}
+A_{y} = -\frac{3m}{16}\ddgct - \frac{k}{4}\gct, \qquad D_{y}= -\frac{m}{2}\ddgct \tag{Ex.1.2.h}
+\end{equation*}\]</span> and so once <span class="math inline">\(\dgct\)</span> is determined, the vertical reaction forces may be calculated using the results in Equation <span class="math inline">\(\ref{eq:Axh}\)</span>.</p>
+<div id="fig-dof1rigidassemblyvw" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1rigidassemblyvw.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.14: The rigid bar assembly with d’Alembert forces. Although not good practice, we keep the supports in the free body diagram to emphasize that the support reactions, being constraint forces, will play no role in the virtual work calculations.</figcaption><p></p>
+</figure>
+</div>
+<p>To analyze this system with virtual work, we need to include the d’Alembert forces as shown in <a href="#fig-dof1rigidassemblyvw">Figure&nbsp;<span>1.14</span></a> at an instant <span class="math inline">\(t\)</span>. The d’Alembert forces for this system will be two concentrated forces, acting at points <span class="math inline">\(B\)</span> and <span class="math inline">\(E\)</span>, i.e.&nbsp;the locations of the concentrated masses, with magnitudes determined by the product of the masses with their accelerations. With the addition of the d’Alembert forces, the system is in static equilibrium at the instant shown. The question now is, what would be the virtual work done by the internal and external forces if a small virtual displacement <span class="math inline">\(\vgc\)</span> were to be imposed?</p>
+<p>Since the spring forces are treated as external to the bar assembly and the bars bear no deformations, there will be no internal work done during <span class="math inline">\(\vgc\)</span>. The displacements that occur at the force locations due to <span class="math inline">\(\vgc\)</span> will be <span class="math inline">\(\vgc/2\)</span> at <span class="math inline">\(B'\)</span>, <span class="math inline">\(3\vgc/4\)</span> at <span class="math inline">\(B\)</span>, <span class="math inline">\(\vgc\)</span> at <span class="math inline">\(F\)</span>, and <span class="math inline">\(\vgc/2\)</span> at <span class="math inline">\(E\)</span>. Clearly there will be no displacements at the supports <span class="math inline">\(A\)</span> and <span class="math inline">\(D\)</span>. The principle of virtual work therefore will lead to: <span class="math display">\[\begin{align*}
+\vwork_{ext} &amp; = - \left(\frac{k\gc}{2}\right)\frac{\vgc}{2} - \left(\frac{3 m \ddgc}{4}\right) \frac{3\vgc}{4} - (2k\gc) \vgc - (m\ddgc) \frac{\vgc}{2} \\
+&amp; = - \left(\frac{k\gc}{4}+\frac{9 m \ddgc}{16}+2k\gc+\frac{m\ddgc}{2}\right) \vgc = 0
+\end{align*}\]</span> This equation has to be valid for an arbitrary value of <span class="math inline">\(\vgc\)</span>, the only possibility for this condition to hold is to have the term in the parenthesis equal to zero, i.e.&nbsp;we must have <span class="math display">\[
+\frac{k\gc}{4}+\frac{9 m \ddgc}{16}+2k\gc+\frac{m\ddgc}{2} = 0
+\]</span> or, in a rewritten form, <span class="math display">\[\begin{equation*}
+\frac{17}{4}m \ddgct + 9k\gct = 0 \tag{Ex.1.2.i}
+\end{equation*}\]</span> which of course is the same equation as Equation <span class="math inline">\(\ref{eq:Axg}\)</span>.</p>
+<div id="fig-dof1rigidassemblyvw2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1rigidassemblyvw2.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1.15: Free body diagrams of the rigid bars including d’Alembert forces.</figcaption><p></p>
+</figure>
+</div>
+<p>Once the equation of motion is solved and <span class="math inline">\(\gct\)</span> is determined, d’Alembert’s principle may be used to determine unknown reaction forces in a relatively easy manner. Consider the free body diagrams, including d’Alembert forces, of the individual bars shown in <a href="#fig-dof1rigidassemblyvw2">Figure&nbsp;<span>1.15</span></a>. With the inclusion of d’Alembert forces, each bar is now in static equilibrium. Therefore, equilibrium of bar <span class="math inline">\(CF\)</span> demands <span class="math display">\[
+C_{x}=F_{x}= 0, \qquad C_{y} = F_{y}
+\]</span> so that from the horizontal force equilibrium of bar <span class="math inline">\(ABC\)</span> we have <span class="math display">\[
+A_{x}=C_{x}= 0
+\]</span> and since the sum of moments about point <span class="math inline">\(C\)</span> in <span class="math inline">\(ABC\)</span> must be zero, <span class="math display">\[
+4\ell A_{y} + 2\ell \frac{k}{2}\gc + \ell \frac{3m}{4}\ddgc = 0 \quad \rightarrow \quad A_{y} = - \frac{3m}{16}\ddgct - \frac{k}{4}\gct
+\]</span> Similarly, for bar <span class="math inline">\(DEF\)</span>, horizontal force equilibrium leads to <span class="math display">\[
+D_{x} = F_{x} = 0
+\]</span> and equating the sum of moments about point <span class="math inline">\(F\)</span> to zero leads to <span class="math display">\[
+4\ell D_{y} + 2\ell m \ddgc = 0 \quad \rightarrow \quad D_{y} = - \frac{m}{2}\ddgct
+\]</span></p>
+<p>Finally, to derive the governing equation of motion using Lagrange’s equations, we note the the kinetic energy of the assembly is given by <span class="math display">\[
+\ke = \frac{1}{2} m \left(\frac{3}{4} \dgc \right)^2 + \frac{1}{2} (2m) \left(\frac{1}{2} \dgc \right)^2 = \frac{17}{32}m\dgc^2
+\]</span> and its potential energy given by <span class="math display">\[
+\pe = \frac{1}{2} k \left(\frac{1}{2} \gc \right)^2 + \frac{1}{2} (2k) \gc^2 = \frac{9}{8} k \gc^2
+\]</span> Since there are no non-conservative forces acting (except the constraint forces), <a href="#eq-lagrange1">Equation&nbsp;<span>1.28</span></a> may be used to derive the equation of motion:</p>
+<p><span class="math display">\[
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc}\right) - \frac{\partial \ke}{\partial \gc} + \frac{\partial \pe}{\partial \gc} = 0 = \frac{17}{16}m\ddgc + \frac{9}{4} k \gc
+\]</span> which may be rewritten as <span class="math display">\[\begin{equation*}
+\frac{17}{4}m \ddgct + 9k\gct = 0 \tag{Ex.1.2.j}
+\end{equation*}\]</span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="16">
+<li id="fn16"><p>At the risk of repeating ourselves, we must emphasize that these derivations implicitly assume that all horizontal motion is so small as to be completely negligible, which would be possible only for <em>small</em> vertical motions. If it were not so, the position vectors and their time derivatives would have to be modified, and the resulting equations would be nonlinear. So please note that the discussion here is strictly limited to small amplitude vertical motion.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p>We could argue that since no external forces are present in the horizontal direction and since we are neglecting all horizontal accelerations by restricting vertical motion to small amplitudes, the horizontal reaction forces will be zero. It may be so in this case, but it would be somewhat easy to err in such arguments, and a more rigorous demonstration should be preferred unless we are absolutely sure.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn18"><p>Note that these results are not unique in the sense that adding or subtracting any multiple of Equation <span class="math inline">\(\ref{eq:Axg}\)</span> to the right side of the equations would not change the values of the reaction forces.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+<section id="sec-Wrapping_Up" class="level3" data-number="1.3.5">
+<h3 data-number="1.3.5" data-anchor-id="sec-Wrapping_Up"><span class="header-section-number">1.3.5</span> Wrapping Up</h3>
+<p>Neither the theory, the surface of which we have barely scratched in this chapter, nor the details of application have by no means been exhaustively discussed. Our aim was simply to provide a refresher about some of the fundamental frameworks which we will make use of throughout the rest of the book. Newton-Euler framework is fundamental since it provides the stage for latter developments, and for systems in which constraint forces need to be evaluated, the Newton-Euler laws may provide all the necessary equations. It is likely that d’Alembert’s principle will be most often referred to since most engineers are familiar with the concept of static equilibrium, and also because the inclusion of d’Alembert forces generally lead to simpler analysis of constraint forces even if other methods are used to derive the governing equations of motion. For generalized single degree of freedom systems, the fundamental framework will be d’Alembert’s principle and virtual work; virtual work will also be directly employed in the context of Lagrange’s equations whenever non-conservative forces are present. The choice of method that will be used in the analysis of a specific problem may stem from a variety of reasons, not least from familiarity and personal choice. On the other hand it is also true, as hopefully demonstrated by the examples discussed, that some methods may provide a more direct reach to a specific goal for a particular system.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./singledof.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

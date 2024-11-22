@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 5&nbsp; Seismic Analysis of Single Degree of Freedom Systems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./multidof.html" rel="next">
+<link href="./numericalsdof.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./eqsdof.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-Preliminary_Concepts" id="toc-sec-Preliminary_Concepts" class="nav-link active" data-scroll-target="#sec-Preliminary_Concepts"><span class="header-section-number">5.1</span> Preliminary Concepts</a></li>
+  <li><a href="#what-is-an-earthquake" id="toc-what-is-an-earthquake" class="nav-link" data-scroll-target="#what-is-an-earthquake"><span class="header-section-number">5.2</span> What Is An Earthquake?</a></li>
+  <li><a href="#sec-Measuring_the_Magnitude_Of_An_Earthquake" id="toc-sec-Measuring_the_Magnitude_Of_An_Earthquake" class="nav-link" data-scroll-target="#sec-Measuring_the_Magnitude_Of_An_Earthquake"><span class="header-section-number">5.3</span> Measuring the Magnitude Of An Earthquake</a></li>
+  <li><a href="#sec-Architectural_Seismic_Design_Considerations" id="toc-sec-Architectural_Seismic_Design_Considerations" class="nav-link" data-scroll-target="#sec-Architectural_Seismic_Design_Considerations"><span class="header-section-number">5.4</span> Architectural Considerations in Earthquake Resistant Design</a></li>
+  <li><a href="#sec-Earthquake_Response_Spectra_for_Linear_SDOF_Systems" id="toc-sec-Earthquake_Response_Spectra_for_Linear_SDOF_Systems" class="nav-link" data-scroll-target="#sec-Earthquake_Response_Spectra_for_Linear_SDOF_Systems"><span class="header-section-number">5.5</span> Earthquake Response Spectra for Linear Systems</a></li>
+  <li><a href="#characteristics-of-response-spectra" id="toc-characteristics-of-response-spectra" class="nav-link" data-scroll-target="#characteristics-of-response-spectra"><span class="header-section-number">5.6</span> Characteristics of Response Spectra</a></li>
+  <li><a href="#elastic-design-spectra" id="toc-elastic-design-spectra" class="nav-link" data-scroll-target="#elastic-design-spectra"><span class="header-section-number">5.7</span> Elastic Design Spectra</a></li>
+  <li><a href="#sec-Earthquake_Response_Spectra_for_Non-linear_SDOF_Systems" id="toc-sec-Earthquake_Response_Spectra_for_Non-linear_SDOF_Systems" class="nav-link" data-scroll-target="#sec-Earthquake_Response_Spectra_for_Non-linear_SDOF_Systems"><span class="header-section-number">5.8</span> Earthquake Response Spectra for Non-linear Systems</a>
+  <ul class="collapse">
+  <li><a href="#strength-reduction-and-ductility" id="toc-strength-reduction-and-ductility" class="nav-link" data-scroll-target="#strength-reduction-and-ductility"><span class="header-section-number">5.8.1</span> Strength Reduction and Ductility</a></li>
+  <li><a href="#inelastic-response-spectra" id="toc-inelastic-response-spectra" class="nav-link" data-scroll-target="#inelastic-response-spectra"><span class="header-section-number">5.8.2</span> Inelastic Response Spectra</a></li>
+  </ul></li>
+  <li><a href="#wrapping-up" id="toc-wrapping-up" class="nav-link" data-scroll-target="#wrapping-up"><span class="header-section-number">5.9</span> Wrapping Up</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-Seismic_Analysis_of_Single_Degree_of_Freedom_Systems" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="sec-Preliminary_Concepts" class="level2" data-number="5.1">
+<h2 data-number="5.1" data-anchor-id="sec-Preliminary_Concepts"><span class="header-section-number">5.1</span> Preliminary Concepts</h2>
+<p>In previous chapters we covered most of the required analysis approaches for calculating the response of SDOF systems to various types of excitations including ground motions. Determining a system’s response to base excitation is important for a variety of applications. We mentioned that base excitations in the form of ambient vibrations, human activity such as pedestrian or vehicle traffic, or nearby industrial activity such as construction and mining may induce small-amplitude vibrations that may nevertheless be noticeable and may even be important in housing of sensitive equipment. Yet, many of these activities typically cause insignificant displacements in well-designed structures even if they cause uncomfort to occupants. Conversely, so-called <em>strong ground motion</em>, arising from seismic activity and most significantly in large earthquakes, is so centrally important in structural analysis and design that it merits a dedicated discussion. For this purpose, here we will briefly discuss some fundamental concepts from seismology such as causes of earthquakes and measures of earthquake intensity, followed by a qualitative discussion of factors that may influence structural behavior and possible damage in response to an earthquake. In latter sections response and design spectra for linear systems will be introduced, followed by a discussion of inelastic behavior of structures and its implications for structural design .</p>
+</section>
+<section id="what-is-an-earthquake" class="level2" data-number="5.2">
+<h2 data-number="5.2" data-anchor-id="what-is-an-earthquake"><span class="header-section-number">5.2</span> What Is An Earthquake?</h2>
+<p>The outermost layer of Earth is called the <em>lithosphere</em>. Earth’s thin crust is part of the litosphere and this crust is subject to extreme stresses that arise from the tremendous mass and relative motion of its fragmented sections because the lithosphere is essentially floating on another layer, called the <em>asthenosphere</em>, which is viscous. Each section of the lithosphere that seemingly moves as a single slab is called a <em>tectonic plate</em> or simply a plate, and the scientific theories and studies regarding the motions of these plates constitute the field of plate tectonics. There are 15 tectonic plates identified currently, some of which are called continental plates as they contain the continents, and some called the oceanic plates which spread between continental plates due to driving forces such as the heat from the mantle and magma cooling in the ocean bed. In a simple analogy, the movement of these plates resembles those of frozen sheets of ice on a partially frozen water body, i.e.&nbsp;with the water body representing the asthenosphere, the liquid-like viscous layer of the mantle. The interfaces of plates are called <em>faults</em>; as plates are driven to move, stresses build up along these faults due to constraints that hinder free relative motion, such that deformations occur in the plates. More generally, faults are fracture planes in Earth’s crust; they may be large so as to form interfaces inbetween tectonic plates, or they may be small (its all relative as even small may mean many kilometers long) so as to result from more local rock mass movements. Eventually the stress may exceed the interface resistance causing the plates or rock masses to slide relative to each other, either vertically (dip-slip fault), laterally (strike-slip fault), or some combination of vertical and lateral (oblique-slip fault). With the slip, the deformation energy previously stored in the plate is released by the elastic rebound<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> of the plate. <a href="#fig-eqfaultslip">Figure&nbsp;<span>5.1</span></a> schematically illustrates the cycle.</p>
+<div id="fig-eqfaultslip" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/eqfaultslip.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.1: Slip along a fault line, showing the (a) original state (b) development of strain due to impeding slip (c) elastic rebound post-slip.</figcaption><p></p>
+</figure>
+</div>
+<p>Post-slip elastic rebound causes <em>seismic waves</em> that travel across the lithosphere. These waves include <em>body waves</em> that travel within Earth, comprising longitudinal tension-compression motion (P waves) and shearing motion (S waves), and <em>surface waves</em> that are generated as the body waves emerge on the surface of the crust (Rayleigh and Love waves). These waves cause local lateral and vertical displacements as they pass through a point on the ground. Some of the commonly encountered terms are schematically noted in <a href="#fig-eqseismology">Figure&nbsp;<span>5.2</span></a>.</p>
+<div id="fig-eqseismology" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/eqseismology.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.2: Basic earthquake terminology.</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The concept of elastic rebound was established by Harry F. Reid’s seminal report entitled “The Mechanics of the Earthquake, The California Earthquake of April 18, 1906” on the 1906 San Francisco earthquake. The report established substantial elastic bending of the ground through geological surveys that seemed to have occurred in years leading to the earthquake. <!-- 
+ Boundaries between tectonic plates are hot-spots for earthquakes as major fault lines occur along these points. Survey of the epicenters of major earthquakes supports these localizations along major fault lines, such as the circum-Pacific belt that has encompasses the sources of most of the major earthquakes in the Americas and East Asia. Build up of elastic energy due to friction between the plates is released as faults slide along, with the intensity of the earthquake being related to the amount of slip and energy released due to this process.  --><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Measuring_the_Magnitude_Of_An_Earthquake" class="level2" data-number="5.3">
+<h2 data-number="5.3" data-anchor-id="sec-Measuring_the_Magnitude_Of_An_Earthquake"><span class="header-section-number">5.3</span> Measuring the Magnitude Of An Earthquake</h2>
+<p>Anecdotal records of earthquakes date back centuries. Systematic quantification of the magnitude and time-history characteristics of earthquakes, however, has become possible only with the advent of seismographic tools. Specifically, accelerometers housed in special stations that are distributed across the world offer us recordings of ground accelerations. Such recordings allow scientists to identify the epicenter as well as the amount of energy released. <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a> shows actual ground acceleration time histories that were measured during three earthquakes that occurred in a relatively small time span at distinct geographic locations.</p>
+<p>Coming up with a single, all-telling indicator to characterize the measure of an earthquake has been an elusive task. Characterizing the behavior of a structure that will be subjected to a future earthquake is all the more so since uncertainties regarding structural behavior compound with uncertainties surrounding what a future ground motion may look like. A general framework proposes that the risk posed to a system is determined jointly by the hazard to which the system will be exposed and the system’s fragility or vulnerability so that: <span class="math display">\[
+\text{Risk} = \text{Hazard} \times \text{Fragility}
+\]</span> Ground motion studies try to model and estimate the hazard component while structural engineering studies focus on modeling structural behavior and estimation of fragility. The measure of an earthquake may mean either a quantification of the hazard or a quantification of the risk. For hazard, the measure used may be some magnitude that will try to define how big the energy released during the earthquake is, or some characteristic parameter, like for example the <em>peak ground acceleration</em>, that will try to quantify the amplitude of motion at a specific location. Examining the earthquake records shown in <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>, we can see that earthquake excitations are generally of random nature without a clear observable pattern. As is characteristic of earthquake ground acceleration time histories, the peak ground acceleration, taken as the maximum value of ground acceleration measured, is different in each case since it depends on distance from the epicenter, magnitude of the earthquake, geological conditions at the site, the response of the structure housing the equipment, instrument characteristics, and other factors. This obviates the well accepted notion that correct interpretation of a seismogram requires us to put the data acquired from a number of seismograms into context through some form of normalization, such that the magnitude of the earthquake can be objectively determined. Additionally, scaling (e.g.&nbsp;to attain a target peak ground acceleration), orientation and other post-processing steps may be necessary prior to utilizing seismogram data for structural analysis purposes.</p>
+<div id="fig-eqtimehist" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/eqtimehistnew.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.3: Earthquake ground acceleration time histories from 3 different earthquakes, Kocaeli (Türkiye) 1999 Iznik Station (90 degrees), Northridge (USA) 1994 Camarillo Station (180 degrees), and Kobe (Japan) 1995 Takarazuka Station (90 degrees). Note that horiontal (time) and vertical (acceleration in <span class="math inline">\(\gravity\)</span>) axes are scaled differently across figures.</figcaption><p></p>
+</figure>
+</div>
+<p>The wide-spread availability of seismographic data allows us to have not just qualitative but also quantitative description of ‘big’ an earthquake is. In general use are two different phrases to describe how big is ‘big’: intensity, and magnitude. Intensity commonly refers to a qualitative measure of the devastation caused in the built environment, and sometimes also in the natural environment, by the earthquake. Such a measure may be helpful for organizing disaster response and for emergency policy-making, among other purposes. The Modified Mercalli Intensity (MMI) Scale<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, for example, is an intensity measure widely used around the world. MMI scale, summarized in <a href="#tbl-mercalli">Table&nbsp;<span>5.1</span></a>, ranges from I to XI (roman numerals), with the severity of damage increasing with intensity. MMI estimates may be developed via observation reports and also seismographic measurements such as maximum (peak) ground velocity which have previously been correlated with the MMI scale.</p>
+<div id="tbl-mercalli">
+<table class="table">
+<caption>Table&nbsp;5.1: Modified Mercalli Intensity Scale.</caption>
+<colgroup>
+<col style="width: 12%">
+<col style="width: 14%">
+<col style="width: 73%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Intensity</th>
+<th>Shaking</th>
+<th>Description / Damage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>I</td>
+<td>Not felt</td>
+<td>Not felt except by a very few under especially favorable conditions.</td>
+</tr>
+<tr class="even">
+<td>II</td>
+<td>Weak</td>
+<td>Felt only by a few persons at rest, especially on upper floors of buildings.</td>
+</tr>
+<tr class="odd">
+<td>III</td>
+<td>Weak</td>
+<td>Felt quite noticeably by persons indoors, especially on upper floors of buildings. Many people do not recognize it as an earthquake. Standing motor cars may rock slightly. Vibrations similar to the passing of a truck. Duration estimated.</td>
+</tr>
+<tr class="even">
+<td>IV</td>
+<td>Light</td>
+<td>Felt indoors by many, outdoors by few during the day. At night, some awakened. Dishes, windows, doors disturbed; walls make cracking sound. Sensation like heavy truck striking building. Standing motor cars rocked noticeably.</td>
+</tr>
+<tr class="odd">
+<td>V</td>
+<td>Moderate</td>
+<td>Felt by nearly everyone; many awakened. Some dishes, windows broken. Unstable objects overturned. Pendulum clocks may stop.</td>
+</tr>
+<tr class="even">
+<td>VI</td>
+<td>Strong</td>
+<td>Felt by all, many frightened. Some heavy furniture moved; a few instances of fallen plaster. Damage slight.</td>
+</tr>
+<tr class="odd">
+<td>VII</td>
+<td>Very Strong</td>
+<td>Damage negligible in buildings of good design and construction; slight to moderate in well-built ordinary structures; considerable damage in poorly built or badly designed structures; some chimneys broken.</td>
+</tr>
+<tr class="even">
+<td>VIlI</td>
+<td>Severe</td>
+<td>Damage slight in specially designed structures; considerable damage in ordinary substantial buildings with partial collapse. Damage great in poorly built structures. Fall of chimneys, factory stacks, columns, monuments, walls. Heavy furniture overturned.</td>
+</tr>
+<tr class="odd">
+<td>IX</td>
+<td>Violent</td>
+<td>Damage considerable in specially designed structures; well-designed frame structures thrown out of plumb. Damage great in substantial buildings, with partial collapse. Buildings shifted off foundations.</td>
+</tr>
+<tr class="even">
+<td>X</td>
+<td>Extreme</td>
+<td>Some well-built wooden structures destroyed; most masonry and frame structures destroyed with foundations. Rails bent.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Magnitude, on the other hand, is a measure of the amplitude of ground motion and energy released in an earthquake, independent of its effects on the environment. In that sense, a magnitude measure may seem more objective than an intensity measure, but in essence they serve different albeit similar purposes. Early efforts to build an objective and quantitative measure for earthquake intensity made use of seismographic data that was becoming widely available. In 1935, Charles F. Richter developed a scale that aimed to account for the size of an earthquake using the peak amplitude measured by a torsional seismometer called the Wood-Anderson seismograph, normalizing this amplitude empirically for the distance from the epicenter to arrive at a local measure of the magnitude. An important notion of the Richter magnitude was that it employed a logarithmic scale to describe the magnitude. The Richter scale, often referred to as the local magnitude (scale) and denoted by <span class="math inline">\(M_L\)</span>, is no longer commonly used today, and it has been replaced by other magnitude measures such as the Moment Magnitude Scale (MMS) <span class="math inline">\(M_w\)</span> which improves upon the shortcomings of the Richter scale. <span class="math inline">\(M_w\)</span> is an estimate of energy released during an earthquake based on the estimate of a seismic moment, defined conceptually as the product <span class="math inline">\(\text{[slip length]} \times \text{[fault area]} \times \text{[rigidity]}\)</span>, where rigidity depends on the cohesive strength of the rocks along the faults on which the slip occurs. Just to provide a comparison, the amount of energy released by a <span class="math inline">\(M_w = 6\)</span> earthquake is comparable to that of an atomic bomb. This measure is also logarithmic, so that an increase from <span class="math inline">\(M_w = 6\)</span> to <span class="math inline">\(M_w = 7\)</span> corresponds to a ten fold increase in energy released. Each year, multiple earthquakes of <span class="math inline">\(M_w &gt; 7\)</span> occur in various locations around the world. Extremely large earthquakes can register <span class="math inline">\(M_w &gt; 9\)</span>, such as the 2011 Tohoku (Japan) earthquake, which triggered a tsunami that compounded the devastation caused by the earthquake. While many of the large earthquakes cause no fatalities as they occur in remote locations, there have been significant earthquakes from the past decade that have caused loss of life measured in tens of thousands and total damage or collapse of thousands of buildings. As such, the issue of seismic design remains as relevant as ever for structural engineering and urban planning, especially for settlements near active faults.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="2">
+<li id="fn2"><p>The Modified Mercalli Intensity Scale dates back to the work of Harry Wood and Frank Neumann in 1931 at a time preceding a more clear understanding of the factors that govern the level of destruction dealt by an earthquake and how instrumental measurements could be used to assess this objectively.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Architectural_Seismic_Design_Considerations" class="level2" data-number="5.4">
+<h2 data-number="5.4" data-anchor-id="sec-Architectural_Seismic_Design_Considerations"><span class="header-section-number">5.4</span> Architectural Considerations in Earthquake Resistant Design</h2>
+<p>Many socio-economic considerations, including availability of fresh water and access to fertile lands, have influenced development of civilizations and birth of mega cities that harbor most of the human population in the modern age. Indeed, some of the world’s most populated urban centers are near active faults, and as such, it is not economically viable to avoid seismic hazards altogether by choosing low-hazard regions for further development. A number of considerations in structural design can, however, reduce the risk of structural damage. Many of these design considerations can be explained by intuition without resorting to any structural design calculations. Among the factors governing the demands generated on a structure by an earthquake, site conditions are of paramount importance. Waves travel quicker through dense geomaterials such as hard, unfragmented rock surfaces, which reduces the amplitude of ground motions transferred onto structures. Conversely, softer ground conditions such as soft clay and filled lake or river beds can amplify the amplitude of ground motion by multiple times. Construction in such regions may require implementation of soil improvement techniques, such as drawing piles that extend the foundation to the bedrock. An additional consideration is soil liquefaction, in which the increase in pore water pressure of soils due to excitation may reduce the load bearing capacity, thereby causing buildings to topple over or sink, sometimes even with their foundations intact, into the ground. This may cause damage and collapse even without visible damage to structural elements above surface.</p>
+<p>As one may expect from all that we have learned in previous chapters, the natural frequency of the structure as well as available damping will also influence the demands. The fundamental period of a building can roughly be estimated as the number of stories divided by 10. Random vibrations such as earthquakes can be thought as a superposition of many harmonic excitations, where in the particular case of earthquakes the notable contributions to the signals come from excitations in the fraction of one Hz to several Hz range. Stiffness of structural elements is of course critical in determining where the frequency lies relative to this range. Typically, low to mid-rise multi-story buildings are more susceptible to earthquakes, whereas for high-rises the flexible nature of the tall cantilever structure makes the response amplification much smaller, and in such cases lateral wind loads are often the dominant design consideration for determining member sections.</p>
+<p>Construction and materials quality are additional factors that determine structural response outcomes, and we cannot overemphasize the importance of quality control and site inspections for ensuring good seismic performance of well-designed structures. In most structures, the cost of the structural elements is a much smaller fraction of the total cost of the building, and from an engineering standpoint it is sensible to invest in high structural performance over superfluities that are largely cosmetic.</p>
+<p>A number of design factors also contribute to the structural response. Symmetrical plans and continuous load transfer mechanisms, especially along vertical axes, are known to be beneficial or at least nondetrimental is seismic behavior. Typically, basic structural designs utilize moment resisting frames, diagonal braces, or shear walls to limit lateral drift due to earthquake loads. Codes typically limit drift to <span class="math inline">\(1\%\)</span> of building height to avoid excess damage. Seismic resisting elements placed at the perimeter help limit drift and also maximize torsional resistance of these structures. Uniformity of load bearing elements is important: designs should avoid short column effects that will concentrate stresses on particular load-bearing elements, or soft stories that often arise when fewer columns are used in entrance floors to generate commercial or parking spaces but are susceptible to formation of collapse mechanisms. Additionally, simple design considerations, such as low height to base ratios (to avoid overturn), equal floor heights or stiffness distributions, short spans, diaphragms without large openings, and avoiding cantilevers are preferable. Aseismic design guidelines are well-described in building codes and documents such as FEMA 454<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> which offer guidance for seismic considerations in architectural design. Structures conforming with these design guidelines are considered to be regular structures, for which analysis procedures may be considerably simpler. That said, irregularities may need to be present for architectural or other purposes and are permissible within the guidelines of building codes (e.g.&nbsp;ASCE 7<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> in the US) that delineate conditions that must be satisfied for these structures to be code-compliant. While these aspects are worthy of mentioning to promote awareness, in depth discussion of such practical considerations is beyond our scope and can be found in building codes and references focusing on structural design.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="3">
+<li id="fn3"><p>FEMA 454, Risk Management Series: Designing for Earthquakes - A Manual for Architects, 2006.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Minimum Design Loads and Associated Criteria for Buildings and Other Structures (ASCE/SEI 7-22).<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Earthquake_Response_Spectra_for_Linear_SDOF_Systems" class="level2" data-number="5.5">
+<h2 data-number="5.5" data-anchor-id="sec-Earthquake_Response_Spectra_for_Linear_SDOF_Systems"><span class="header-section-number">5.5</span> Earthquake Response Spectra for Linear Systems</h2>
+<p>Let’s recall that the equation of motion for a viscously damped linear SDOF system subject to ground accelerations <span class="math inline">\(\gacc (t)\)</span> is given by <span class="math display">\[
+m \ddgc (t) + c \dgc (t) + k \gc (t) = - m \gacc (t)
+\]</span> which may also be expressed as <span class="math display">\[
+\ddgc (t) + 2 \damp \freq \dgc (t) + \freq^2 \gc (t) = -\gacc (t)
+\]</span> whereby it is quite obvious that the mass of the SDOF system does not explicitly factor into the equation in the case of ground motion, although it influences system parameters such as its natural period. In the context of seismic design, our primary goal is to determine the peak value of a key response variable, for example the relative displacement of the mass with respect to the ground, given a particular ground acceleration time history <span class="math inline">\(\gacct\)</span>. These calculations will almost always have to be done via numerical methods.</p>
+<p>The equation of motion implies that the response to a specific ground motion depends only on the natural frequency (or period) and the damping ratio of the system. How a response quantity varies with the period of the system is a very important design consideration, and the concept of a response spectrum was previously introduced in our discussion of forced vibrations of SDOF systems precisely for this reason. In the particular case of earthquake response spectra, we compute the peak response quantity (for example the absolute maximum value of <span class="math inline">\(\gc (t)\)</span>) attained due to a particular ground acceleration time history <span class="math inline">\(\gacc (t)\)</span>, and plot it against the period of the structure. Given an earthquake ground acceleration record, the response spectrum tells us what peak values may be expected depending on the period <span class="math inline">\(\period\)</span> of the system. Often the same plot may include multiple graphs, each corresponding to a different value of the damping ratio. Of particular interest is the displacement (deformation) response spectrum, where we can define the absolute maximum of the displacement as:<br>
+<span class="math display">\[
+\dspec = \dspec(\period, \damp) \equiv \max_t \left( {q(t,\period,\damp)} \right )
+\]</span> <a href="#fig-Dspec">Figure&nbsp;<span>5.4</span></a> illustrates how the displacement response spectrum of SDOF systems vary with their undamped period <span class="math inline">\(\period\)</span> in response to the Kobe and Northridge records shown in <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>. The spectra are developed for a damping ratio of <span class="math inline">\(\damp = 5\%\)</span> using the central difference algorithm.</p>
+<div id="fig-Dspec" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Dspecnew2.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.4: Displacement response spectra for systems with <span class="math inline">\(\damp = 5\%\)</span> for Kobe and Northridge ground motion records shown in <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<p>The two ground motion records are quite different (see <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>) and so are their response spectra; there are, however, some common behavioral observations. When the period is very small (as <span class="math inline">\(\period \rightarrow 0\)</span>), the deformation is negligible, as this limit represents an extremely rigid structure that moves as a rigid body with the ground. At the other extreme (as <span class="math inline">\(\period \rightarrow \infty\)</span>) , each spectra seems to converge to some constant value, as this limit represents an extremely flexible structure in which the mass basically stands still as the ground moves, with the maximum deformation given by the peak ground displacement (of that particular ground motion). The mid-period range is where obvious differentiation between the ground motions appear and this region is where most civil engineering structures are located.</p>
+<p>One could similarly compute the absolute maximum values of the relative velocity and absolut (total) acceleration responses. Plotting these computed values against the natural period of the SDOF system can be used to construct the <em>relative velocity response spectrum</em> and the <em>acceleration response spectrum</em>. These two spectra are seldom computed. Instead, it is more practical to compute the so-called <em>pseudo-velocity</em>, defined as <span id="eq-pseudovel"><span class="math display">\[
+\vspec = \freq \dspec = \frac{2 \pi}{\period} \dspec
+\qquad(5.1)\]</span></span> and the pseudo-acceleration, defined as <span id="eq-pseudoacc"><span class="math display">\[
+\aspec = \freq^2 \dspec = \left(\frac{2 \pi}{\period}\right)^2 \dspec
+\qquad(5.2)\]</span></span> whic are very close, but not exactly equal in the presence of damping, to the peak relative velocity and the peak absolute acceleration, respectively.</p>
+<div id="fig-Aspec" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Aspecnew2.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.5: Acceleration response spectra for systems with <span class="math inline">\(\damp = 5\%\)</span> for the Kobe and Northridge ground motions shown in <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<p><a href="#fig-Aspec">Figure&nbsp;<span>5.5</span></a> shows the pseudo-acceleration response spectra derived from the displacement response spectra shown in <a href="#fig-Dspec">Figure&nbsp;<span>5.4</span></a>. Again, the two spectra are significantly different, each reflecting the nature of its corresponding ground motion, albeit with some common behavioral patterns. Each spectra starts (as <span class="math inline">\(\period \rightarrow 0\)</span>) from the peak ground acceleration of its ground motion, as this limit represents a completely rigid structure with the mass moving identically with the ground. At the other extreme (as <span class="math inline">\(\period \rightarrow \infty\)</span>), both spectra asymptotically converge to zero, as this limit represents an extremely flexible structure with the mass standing still as the ground moves. Once again the mid-period range reflects the particular energy contents of the individual ground motions, with high amplifications for some values of the period and not so significant amplifications in others. The response spectra essentially represent the demand on a structure: the bigger the response spectra, the more deformation the structure will have to resist.</p>
+<p>We may naturally inquire how the pseudo-acceleration relates to the absolute (total) acceleration. In the case of undamped SDOF systems, the two quantities are identical. We can see this by writing the equation of motion as <span class="math display">\[  
+m \aacc (t) + k \gct = 0
+\]</span> and thus <span id="eq-absacceq"><span class="math display">\[
+\aacc (t) =- \freq^2 \gct
+\qquad(5.3)\]</span></span> where we note that <span class="math inline">\(\aacc (t)\)</span> is teh absolute (total) acceleration given by <span class="math inline">\(\aacc (t) = \gacct + \ddgct\)</span>. From <a href="#eq-absacceq">Equation&nbsp;<span>5.3</span></a> it is clear that the total acceleration scales proportionally with relative displacement <span class="math inline">\(\gc (t)\)</span>, with the proportionality constant being <span class="math inline">\(\freq^2\)</span>. This approximation is not strictly true for damped systems since with the inclusion of the damping term, acceleration is <span class="math display">\[
+\aacc (t) =-(2\damp \freq \dgct + \freq^2 \gct)
+\]</span> However, the maximum of the relative displacement (deformation) occurs when the relative velocity is zero, and the acceleration at that instance, while not exactly equal to its peak value, is given by <span class="math inline">\(-\freq^2 D\)</span>. This value is a close approximation for lightly damped systems. The error of this approximation will grow with the damping ratio but for common structures with <span class="math inline">\(\damp &lt; 0.1\)</span> it is inconsequential, justifying the use of <a href="#eq-pseudoacc">Equation&nbsp;<span>5.2</span></a>.</p>
+<div id="fig-forceseqsdof" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/forceseqsdofnew.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.6: Base shear and overturning moment due to earthquake excitation.</figcaption><p></p>
+</figure>
+</div>
+<p>The utility of calculating the pseudo-acceleration becomes apparent when we think about what will be the peak demand from our SDOF system due to the ground excitation. For SDOF systems, two of the significant measures of demand are the base shear and overturning moment: these quantities have direct implications on demands regarding shear forces, bending moments and axial forces that must be transmitted by the vertical members right above the ground. A popular conceptualization that bears some familiarity to the models the structural engineers are accustomed to is to think about a set of external forces that would, if they were to be applied to a stationary stucture, generate the same deformations as those that would be induced by the ground motion. These hypothetical forces are called <em>equivalent static forces</em>, to be denoted by <span class="math inline">\(\estat (t)\)</span> in SDOF systems. Obviously if the deformation (relative displacement) in an SDOF system at any instant is <span class="math inline">\(\gc\)</span>, the external force that would have to be applied to that system to generate the same deformation without motion would have to be <span class="math inline">\(\estat = k \gc\)</span>. Since the internal forces developed in members depend on the deformations, the equivalent static forces may be used to calculate the internal forces that must be transmitted by the load bearing members using static equilibrium concepts. The equivalent static forces, although hypothetical, are of course related to the inertial effects through the equation of motion. Consider the SDOF force diagram shown in <a href="#fig-forceseqsdof">Figure&nbsp;<span>5.6</span></a>. Using d’Alembert forces, we may consider static force and moment equilibrium of the whole system and calculate the base shear and overturning moment as: <span id="eq-eqsdofbase1"><span class="math display">\[
+\baseshear (t) = - m \ddgc (t), \quad \overturn (t) = - h m \ddgc (t)
+\qquad(5.4)\]</span></span> The equivalent static force concept says that we may use the lateral static force (applied in concordance with the sense of the generalized coordinate) <span class="math inline">\(\estat (t) = k \gc (t)\)</span>, in which case we would have <span id="eq-eqsdofbase2"><span class="math display">\[
+\baseshear (t) = k \gc (t), \quad \overturn (t) = h k \gc (t)
+\qquad(5.5)\]</span></span> That these are both viable approaches (the d’Alembert forces are in fact exact) for calculations may be deduced from the equation of motion of an undamped system since then we would have <span class="math display">\[
+m \aacc (t) + k \gc (t) = 0 \quad \rightarrow \quad - m \aacc (t) = k \gc (t) = \estat (t)
+\]</span> so that if damping were neglected, <a href="#eq-eqsdofbase2">Equation&nbsp;<span>5.5</span></a> and <a href="#eq-eqsdofbase2">Equation&nbsp;<span>5.5</span></a> would yield identical results. With damping there will be differences but such differences could very well be neglected for lightly damped systems. The peak values for base shear and overturning moment may therefore be calculated via <span id="eq-baseshear"><span class="math display">\[
+\baseshear = k \dspec = m \aspec
+\qquad(5.6)\]</span></span> and <span id="eq-overturn"><span class="math display">\[
+\overturn = h k \dspec = h m \aspec  
+\qquad(5.7)\]</span></span></p>
+<p>When expressed in units of gravitational constant <span class="math inline">\(\gravity\)</span>, the pseudo-acceleration <span class="math inline">\(\aspec\)</span> directly specifies the magnitude of peak base shear as a ratio to the weight (<span class="math inline">\(W = m\gravity\)</span>) of the SDOF system; e.g.&nbsp;when <span class="math inline">\(\aspec = 0.7\gravity\)</span>, then the peak shear is <span class="math inline">\(\baseshear = 0.7 m \gravity = 0.7 W\)</span> or, in other words, <span class="math inline">\(70 \%\)</span> of the structural weight.</p>
+</section>
+<section id="characteristics-of-response-spectra" class="level2" data-number="5.6">
+<h2 data-number="5.6" data-anchor-id="characteristics-of-response-spectra"><span class="header-section-number">5.6</span> Characteristics of Response Spectra</h2>
+<p>From <a href="#eq-pseudovel">Equation&nbsp;<span>5.1</span></a> and <a href="#eq-pseudoacc">Equation&nbsp;<span>5.2</span></a> we note that the response quantities <span class="math inline">\(\dspec, \vspec, \aspec\)</span> are all interrelated through the equation <span class="math display">\[
+\frac{\aspec}{\freq} = \vspec = \freq \dspec
+\]</span> which, when expressed in terms of the period instead of the frequency, become <span class="math display">\[ \frac{T }{2 \pi} \aspec = V = \frac{2 \pi}{T} D \]</span></p>
+<p>Logarithms (say to base 10) of these relations lead to <span class="math display">\[
+\log \vspec = - \log \period + \log \dspec + \log 2\pi
+\]</span> <span class="math display">\[
+\log \vspec = + \log \period + \log \aspec - \log 2\pi
+\]</span> so that if <span class="math inline">\(\log \vspec\)</span> were to be plotted against <span class="math inline">\(\log \period\)</span>, <span class="math inline">\(\log \dspec = \text{constant}\)</span> would be a line parallel to the <span class="math inline">\(- 45^\circ\)</span> line (in other words, parallel to the line <span class="math inline">\(\log \vspec = - \log \period\)</span>), and <span class="math inline">\(\log \aspec = \text{constant}\)</span> would be a line parallel to the <span class="math inline">\(+ 45^\circ\)</span> line (i.e.&nbsp;parallel to the line <span class="math inline">\(\log \vspec = + \log \period\)</span>). Therefore, if plotted on the same <em>logarithmic</em> figure with the vertical axis corresponding to <span class="math inline">\(\vspec\)</span>, <span class="math inline">\(\dspec\)</span> axis would have a slope of <span class="math inline">\(+1\)</span> and <span class="math inline">\(\aspec\)</span> axis would have a slope of <span class="math inline">\(-1\)</span>. Thus, the three spectral response parameters <span class="math inline">\(\dspec\)</span>, <span class="math inline">\(\vspec\)</span>, and <span class="math inline">\(\aspec\)</span> may be shown on a single tripartate logarithmic graph as plotted in <a href="#fig-tripdamp">Figure&nbsp;<span>5.7</span></a>. Such tripartate plots have historically helped identify certain trends in earthquake response spectra which in turn have been employed in development of design spectra.</p>
+<div id="fig-tripdamp" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/tripdampnew.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.7: Tripartite D-V-A spectra for various damping ratios for the Kobe 1995 ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a> scaled to a PGA of <span class="math inline">\(1 \gravity\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>There are two extremes in such spectra which happen to yield identical behaviors across all earthquake ground motions: lines for different <span class="math inline">\(\damp\)</span> converge to the same limits asymptotically at the low and high ends of the spectra. These two extremes may be explained by mechanical considerations. When the period is very low (<span class="math inline">\(\period \rightarrow 0\)</span>), the stiffness of the system should be extremely large (assuming a proportinately finite mass). In the limit, if the structure were to be infinitely stiff (<span class="math inline">\(k \rightarrow \infty\)</span>), then we would have <span class="math display">\[
+\frac{m}{k} \aacc (t) + \gc (t) = 0 \approx \gc(t)
+\]</span> so that with no relative displacements, the mass would move identically as the ground. Hence the maximum absolute acceleration of the mass would be identical to the peak ground acceleration so that <span class="math display">\[
+\text{as } \period \rightarrow 0, \quad \dspec \rightarrow 0 \text{ and } \aspec \rightarrow \text{peak ground acceleration}
+\]</span> At the other extreme when <span class="math inline">\(\period \rightarrow \infty\)</span>, the system has negligibly small stiffness (<span class="math inline">\(k \rightarrow 0\)</span>) so that almost no force is transmitted to the mass. The mass therefore stands still as the ground moves, with <span class="math display">\[
+m \aacc (t) + k \gc (t) = 0 \approx m \aacc \rightarrow \ddgc (t) \approx - \gacc (t), \quad \gc (t) \approx - \gdis (t)
+\]</span> and we have <span class="math display">\[
+\text{as } \period \rightarrow \infty, \quad \dspec \rightarrow \text{peak ground displacement} \text{ and } \aspec \rightarrow 0
+\]</span> Note that these trends are clearly independent of the ground motion as they are rather solely dominated by the physical properties of the system. The mid-range of the periods meanwhile illustrate the regime in which damping plays a pivotal role in the dynamic amplification observed. The behavior in this region is generally idealized as variations around a constant velocity value.</p>
+</section>
+<section id="elastic-design-spectra" class="level2" data-number="5.7">
+<h2 data-number="5.7" data-anchor-id="elastic-design-spectra"><span class="header-section-number">5.7</span> Elastic Design Spectra</h2>
+<p>It will be of interest to plot variations in the pseudo-acceleration response spectrum for different values of <span class="math inline">\(\damp\)</span> for a given ground motion time-history. This is shown in <a href="#fig-aspecdamp">Figure&nbsp;<span>5.8</span></a> for the Kobe ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>. It is clear yet again that damping plays an important role for SDOF systems in the mid-period range. While the excitation time history would cause notable differences in the spectra, some generic observations can be made.</p>
+<div id="fig-aspecdamp" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/aspecdamp.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.8: Acceleration response spectra for the Kobe ’95 earthquake with various damping ratios and PGA = 1 g.</figcaption><p></p>
+</figure>
+</div>
+<p>For <span class="math inline">\(\period\)</span> values that are very small, <span class="math inline">\(\aspec\)</span> converges to the peak ground acceleration. As the period gets longer, <span class="math inline">\(\aspec\)</span> exhibits a sharp increase with increasing <span class="math inline">\(\period\)</span>. This increase can be assumed to be more or less linear. At intermediate values of <span class="math inline">\(\period\)</span>, <span class="math inline">\(\aspec\)</span> shows large fluctuations in lightly damped systems. A plateau-like behavior can be seen as damping increases. Highest sensitivity to the damping ratio is observed in this intermediate regime. For design purposes, we may consider <span class="math inline">\(\aspec\)</span> to be roughly constant over a narrow range of <span class="math inline">\(\period\)</span> values beyond the initial linear increase regime, before transitioning to a decay regime. The value of <span class="math inline">\(\aspec\)</span> strongly depends on <span class="math inline">\(\damp\)</span> in this intermediate range. Beyond this point, <span class="math inline">\(\aspec\)</span> exhibits a roughly inverse <span class="math inline">\(1/\period\)</span> relation with the <span class="math inline">\(\period\)</span> and possibly transitions to a <span class="math inline">\(1/\period^2\)</span> scaling at very long periods.</p>
+<p>In summary, three distinct regions possibly arise in an idealized spectrum. The spectrum starts from the PGA value and linearly rises in the acceleration governed, small period regime. In the narrow velocity governed regime, <span class="math inline">\(\aspec\)</span> fluctuates around an average value, possibly with sharp peak and troughs. At longer periods, <span class="math inline">\(\aspec\)</span> decays inversely with the period and the response is governed by a large relative displacement. These basic features form the basis of linear elastic design spectra used in structural design codes such as ASCE/SEI 7: “Minimum Design Loads and Associated Criteria for Buildings and Other Structures”. The parameters describing the curve, most notably the two periods that mark the transition points in the so-called traditional 2-period response spectra (2PRS), are determined based on the local regulations that take into account the expected magnitude of the earthquake and ground conditions, considering an ideal maximum credible earthquake (MCE, e.g.&nbsp;an earthquake with ~2,500 yr return period). Various tools (such as the “ASCE Hazard Tool”) can be used to obtain design spectra for specific site conditions. It should be noted that with ASCE 7-22 and subsequent versions, the design guidelines have shifted from the traditional two-period response spectra (2PRS) to multi-period response spectra (MPRS) that better captures the frequency characteristics of earthquakes<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Notable differences between 2PRS and MPRS spectra are the sharper peak and transition in the velocity governed regime and a more gradual decay in the long-period regime. <a href="#fig-designspec">Figure&nbsp;<span>5.9</span></a> demonstrates the ASCE 7-22 prescribed response and design spectra (defined as the 2/3 of the intensity of the response spectrum to MCE) for a site on stiff soil and ordinary building (Risk Level II) in Evanston, IL, USA.</p>
+<p>The discussion of practical considerations in constructing and using response and design spectra are purposefully kept brief here not to detract from the fundamental concepts pertaining to structural dynamics. Developing understanding of seismic hazards results in continuous changes in design codes and regulations, as such, these discussions are meant to familiarize the reader with general considerations rather than intending to convey the most up to date and accurate practices. For a more in depth discussion of response and design spectra, as well as their historical development, we refern the reader to comprehensive references on structural dynamics and seismic design<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
+<div id="fig-designspec" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/designspec.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.9: Example response and design spectra (spectral acceleration vs period): Risk Level II, Class D buildings in Evanston, IL, USA based on ASCE 7 specifications.</figcaption><p></p>
+</figure>
+</div>
+<section id="sec-ex-eqs1" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-ex-eqs1">EXAMPLE 5 .1</h4>
+<p>Based on the response spectra shown in <a href="#fig-aspecdamp">Figure&nbsp;<span>5.8</span></a> scaled down to a PGA of <span class="math inline">\(0.5 \gravity\)</span>, calculate the peak base shear and overturning moment for an SDOF idealization of a one-story building with floor mass <span class="math inline">\(m = 250 \, 000~\unit{kg}\)</span>, floor height <span class="math inline">\(h = 3~\unit{m}\)</span>, total lateral stiffness <span class="math inline">\(k= 10 \, 000\unit{kN}\)</span>, and <span class="math inline">\(\zeta = 0.05\)</span>. Express the base shear and overturning moment in terms of the weight of the structure.</p>
+<p>We first compute natural frequency and period of system as <span class="math inline">\(\freq = \sqrt \frac {k}{m} =\)</span> 6.32 rad/s. This gives <span class="math display">\[\period = \frac{2 \pi} { \freq} = 0.993~\unit{s} .\]</span></p>
+<p>We can estimate <span class="math inline">\(\aspec\)</span> from the graph as <span class="math display">\[\aspec \approx 1.2\times0.5 = 0.6 \gravity \]</span></p>
+<p>noting that the acceleration must be scaled down by 50%. Then, the base shear is calculated as a function of the weight <span class="math inline">\(W=m\gravity\)</span>:</p>
+<p><span class="math display">\[ \baseshear = mA = 0.6 m\gravity = 0.6 W\]</span></p>
+<p>Similarly,</p>
+<p><span class="math display">\[\overturn = mAh = 1.8 W\]</span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="5">
+<li id="fn5"><p>MPRS methodology was proposed partly to better estimate the response of long-period structures on soft soils where 2PRS estimates may not be conservative.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Anil K. Chopra, <em>Dynamics of Structures</em>, 6th edition, 2024.<br>
+Ray W. Clough and Joseph Penzien, <em>Dynamics of Structures</em>, 2nd edition, 2015<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+<section id="sec-Earthquake_Response_Spectra_for_Non-linear_SDOF_Systems" class="level2" data-number="5.8">
+<h2 data-number="5.8" data-anchor-id="sec-Earthquake_Response_Spectra_for_Non-linear_SDOF_Systems"><span class="header-section-number">5.8</span> Earthquake Response Spectra for Non-linear Systems</h2>
+<p>The elastic response and design spectra are helpful in understanding the response of a building to strong ground motion, particularly the effects of viscous damping and the natural period on response characteristics. The current paradigm in earthquake engineering, however, is based on the premise that it is not feasible economically to design buildings in a way to ensure that they respond elastically in rare large earthquakes. It is expected and deemed acceptable to some degree that a building shall respond inelastically to a significant ground motion; that cracking of concrete, yielding and plastic deformation of reinforcing bars or moment resisting steel frames shall occur. These <em>material nonlinearities</em> conribute to energy dissipation capacity of the structure. Additionally, when displacements become large, <em>geometric nonlinearities</em> may also become significant; for instance, brace members or suspension cables may exhibit large deviations from their undeformed orientations, which in turn may necessitate use of nonlinear trigonometric relations to model the stiffness term in the SDOF equation of motion.</p>
+<div id="fig-eqpictures" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/eqpictures.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.10: Excessive damage due to high inelastic demands in a large earthquakes. Spalling of concrete and buckling of longitudinal reinforcement indicate that the design capacity has been exceeded.</figcaption><p></p>
+</figure>
+</div>
+<p>Inelastic behavior is difficult to quantify and predict exactly, but safety may be approximately accounted for by estimating how much ductility structural members can exhibit without losing load-bearing capacity, and how that capacity would fare against the total elastic and plastic deformations that a structure would have to sustain during an earthquake, i.e.&nbsp;demand. High inelastic demands may lead to excessive damage on load bearing members, a few examples of which are shown in <a href="#fig-eqpictures">Figure&nbsp;<span>5.10</span></a>; significant demands may lead to collapse of structures during earthquakes or the structure may need to be demolished after the earthquake due to irreperable damage. In this section we will try to examine the effects of plastic deformations on the response time histories and consequently the peak response spectrum variables <span class="math inline">\(\dspec\)</span>,<span class="math inline">\(\vspec\)</span> and <span class="math inline">\(\aspec\)</span>.</p>
+<section id="strength-reduction-and-ductility" class="level3" data-number="5.8.1">
+<h3 data-number="5.8.1" data-anchor-id="strength-reduction-and-ductility"><span class="header-section-number">5.8.1</span> Strength Reduction and Ductility</h3>
+<p>The elastoplastic (elastic-perfectly plastic) spring model was previously introduced in the context of non-linear numerical integration methods, where it was also illustrated how energy is dissipated via plastic deformation in the form of hysteresis during cyclic excitation. We once again adopt the simple elastoplastic spring model to account for post-elastic deformations, this time in the context of earthquake induced ground motions. With no claims to exactness, the elastoplastic (elastic-perfectly plastic) model leads to some observations which help understanding of response behavior in more complicated nonlinear force-deformation relationships in which stiffness is continuously modified throughout the analysis to simulate plastic deformations that could occur due to large displacements.</p>
+<div id="fig-ductility" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/ductility.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.11: Force-displacement relationships: (a) ideal elastoplastic spring model, (b) the corresponding linear elastic model.</figcaption><p></p>
+</figure>
+</div>
+<p>Recall that in the first loading (<span class="math inline">\(\diff \gc \geq 0\)</span> throughout) of an initially unloaded and undeformed elastoplastic spring, the force-displacement (<span class="math inline">\(\stifforce\)</span>-<span class="math inline">\(\gc\)</span>) relationship is defined as: <span id="eq-nlspring"><span class="math display">\[
+\stifforce = \begin{cases}
+    k \gc   &amp; \text{if $\gc &lt; \yielddisp$}.\\
+    \yieldforce &amp; \text{if $\gc \ge \yielddisp$}.
+  \end{cases}
+\qquad(5.8)\]</span></span> Yielding begins when <span class="math inline">\(\gc = \yielddisp\)</span>, i.e.&nbsp;the <em>yield displacement</em>, and the corresponding spring force <span class="math inline">\(\yieldforce\)</span> is called the <em>yield force</em>. When defining such a spring one also needs to prescribe unloading and reloading roles, for which it is assumed yielding in tension and compression occur at the same deformation level (<span class="math inline">\(\gc' \pm \yielddisp\)</span> where <span class="math inline">\(\gc'\)</span> is some value of <span class="math inline">\(\gc\)</span> for which <span class="math inline">\(\stifforce = 0\)</span>), and all unloading and reloading lines are parallel to the initial loading line. These rules are graphically summarized in <a href="#fig-ductility">Figure&nbsp;<span>5.11</span></a> (a).</p>
+<p>It has become customary in earthquake engineering to define a hypothetical <em>conjugate linear SDOF system</em> (also referred to as the <em>corresponding linear system</em>) for comparison purposes. The conjugate linear SDOF system is a system with the same mass and the same initial tangent stiffness as the inelastic system, and it is assumed that the conjugate system remains linear elastic with this stiffness value. If the conjugate linear SDOF system has a stiffness of <span class="math inline">\(k\)</span> and its maximum deformation under an excitation is <span class="math inline">\(\dspec = \maxlindisp\)</span>, then the peak force transmitted by the spring of the conjugate system is <span class="math inline">\(\maxstifforce = k \maxlindisp\)</span>. The comparative behavior of an elastoplastic system and its conjugate linear SDOF system are sketched in <a href="#fig-ductility">Figure&nbsp;<span>5.11</span></a> (b). By definition, the force in the elastoplastic spring can not exceed the yield force so that if <span class="math inline">\(\maxlindisp &gt; \yielddisp\)</span>, then <span class="math inline">\(\maxstifforce &gt; \yieldforce\)</span>. One measure of inelastic action is the <em>strength reduction factor</em> <span class="math inline">\(\redfac\)</span> (also reffered to as the <em>yield strength reduction factor</em>), defined as <span class="math display">\[
+\redfac= \frac{\maxstifforce}{\yieldforce} = \frac{\maxlindisp}{\yielddisp} \geq 1
+\]</span> The strength reduction factor is significant because in some sense it provides a bound for force-based design: if the system is allowed to deform inelastically, then the force it will have to be designed for is less than the force it would have to resist if it were to remain elastic. This sounds too good to be true and it is: plastic deformations may not be allowed to reach excessive levels and, even more importantly, the system must be designed sufficiently well so as to be able to undergo expected plastic deformations without any failure (however one may define failure). So the strength reduction factor by itself does not suffice to ensure successful aseismic design. Another commonly used measure in earthquake engineering is the <em>ductility demand</em> <span class="math inline">\(\duct\)</span> (also referred to as the <em>ductility factor</em>) defined as <span class="math display">\[
+\duct = \frac{\maxtotdisp}{\yielddisp}
+\]</span> where <span class="math inline">\(\maxtotdisp\)</span> is the maximum (in an absolute value sense) deformation that occurs in the system under a particular excitation. The ductility demand helps to quantify the amount of plastic deformation that will be asked of a system designed with some value of <span class="math inline">\(\redfac\)</span> in mind. For a certain value of <span class="math inline">\(\redfac\)</span>, the response of the inelastic SDOF model may be computed numerically to estimate the maximum deformation <span class="math inline">\(\maxtotdisp\)</span> with which the ductility demand may be forecast.</p>
+<p>In the context of damped SDOF systems with damping ratio <span class="math inline">\(\damp\)</span>, several important questions arise. First, what is the relationship between <span class="math inline">\(\redfac\)</span>, <span class="math inline">\(\mu\)</span>, and <span class="math inline">\(\period\)</span>, and to a lesser extent <span class="math inline">\(\damp\)</span>? Qualitatively, one can expect that higher values of <span class="math inline">\(\redfac\)</span> will result in greater ductility demands, but how does this depend on system variables? Another important question is: how should an inelastic response spectra be constructed to understand the impact of ductility demand on key response variables, and what are the appropriate variables to ensure a rational comparison with elastic systems? This will allow us to contrast strength-based designs (elastic design) and ductility-based designs (inelastic design) to see how they fare against each other from an economical or structural performance standpoint.</p>
+</section>
+<section id="inelastic-response-spectra" class="level3" data-number="5.8.2">
+<h3 data-number="5.8.2" data-anchor-id="inelastic-response-spectra"><span class="header-section-number">5.8.2</span> Inelastic Response Spectra</h3>
+<p>Analyses by Veletsos and Newmark<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> using the El Centro and Vernon earthquake records in the early 1960s helped clarify how elastic and inelastic behavior can be contrasted. To examine various issues, we’ll calculate the response of inelastic systems subjected to an actual ground motion (in our case the Kobe ’95 record) using the central difference algorithm. The first question that arises is, can inelastic deformations dissipate sufficient energy to reduce the maximum displacement attained to be below that of the conjugate linear system. <a href="#fig-qmqo">Figure&nbsp;<span>5.12</span></a> illustrates that for lightly damped systems, this appears to be the case over a wide range of intermediate periods.</p>
+<div id="fig-qmqo" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/qmqonewkobe.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.12: Ratio of maximum displacement (elastic or inelastic) to maximum elastic displacement (observed in the conjugte SDOF system) for the Kobe ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a> considering four different values of <span class="math inline">\(\redfac\)</span> (with <span class="math inline">\(\redfac=1\)</span> corresponding to the elastic case) and two different values of damping ratio: (a) <span class="math inline">\(\damp = 2\%\)</span>, (b) <span class="math inline">\(\damp = 20\%\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-ductdem" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/ductdemkobe.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.13: Variation of ductility demand as a function of period for four different values of <span class="math inline">\(\redfac\)</span> (with <span class="math inline">\(\redfac=1\)</span> corresponding to the elastic case) for the Kobe ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<p>For fairly rigid systems with small periods, on the other hand, plastic deformations become quite excessive, often exhibiting a multi-fold increase relative to linear responses. In this regime, the large ductility demands shown in <a href="#fig-ductdem">Figure&nbsp;<span>5.13</span></a> impose some practical limitations on the utility of inelastic behavior. Thus, for structural systems that are fairly rigid and with periods lower than <span class="math inline">\(1 \unit{second}\)</span>, the design tends to rely predominantly on strength to ensure that the response remains largely elastic. Inelastic deformations seem to contribute to keeping the peak displacements relatively small in the intermediate period range even for increasing values of viscous damping. Whereas for long-period structures, benefits of hysteretic damping seem marginal, in a sense similar to the case of viscous damping. In this long-period regime, as previously discussed in the context of elastic spectra, a system with a finite mass is relatively so very flexible that the mass basicaly stands still as the ground moves; hence one essentially has <span class="math inline">\(\maxlindisp \approx \maxtotdisp \approx \text{peak ground displacement}\)</span>. This convergence also implies that for long-period systems one has <span class="math inline">\(\redfac \approx \duct\)</span> since for <span class="math inline">\(\maxlindisp = \maxtotdisp\)</span>, <span class="math display">\[
+\redfac = \frac{\maxstifforce}{\yieldforce} = \frac{k \maxlindisp}{k \yielddisp} = \frac{\maxtotdisp}{\yielddisp} = \duct
+\]</span> and not surprisingly we see that the ductility curves in <a href="#fig-ductdem">Figure&nbsp;<span>5.13</span></a> tend to their respective strength reduction factors toward the higher values of the period. The observation that for longer periods <span class="math inline">\(\maxlindisp \approx \maxtotdisp\)</span> (and, equivalently, <span class="math inline">\(\redfac \approx \duct\)</span>) is called the <em>equal displacement rule</em> and it has been used as a basis for many code provisions.</p>
+<p>To delve deeper in to these comparisons, it will be fruitful to think about how response spectra may be constructed to allow for direct comparison between inelastic and elastic systems. For this purpose, we consider that the maximum elastic strain energy that can be stored in the inelastic system is given by <span class="math display">\[
+\frac{1}{2} k \yielddisp ^2 = \frac{1}{2} m (\freq \yielddisp)^2=\frac{1}{2} m \yvspec^2
+\]</span> where the pseudo-velocity spectral response variable is defined as <span class="math inline">\(\yvspec \equiv \freq \yielddisp\)</span>. This notation is consistent with elastic pseudo-velocity and pseudo-acceleration definitions presented earlier, since for <span class="math inline">\(\redfac=1\)</span> corresponding to the elastic case we have <span class="math display">\[
+\dspec = \maxtotdisp = \yielddisp  
+\]</span> Similarly, the pseudo-acceleration spectral response and yield-deformation spectral response variables can be defined in accordance with linear systems, which results in the following relationships: <span id="eq-nlspectra"><span class="math display">\[
+\frac{\yaspec}{\freq} = \yvspec = \freq \ydspec
+\qquad(5.9)\]</span></span></p>
+<p>As in the case of linear systems, <span class="math inline">\(\yaspec\)</span> is significant from a design standpoint because it is related to the maximum base shear and overturning moment that can be attained, i.e.&nbsp;<span class="math inline">\(\baseshear = m \yaspec\)</span> since the maximum member force is capped at the yield strength. It is of practical utility to construct a constant ductility response spectrum for the variables shown in <a href="#eq-nlspectra">Equation&nbsp;<span>5.9</span></a> to understand how ductility demand will impact these response measures. Such a development, however, requires iterative determination of the relationship between <span class="math inline">\(\yieldforce\)</span> and <span class="math inline">\(\mu\)</span>. This can be done by numerically computing the ductility demand and then determining the largest value of the <span class="math inline">\(\yieldforce\)</span> that results in a target <span class="math inline">\(\mu\)</span>, within an acceptable threshold. Interpolation of <span class="math inline">\(\yieldforce\)</span> and <span class="math inline">\(\mu\)</span> relationships computed with a small number of points may also be used to more efficiently converge to the ductility solutions. <a href="#fig-Rduct">Figure&nbsp;<span>5.14</span></a> demonstrates the relationship between <span class="math inline">\(\redfac\)</span> and <span class="math inline">\(\mu\)</span>. From <a href="#fig-Rduct">Figure&nbsp;<span>5.14</span></a>, it is apparent that as <span class="math inline">\(\period \rightarrow 0\)</span>, <span class="math inline">\(\redfac \approx 1\)</span>. In the limit as <span class="math inline">\(\period \rightarrow \infty\)</span> period limit, <span class="math inline">\(\redfac \approx \mu\)</span>. It has also been empirically suggested that <span class="math inline">\(\redfac \approx \sqrt{2 \mu - 1}\)</span> in the intermediate range, although various analytical formulas could be fitted to this regime. These basic rules of thumb, along with linear interpolation of <span class="math inline">\(\redfac\)</span> between these constant <span class="math inline">\(\redfac\)</span> regimes can be used to determine design values for yield-strength reduction factors empirically based on ensembles of ground motion data to construct inelastic design spectra.</p>
+<div id="fig-Rduct" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Rductnewkobe.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.14: Relationship between <span class="math inline">\(\redfac\)</span> and <span class="math inline">\(\period\)</span> for different <span class="math inline">\(\mu\)</span> for a system with <span class="math inline">\(\damp\)</span> = 0.05 subjected to the Kobe ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-AspecNL" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/AspecNLnewkobe.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.15: <span class="math inline">\(\yaspec\)</span> vs <span class="math inline">\(\period\)</span> for varying <span class="math inline">\(\mu\)</span> values for a system with <span class="math inline">\(\damp\)</span> = 0.05 subjected to the Kobe ground motion record of <a href="#fig-eqtimehist">Figure&nbsp;<span>5.3</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<p><a href="#fig-AspecNL">Figure&nbsp;<span>5.15</span></a> illustrates the variation of <span class="math inline">\(\yaspec\)</span> with <span class="math inline">\(\period\)</span>. Comparing <a href="#fig-aspecdamp">Figure&nbsp;<span>5.8</span></a> with this spectra while being mindful of the scaling difference due to different PGAs, it is evident that the role of inelastic deformation is similar to damping, with a moderate amount of ductility strongly reducing the amount of strain energy that must be accommodated elastically in the system during deformations. As in the case of viscous damping, inelastic dissipation is most effective in the intermediate range of periods, which is the velocity sensitive regime. For the pseudo-acceleration spectra, it is clear that allowing a ductility factor of <span class="math inline">\(\mu = 2\)</span> is equivalent to having a linear system with fairly high levels of damping (~10%) in the velocity-sensitive regime. Considering that most structural engineering materials and member designs can accommodate reasonable amounts of ductility in the range of <span class="math inline">\(\mu \approx 3\)</span>, and that externally supplementing viscous damping is relatively costly, ductile designs offer economical alternatives to purely strength-based designs that enforce strictly linear behavior.</p>
+<p>Based on these considerations, we can summarize the seismic design process as follows. The designer may choose to pursue a strength-based design approach, ensuring that the response remains elastic at all times. This may be an economical solution in fairly rigid, short period structures in which high ductility demands may result in displacements that exceed safety limits even with a relatively small <span class="math inline">\(\redfac\)</span>. For intermediate to longer period structures, accounting for some degree of inelastic deformation will often yield more economical solutions.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> This can be pursued by choosing a reasonable <span class="math inline">\(\redfac\)</span> and determining what is an acceptable ductility demand, for instance using the approximate <span class="math inline">\(\redfac - \mu\)</span> relationships listed above for different period ranges. In building codes, the reduction factor is generalized to account for not only the yield behavior but also the overstrength that a structure should have, which is the difference between the design strength and the true yield strength that exceeds that value. All the relevant parameters such as the maximum deformation of an inelastic system can be determined directly from an elastic response spectrum. For instance, in the case of an allowable stress design approach, assume that the designer needs to determine <span class="math inline">\(\yieldforce\)</span>. Based on the type of the structure and materials used, building codes typically prescribe an allowable ductility factor <span class="math inline">\(\mu\)</span>. Based on a linear elastic design spectrum, <span class="math inline">\(\aspec\)</span> can be determined for a given <span class="math inline">\(\damp\)</span> and <span class="math inline">\(\period\)</span>. Then, approximations for <span class="math inline">\(\redfac\)</span> based on <span class="math inline">\(\mu\)</span> can be determined for the given <span class="math inline">\(\period\)</span> using the established empirical relationships (recall trends in <a href="#fig-Rduct">Figure&nbsp;<span>5.14</span></a>). From there it follows that <span class="math inline">\(\baseshear = m \aspec/\redfac = \yieldforce\)</span>. Additionally, one may need to consider the maximum displacement attained to ensure that it is within allowable limits. Recall that <span id="eq-mulin1"><span class="math display">\[ \mu = \frac{\maxtotdisp}{\yielddisp} = \frac{\maxtotdisp \redfac}{ \dspec}  \qquad(5.10)\]</span></span> where <span class="math inline">\(\dspec\)</span> is the maximum displacement attained in the conjugate linear system, and thus <span class="math inline">\(\yielddisp = \dspec/R\)</span>. Noting that for the conjugate linear system, <span id="eq-mulin2"><span class="math display">\[\aspec = \left(\frac{2 \pi}{\period}\right)^2 \dspec  \qquad(5.11)\]</span></span> we can use <a href="#eq-mulin2">Equation&nbsp;<span>5.11</span></a> in <a href="#eq-mulin1">Equation&nbsp;<span>5.10</span></a> to obtain: <span id="eq-mulin3"><span class="math display">\[ \maxtotdisp = \mu \frac{1}{R} \left(\frac{T}{2 \pi}\right)^2 \aspec  \qquad(5.12)\]</span></span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="7">
+<li id="fn7"><p>A.S. Veletsos and N.M. Newmark, <em>Effect of Inelastic Behavior on the Response of Simple Systems to Earthquake Motions</em>, Proc. of 2nd WCEE, pp.&nbsp;895-912, 1960.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>We have to be careful about what we mean by “economical” as the validity of the adjective depends very much on the boundaries or horizon of analyses. Recent earthquakes have unfortunately shown that indirect losses, such as significant population migration away from heavily damaged quarters and the consequent socio-economic losses may better be avoided even at higher costs of initial construction. “Resilient Urban Environment” may become the dominant paradigm in recent future.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+<section id="wrapping-up" class="level2" data-number="5.9">
+<h2 data-number="5.9" data-anchor-id="wrapping-up"><span class="header-section-number">5.9</span> Wrapping Up</h2>
+<p>In this chapter, we tried to introduce the basic concepts and analyses techniques developed for understanding how SDOF systems respond to base excitations, most notably in earthquakes. For linear systems designed for substantial strength, construction of elastic response spectra is relatively straightforward and can be done using existing ground acceleration time-histories. Appropriate care must be taken to ensure that time-histories, notably frequency range of the excitations, and peak amplitude of ground accelerations taken are representative of the site conditions and historical characteristics of earthquakes in the region. Principles underlying simplified design spectra commonly employed in building codes were briefly mentioned. We also introduced concepts of inelastic response spectra and design considerations, namely the importance of ductility in dissipating energy and economical designs that arise when ductility is favored over strength.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./numericalsdof.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./multidof.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

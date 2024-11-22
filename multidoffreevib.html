@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 7&nbsp; Free Vibrations of Multi Degree of Freedom Systems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./multidofforcedvib.html" rel="next">
+<link href="./multidof.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./multidoffreevib.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#harmonic-motion-and-the-eigenvalue-problem" id="toc-harmonic-motion-and-the-eigenvalue-problem" class="nav-link active" data-scroll-target="#harmonic-motion-and-the-eigenvalue-problem"><span class="header-section-number">7.1</span> Harmonic Motion and the Eigenvalue Problem</a></li>
+  <li><a href="#orthogonality-of-modes" id="toc-orthogonality-of-modes" class="nav-link" data-scroll-target="#orthogonality-of-modes"><span class="header-section-number">7.2</span> Orthogonality of Modes</a></li>
+  <li><a href="#coordinate-transformations-and-the-eigenvalue-problem" id="toc-coordinate-transformations-and-the-eigenvalue-problem" class="nav-link" data-scroll-target="#coordinate-transformations-and-the-eigenvalue-problem"><span class="header-section-number">7.3</span> Coordinate Transformations and the Eigenvalue Problem</a></li>
+  <li><a href="#modal-analysis-of-free-vibrations" id="toc-modal-analysis-of-free-vibrations" class="nav-link" data-scroll-target="#modal-analysis-of-free-vibrations"><span class="header-section-number">7.4</span> Modal Analysis of Free Vibrations</a></li>
+  <li><a href="#approximations-for-frequencies" id="toc-approximations-for-frequencies" class="nav-link" data-scroll-target="#approximations-for-frequencies"><span class="header-section-number">7.5</span> Approximations for Frequencies</a>
+  <ul class="collapse">
+  <li><a href="#rayleighs-quotient" id="toc-rayleighs-quotient" class="nav-link" data-scroll-target="#rayleighs-quotient"><span class="header-section-number">7.5.1</span> Rayleigh’s Quotient</a></li>
+  <li><a href="#rayleigh-ritz-method" id="toc-rayleigh-ritz-method" class="nav-link" data-scroll-target="#rayleigh-ritz-method"><span class="header-section-number">7.5.2</span> Rayleigh-Ritz Method</a></li>
+  </ul></li>
+  <li><a href="#sec-mdofdampfree" id="toc-sec-mdofdampfree" class="nav-link" data-scroll-target="#sec-mdofdampfree"><span class="header-section-number">7.6</span> Free Vibration Response of Damped Systems</a>
+  <ul class="collapse">
+  <li><a href="#damping-in-mdof-systems" id="toc-damping-in-mdof-systems" class="nav-link" data-scroll-target="#damping-in-mdof-systems"><span class="header-section-number">7.6.1</span> Damping in MDOF Systems</a></li>
+  <li><a href="#modal-analysis-of-classically-damped-systems" id="toc-modal-analysis-of-classically-damped-systems" class="nav-link" data-scroll-target="#modal-analysis-of-classically-damped-systems"><span class="header-section-number">7.6.2</span> Modal Analysis of Classically Damped Systems</a></li>
+  <li><a href="#constructing-damping-matrices-in-classically-damped-systems" id="toc-constructing-damping-matrices-in-classically-damped-systems" class="nav-link" data-scroll-target="#constructing-damping-matrices-in-classically-damped-systems"><span class="header-section-number">7.6.3</span> Constructing Damping Matrices in Classically Damped Systems</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="harmonic-motion-and-the-eigenvalue-problem" class="level2" data-number="7.1">
+<h2 data-number="7.1" data-anchor-id="harmonic-motion-and-the-eigenvalue-problem"><span class="header-section-number">7.1</span> Harmonic Motion and the Eigenvalue Problem</h2>
+<p>Solving the coupled equations of motion of an MDOF system is not a trivial issue. If one wants to find how each generalized coordinate evolves in time, one has to find <span class="math inline">\(n\)</span> many time functions in an <span class="math inline">\(n\)</span>-DOF system that will somehow satisfy the coupled equations at all times. Most often this task will have to be dealt with numerically, if it can be dealt with at all. Numerical results, however, tend to be not so conducive in helping us develop physical insights, which we do need in order to be able to judge the validity of any analysis.</p>
+<p>So we may ask: is there any insight or experience that we have gained from analyses of SDOF systems that may help us get started with MDOF systems. One predominant characteristic of an SDOF system was its unique period (or frequency) with which it oscillated if it were perturbed form its original equilibrium configuration. Would an MDOF system do the same, and, what does this exactly mean? By the <em>period of the MDOF system</em> we shall understand the period, if it exists, with which the whole system repeats its motion in that during free vibrations all generalized coordinates execute harmonic motions with the same period. Since there are multiple degrees of freedom, the motions along each may have different <em>amplitudes</em>, but all motion should bear the same period. Consider the three masses hung along the same rope as shown in <a href="#fig-dof3pendulum">Figure&nbsp;<span>7.1</span></a>. We may intuitively feel that if we were to pull this pendulum to some initial angle and let go, the masses would move in harmony, swinging back and forth while keeping their initial relative appearance so that if we were to take consecutive snapshots, the pendulum would look pretty much as it did at the first instant albeit at smaller angles, somewhat like the sketch in <a href="#fig-dof3pendulum">Figure&nbsp;<span>7.1</span></a> (a). We may also feel that after such an initial perturbance the snapshots depicted in <a href="#fig-dof3pendulum">Figure&nbsp;<span>7.1</span></a> (b) are probably unlikely, that the masses are unlikely to do as they please and swing any way they want at any speed they want.</p>
+<div id="fig-dof3pendulum" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3pendulum.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.1: Pendulum with three masses.</figcaption><p></p>
+</figure>
+</div>
+<p>We can’t quit at intuition of course and so the question is whether or not such harmonic motion is mathematically possible. For the whole system to move with the same frequency but different amplitudes along the generalized coordinates, the equations of motion should admit a solution that may be expressed as <span id="eq-mdofharm"><span class="math display">\[
+\gctvec = \colmat{\gc_1 (t) \\ \gc_2 (t) \\ \vdots \\ \gc_n (t)} = \colmat{\eigvecs_{1} \\ \eigvecs_{2} \\ \vdots \\ \eigvecs_{n}} \cosp{\freq t - \phs} = \eigvec \cosp{\freq t - \phs}
+\qquad(7.1)\]</span></span> where <span class="math inline">\(\eigvecs_{j}\)</span> is the time independent amplitude at the <em>j</em>th generalized coordinate, <span class="math inline">\(\freq\)</span> is the frequency with which the whole system moves, and <span class="math inline">\(\phs\)</span> is some possible lag. Note that the way the system looks as it moves is governed by <span class="math inline">\(\eigvec\)</span> or, more precisely, <em>the ratios of <span class="math inline">\(\eigvecs_{j}\)</span> to each other</em>. As we assume these amplitudes to be time invariant, the <em>relative shape of deformation is constant</em> by assumption, with instantaneous positions communally regulated by the time dependent cosine component.</p>
+<p>Admissibility of such a motion depends on whether the equation of motion for free vibrations, given by <span id="eq-eomudfreevib"><span class="math display">\[
+\mmat \ddgctvec + \kmat \gctvec = \zerocol
+\qquad(7.2)\]</span></span> may be satisfied by this solution. The damping matrix is conspicuously missing of course, but we will come back to that in a little while. To see whether or not the solution works we plug the proposed expression <a href="#eq-mdofharm">Equation&nbsp;<span>7.1</span></a> into <a href="#eq-eomudfreevib">Equation&nbsp;<span>7.2</span></a> to get <span id="eq-soludfreevib1"><span class="math display">\[
+-\freq^2 \mmat \eigvec \cosp{\freq t - \phs} + \kmat \eigvec \cosp{\freq t - \phs} = \left(\kmat - \freq^2 \mmat \right) \eigvec \cosp{\freq t - \phs} = \zerocol
+\qquad(7.3)\]</span></span> If such a solution is to exist, <a href="#eq-soludfreevib1">Equation&nbsp;<span>7.3</span></a> should be satisfied at all times. Obviously the cosine term can take on nonzero values, and so there are only two possibilities. It could be that <span class="math inline">\(\eigvec \equiv \zerocol\)</span>, which means that the system is not moving at all! Equilibrium is naturally satisfied in that case (remember that initially the system is at an equilibrium state) but this is not the option we are seeking; this is called the <em>trivial solution</em>. The nontrivial solution is the possibility of <span class="math display">\[
+\left(\kmat - \freq^2 \mmat \right) \eigvec = \zerocol
+\]</span> which means that, for a nonzero <span class="math inline">\(\eigvec\)</span>, the matrix <span class="math inline">\(\left(\kmat - \freq^2 \mmat \right)\)</span> is (to borrow from linear algebra) rank deficient, i.e.&nbsp;its determinant is zero and its inverse does not exist; for if it did, then the only possibility would be <span class="math inline">\(\eigvec = \left(\kmat - \freq^2 \mmat \right)^{-1} \zerocol = \zerocol\)</span>.</p>
+<p>What does this mean? Well, we were seeking for the possibility of harmonic motion and it turns out that: yes, it is possible, but only for those values of <span class="math inline">\(\freq\)</span> which make <span id="eq-detfreevib"><span class="math display">\[
+\left| \kmat - \freq^2 \mmat \right| = 0
+\qquad(7.4)\]</span></span> where <span class="math inline">\(\left| \mtrx{A} \right|\)</span> denotes the determinant of matrix <span class="math inline">\(\mtrx{A}\)</span>. For an <span class="math inline">\(n\)</span>-DOF system, <span class="math inline">\(\mmat\)</span> and <span class="math inline">\(\kmat\)</span> are <span class="math inline">\(n \times n\)</span> matrices, and the characteristic equation of <a href="#eq-detfreevib">Equation&nbsp;<span>7.4</span></a> is of order <span class="math inline">\(n\)</span> in <span class="math inline">\(\freq^2\)</span>. The characteristic equation, therefore, has <span class="math inline">\(n\)</span> roots, meaning there are <span class="math inline">\(n\)</span> values of <span class="math inline">\(\freq\)</span> which may make the determinant zero. From a more physical perspective: an MDOF system has multiple frequencies, as many as the number of degrees of freedom, with which it may execute harmonic motion.</p>
+<p>In linear algebra, this problem is usually cast as the <em>generalized eigenvalue problem</em>: find all <span class="math inline">\(\freq^2\)</span> and <span class="math inline">\(\eigvec\)</span> for which <span id="eq-eigprob"><span class="math display">\[
+\freq^2 \mmat \eigvec = \kmat \eigvec
+\qquad(7.5)\]</span></span> is satisfied. When matrix dimensions are very small, it may be possible to solve this problem by hand. After a while it becomes tedious and outright impossible to proceed by hand and so the eigenvalue problems are almost always solved numerically.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> In the structural dynamics jargon, the eigenvalues of <a href="#eq-eigprob">Equation&nbsp;<span>7.5</span></a>, or rather their positive square roots the <span class="math inline">\(\freq\)</span>’s, are called the <em>natural frequencies</em> or <em>modal frequencies</em>, and its eigenvectors the <span class="math inline">\(\eigvec\)</span>’s are called the <em>mode shapes</em> of the system. This terminology is well established and we will adhere to it.</p>
+<p>To give a flavor of what this all means, let us work on the two-story shear building shown in <a href="#fig-dof2shearbldg">Figure&nbsp;<span>7.2</span></a>. It is relatively easy to show that the mass and stiffness matrices for this simple model are given by <span class="math display">\[
+\mmat = \begin{bmatrix} m_1 &amp; 0 \\ 0 &amp; m_2 \end{bmatrix}, \quad \kmat = \begin{bmatrix} k_1 + k_2 &amp; -k_2 \\ -k_2 &amp; k_2 \end{bmatrix}
+\]</span></p>
+<div id="fig-dof2shearbldg" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2shearbldg.png" class="img-fluid figure-img" style="width:35.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.2: Two story shear building.</figcaption><p></p>
+</figure>
+</div>
+<p>Let us simplify the algebra by considering a particular case with <span class="math inline">\(m_1 = m_2 = m\)</span>, <span class="math inline">\(k_1 = 2k\)</span> and <span class="math inline">\(k_2 = k\)</span>. The eigenvalue problem becomes <span id="eq-dof2eig"><span class="math display">\[
+\left(\begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} - \freq^2 \begin{bmatrix} m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right) \eigvec = \zerocol
+\qquad(7.6)\]</span></span> with the characteristic equation given by <span id="eq-dof2det"><span class="math display">\[
+\left| \kmat - \freq^2 \mmat \right| =\left| \begin{bmatrix} 3k-\freq^2 m &amp; -k \\ -k &amp; k - \freq^2 m \end{bmatrix} \right| = m^2 (\freq^2)^2 - 4 {k}{m} \freq^2 + 2 k^2 = 0
+\qquad(7.7)\]</span></span> which yields the following two roots via the well-known quadratic formula: <span class="math display">\[
+\freq_1^2 = (2 - \sqrt{2}) \ratio{k}{m}, \quad \freq_2^2 = (2 + \sqrt{2}) \ratio{k}{m}
+\]</span> By convention, when numbering the multiple frequencies of a system, they are numbered in increasing order so that <span class="math display">\[
+\freq_1 \leq \freq_2 \leq \ldots \leq \freq_{n-1} \leq \freq_n
+\]</span> This convention is almost always adhered to, with the lowest frequency <span class="math inline">\(\freq_1\)</span> generally referred to as the <em>fundamental frequency</em> of the system; the corresponding period <span class="math inline">\(\period_1 = 2 \pi/ \freq_1\)</span>, which happens to be the longest period of the system, is analogously called the <em>fundamental period</em>. Experience has shown that in most cases the largest amplitudes of motion occur in relation to this fundamental period, and therefore its proper estimation is of prime importance.</p>
+<p>So what kind of a deformed shape does the system take on while moving with any of these frequencies; in other words, what are the corresponding <span class="math inline">\(\eigvec\)</span>’s? We have to go back to <a href="#eq-dof2det">Equation&nbsp;<span>7.7</span></a> and try to figure out the <span class="math inline">\(\eigveci{i}\)</span> that accompanies the particular frequency <span class="math inline">\(\freq_i\)</span>. For our system we have two frequencies and two such mode shapes. We will denote the related mode shapes by <span class="math inline">\(\eigveci{1}\)</span> and <span class="math inline">\(\eigveci{2}\)</span>, and their components as <span class="math display">\[
+\eigveci{1} = \colmat{\eigvecs_{11} \\ \eigvecs_{21}}, \quad \eigveci{2} = \colmat{\eigvecs_{12} \\ \eigvecs_{22}}
+\]</span> where we take <span class="math inline">\(\eigvecs_{ji}\)</span> to mean the <em>j</em>th component of the <em>i</em>th mode shape. In short, <span class="math inline">\(\eigvecs_{ji}\)</span> is the relative amplitude at generalized coordinate <em>j</em> while the system moves in mode <em>i</em>. For <span class="math inline">\(\freq_1^2\)</span>, the eigenvalue equation is given by <span class="math display">\[
+\left(\begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} - \freq_1^2 \begin{bmatrix} m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right) \eigveci{1} = \begin{bmatrix}3k - (2-\sqrt{2})k &amp; -k \\ -k &amp; k - (2-\sqrt{2})k \end{bmatrix} \colmat{\eigvecs_{11} \\ \eigvecs_{21}} = \zerocol
+\]</span> which seemingly yields two equations as <span class="math display">\[
+(1+\sqrt{2}) \eigvecs_{11} - \eigvecs_{21} = 0, \quad \eigvecs_{11} - (1 -\sqrt{2}) \eigvecs_{21} = 0
+\]</span> but these two equations are in fact one and the same: <span class="math display">\[
+\eigvecs_{21} = 2.414 \eigvecs_{11}
+\]</span> How do we determine two unknowns with one equation? We can’t. Mathematically this result is to be expected since, for the eigenvalue problem to work out, <span class="math inline">\(\eigvec\)</span> must lie in the null space of the rank deficient coefficient matrix <span class="math inline">\((\kmat-\freq^2 \mmat)\)</span>; consequently, if some <span class="math inline">\(\eigvec\)</span> satisfies <span class="math inline">\((\kmat-\freq^2 \mmat)\eigvec=\zerocol\)</span>, then so does <span class="math inline">\(a\eigvec\)</span> where <span class="math inline">\(a\)</span> is an arbitrary multiplier. Does this make sense physically? Think about it this way: What we have determined is the <em>relative shape</em> the system maintains as it moves with a certain frequency, but the absolute amplitude of motion should depend on the initial conditions (e.g.&nbsp;how large is the initial perturbation?). We have not considered such information yet and it will have to wait until we discuss the initiation of motion. Until then, we have to be satisfied with only the relative ratios of what will occur along the generalized coordinates. We may therefore choose to represent the relative amplitudes according to any particular scaling at this point. We may, for example, assign a magnitude of one to a particular generalized coordinate; say we assign <span class="math inline">\(\eigvecs_{11}=1\)</span>, in which case we have <span class="math display">\[
+\eigveci{1}=\colmat{1 \\ 2.414}
+\]</span> Alternatively we may adjust the values of the coefficients so that the mode shape has unit magnitude, i.e.&nbsp;<span class="math inline">\({\eigveci{1}^T}\eigveci{1}=1\)</span>, in which case we would have <span class="math display">\[
+\eigveci{1}=\colmat{0.383 \\ 0.924}
+\]</span> Both of these choices are fine in that the actual response that we will observe as the system oscillates with the fundamental frequency will be given by <span class="math display">\[
+\gctvec = A_1 \eigveci{1} \cosp{\freq_1 t - \phs_1}
+\]</span> where, depending on the particular scaling we choose, the coefficient <span class="math inline">\(A_1\)</span> may take on different values, but at the end all choices will yield the same <span class="math inline">\(\gctvec\)</span>.</p>
+<div id="fig-dof2shearbldgms" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2shearbldgms.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.3: Mode shapes of the two story shear building.</figcaption><p></p>
+</figure>
+</div>
+<p>There is also a second frequency with which harmonic motion is possible. The mode shape corresponding to <span class="math inline">\(\freq_2\)</span> is prescribed by <span class="math display">\[
+\left(\begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} - \freq_2^2 \begin{bmatrix} m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right) \eigveci{2} = \begin{bmatrix}3k - (2+\sqrt{2})k &amp; -k \\ -k &amp; k - (2+\sqrt{2})k \end{bmatrix} \colmat{\eigvecs_{12} \\ \eigvecs_{22}} = \zerocol
+\]</span> which yields the following relationship: <span class="math display">\[
+\eigvecs_{22} = -0.414 \eigvecs_{12}
+\]</span> If we again assign a unit amplitude to the first generalized coordinate, we have <span class="math display">\[
+\eigveci{2}=\colmat{1 \\ -0.414}
+\]</span> Finally as there are two possibilities of harmonic motion, the general solution is the superposition the two, giving as the final answer the following expression for our example of the two story shear building: <span id="eq-dof2modsol"><span class="math display">\[
+\gctvec = A_1 \eigveci{1} \cosp{\freq_1 t - \phs_1} + A_2 \eigveci{2} \cosp{\freq_2 t - \phs_2}
+\qquad(7.8)\]</span></span> Before we move on, it is worthwhile to visualize the mode shapes for such a structure, schematically sketched in <a href="#fig-dof2shearbldgms">Figure&nbsp;<span>7.3</span></a>. In the fundamental mode, the relative movements of the masses are such that the building sways to one side as a whole. The second mode, on the other hand, comprises movement of masses in opposite directions, with one sign change or one cross-over. We’ll see in numerous cases that such modal motions are typical of many similar systems, with number of crossovers increasing with increasing mode numbers and the fundamental mode comprising a unidirectional movement.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The more commonly encountered version is the <em>eigenvalue problem</em> expressed as <span class="math inline">\(\lambda \nvec{x} = \mtrx{A} \nvec{x}\)</span>. Eigenvalue problems are so common and important in mathematical physics that there are extremely efficient and well-established algorithms available in computing platforms. We therefore will not delve into how this problem is solved numerically.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="orthogonality-of-modes" class="level2" data-number="7.2">
+<h2 data-number="7.2" data-anchor-id="orthogonality-of-modes"><span class="header-section-number">7.2</span> Orthogonality of Modes</h2>
+<p>A property known as orthogonality of the mode shapes leads to a very well-known and extremely useful analyses tool for MDOF systems. To demonstrate this property, let us assume we have an <em>n</em>-DOF system with symmetric <span class="math inline">\(\mmat\)</span> and <span class="math inline">\(\kmat\)</span>, with frequencies <span class="math inline">\(\freq_i\)</span> and mode shapes <span class="math inline">\(\eigveci{i}\)</span> for <span class="math inline">\(i=1,2,\ldots,n\)</span>. For ease of proof let us further consider the case with no repeated roots so that <span class="math inline">\(\freq_i \neq \freq_j\)</span> for <span class="math inline">\(i \neq j\)</span>; in structural dynamics this is almost always the case except when there is perfect symmetry so that the structure has identical periods in two directions but even in such cases the following conclusions will hold.</p>
+<p>For such a system, the eigenvalue problem for two different modes, modes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, will be given by the following equations: <span id="eq-eigmodei"><span class="math display">\[
+\kmat\eigveci{i} = \freq_i^2 \mmat \eigveci{i}
+\qquad(7.9)\]</span></span> <span id="eq-eigmodej"><span class="math display">\[\kmat\eigveci{j} = \freq_j^2 \mmat \eigveci{j}
+\qquad(7.10)\]</span></span> If we pre-multiply <a href="#eq-eigmodei">Equation&nbsp;<span>7.9</span></a> by <span class="math inline">\(\eigveci{j}^T\)</span> and <a href="#eq-eigmodej">Equation&nbsp;<span>7.10</span></a> by <span class="math inline">\(\teigveci{i}\)</span>, we obtain: <span id="eq-eigmodeij"><span class="math display">\[
+\eigveci{j}^T \kmat\eigveci{i} = \eigveci{j}^T \freq_i^2 \mmat \eigveci{i}
+\qquad(7.11)\]</span></span> <span id="eq-eigmodeji"><span class="math display">\[
+\teigveci{i} \kmat\eigveci{j} = \freq_j^2 \teigveci{i}  \mmat \eigveci{j}
+\qquad(7.12)\]</span></span> Since the mass and stiffness matrices are symmetric, the transpose of <a href="#eq-eigmodeji">Equation&nbsp;<span>7.12</span></a> yields <span id="eq-eigmodejiT"><span class="math display">\[
+(\teigveci{i} \kmat\eigveci{j})^T = \eigveci{j}^T \kmat^T\eigveci{i} = \eigveci{j}^T \kmat \eigveci{i} = \freq_j^2 \eigveci{j}^T  \mmat \eigveci{i}
+\qquad(7.13)\]</span></span> so that the difference of <a href="#eq-eigmodeij">Equation&nbsp;<span>7.11</span></a> and <a href="#eq-eigmodejiT">Equation&nbsp;<span>7.13</span></a> leads to: <span id="eq-eigmodeijdif"><span class="math display">\[
+0 = (\freq_i^2 - \freq_j^2) \eigveci{j}^T  \mmat \eigveci{i}
+\qquad(7.14)\]</span></span> The equality in <a href="#eq-eigmodeijdif">Equation&nbsp;<span>7.14</span></a> demands that either <span class="math inline">\((\freq_i^2 - \freq_j^2)=0\)</span> or <span class="math inline">\(\eigveci{j}^T \mmat \eigveci{i}=0\)</span>; but if there are no repeated roots, <span class="math inline">\(\freq_i^2 - \freq_j^2 \neq 0\)</span> and so it must be true that <span id="eq-massort"><span class="math display">\[
+\eigveci{j}^T  \mmat \eigveci{i} = 0
+\qquad(7.15)\]</span></span> whenever <span class="math inline">\(i \neq j\)</span>. This condition also implies by the eigenvalue equation that <span id="eq-stiffort"><span class="math display">\[
+\eigveci{j}^T  \kmat \eigveci{i} = 0 \quad \text{for } i\neq j.
+\qquad(7.16)\]</span></span> When <span class="math inline">\(i=j\)</span>, on the other hand, these products may yield nonzero values. Let us denote those values by <span id="eq-modalmk"><span class="math display">\[
+\teigveci{i}  \mmat \eigveci{i} = \modm_i, \quad \teigveci{i}  \kmat \eigveci{i} = \modk_i
+\qquad(7.17)\]</span></span> where <span class="math inline">\(\modm_i\)</span> is called the modal mass and <span class="math inline">\(\modk_i\)</span> the modal stiffness for the <em>i</em>-th mode. The orthogonality conditions are generally expressed more concisely via the Kronecker-<span class="math inline">\(\delta\)</span> <span class="math inline">\(\delta_{ij}\)</span> defined as <span class="math display">\[
+\delta_{ij} = \begin{cases}1 &amp; i=j \\ 0 &amp; i \neq j \end{cases}
+\]</span> so that modal orthogonality may be simply written as follows: <span id="eq-ortfinal"><span class="math display">\[
+\eigveci{j}^T  \mmat \eigveci{i} = \modm_i \delta_{ij}, \quad \eigveci{j}^T  \kmat \eigveci{i} = \modk_i \delta_{ij}
+\qquad(7.18)\]</span></span> It is important to note that these relations imply a formulation to calculate the frequencies. Considering the eigenvalue equation for the <em>i</em>-th mode and premultiplying it with <span class="math inline">\(\teigveci{i}\)</span> we have <span id="eq-ortfreq"><span class="math display">\[
+\teigveci{i} \kmat\eigveci{i} = \freq_i^2 \teigveci{i} \mmat \eigveci{i} \rightarrow \freq_i^2 = \ratio{\teigveci{i} \kmat\eigveci{i}}{\teigveci{i} \mmat\eigveci{i}} = \ratio{\modk_i}{\modm_i}
+\qquad(7.19)\]</span></span> The particular values of the modal masses and stiffnesses will naturally depend on the particular scaling chosen for the mode shapes. Consider for example the two story shear building of <a href="#fig-dof2shearbldg">Figure&nbsp;<span>7.2</span></a> discussed previously, with the mass and stiffness matrices given by <span class="math display">\[
+\mmat = \begin{bmatrix} m &amp; 0 \\ 0 &amp; m \end{bmatrix}, \quad \kmat = \begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix}  
+\]</span> One option that was considered was to scale the mode shapes so that the amplitude corresponding to the first generalized coordinate was of unit magnitude, leading to <span class="math display">\[
+\eigveci{1}=\colmat{1 \\ 2.414}, \quad \eigveci{2}=\colmat{1 \\ -0.414}
+\]</span> With these mode shapes, <a href="#eq-ortfinal">Equation&nbsp;<span>7.18</span></a> yields <span class="math display">\[
+\modm_1 = \eigveci{1}^T \mmat \eigveci{1} = 6.83 m, \quad \modm_2 = \eigveci{2}^T \mmat \eigveci{2} = 1.17 m, \quad \eigveci{1}^T \mmat \eigveci{2} = 0
+\]</span> and <span class="math display">\[
+\modk_1 = \eigveci{1}^T \kmat \eigveci{1} = 4 k, \quad \modk_2 = \eigveci{2}^T \kmat \eigveci{2} = 4k, \quad \eigveci{1}^T \kmat \eigveci{2} = 0
+\]</span> One way to check the algebra is to make sure that the modal masses and stiffness lead to the calculated frequencies: <span class="math display">\[
+\ratio{\modk_1}{\modm_1} = 0.586 \frac{k}{m} = \freq_1^2, \quad \ratio{\modk_2}{\modm_2} = 3.41 \frac{k}{m} = \freq_2^2
+\]</span> An alternative scaling for the first mode shape was also considered subject to <span class="math inline">\(\eigveci{1}^T\eigveci{1} = 1\)</span> in which case the mode shapes were given by <span class="math display">\[
+\eigveci{1}=\colmat{0.383 \\ 0.924}, \quad \eigveci{2}=\colmat{1 \\ -0.414}
+\]</span> so that with these mode shapes, the orthogonality conditions would in this case yield <span class="math display">\[
+\modm_1 = \eigveci{1}^T \mmat \eigveci{1} = m, \quad \modm_2 = \eigveci{2}^T \mmat \eigveci{2} = 1.17 m, \quad \eigveci{1}^T \mmat \eigveci{2} = 0
+\]</span> and <span class="math display">\[
+\modk_1 = \eigveci{1}^T \kmat \eigveci{1} = 0.586 k, \quad \modk_2 = \eigveci{2}^T \kmat \eigveci{2} = 4k, \quad \eigveci{1}^T \kmat \eigveci{2} = 0
+\]</span> and once again we have <span class="math display">\[
+\ratio{\modk_1}{\modm_1} = 0.586 \frac{k}{m} = \freq_1^2, \quad \ratio{\modk_2}{\modm_2} = 3.41 \frac{k}{m} = \freq_2^2
+\]</span> as we should. If the mode shapes are scaled so that the modal masses are equal to <span class="math inline">\(1\)</span>, then the mode shapes are said to be <em>mass normalized</em>. Recall that scaling of a mode shape is essentially multiplying it with a non-zero scalar. If <span class="math inline">\(\eigveci{i}\)</span> is the arbitrarily scaled mode shape for the <span class="math inline">\(i\)</span>-th mode, the mass normalized mode shape <span class="math inline">\(\meigveci{i}\)</span> for that mode is related to <span class="math inline">\(\eigveci{i}\)</span> through <span class="math inline">\(\meigveci{i}=s_i \eigveci{i}\)</span> where <span class="math inline">\(s_i\)</span> is some scalar. To find out what it should be, we can use the condition that mass normalized mode shapes should lead to unit modal masses, so that <span id="eq-massnormcoef"><span class="math display">\[
+\meigveci{i}^T \mmat \meigveci{i} = 1 = s_i^2 \teigveci{i} \mmat  \eigveci{i} = s_i^2 \modm_i \quad \rightarrow \quad s_i = \ratio{1}{\sqrt{\modm_i}}
+\qquad(7.20)\]</span></span> Our aim is to introduce the terminology of mass normalized mode shapes and to show how they can be constructed. From now on we will refrain from introducing a special symbol for mass normalized mode shapes in an effort to curb symbolic overcrowding and simply state, if necessary, whether a particular mode shape is mass normalized.<br>
+Finally, we should note that the eigenvalue problem may be collectively stated for all the modes with a relatively simple matrix notation. Collecting the eigenvalue equation for each mode in consecutive columns we get <span class="math display">\[
+\left[ \kmat \eigveci{1} \; \kmat \eigveci{2} \; \cdots \; \kmat \eigveci{n} \right] = \left[ \mmat \eigveci{1} \freq_1^2 \; \kmat \eigveci{2} \freq_2^2 \; \cdots \; \kmat \eigveci{n}\freq_n^2 \right]
+\]</span> which may also be written as <span class="math display">\[
+\kmat \left[ \eigveci{1} \; \eigveci{2} \; \cdots \; \eigveci{n}\right] = \mmat \left[ \eigveci{1} \; \eigveci{2} \; \cdots \; \eigveci{n}\right] \begin{bmatrix} \freq_1^2 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \freq_2^2 &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \cdots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; \freq_{n-1}^2 &amp; 0\\ 0 &amp; 0 &amp; 0 &amp; \cdots &amp; \freq_n^2\end{bmatrix}
+\]</span> Defining the <em>mode shape matrix</em> (or the <em>modal matrix</em> as it is referred to in linear algebra) <span class="math inline">\(\modmat\)</span> as <span class="math display">\[
+\modmat = \left[ \eigveci{1} \; \eigveci{2} \; \cdots \; \eigveci{n}\right]
+\]</span> and the diagonal <em>spectral matrix</em> <span class="math inline">\(\spectmat\)</span> as <span class="math display">\[
+\spectmat = \begin{bmatrix} \freq_1^2 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \freq_2^2 &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \cdots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; \freq_{n-1}^2 &amp; 0\\ 0 &amp; 0 &amp; \cdots &amp; 0 &amp; \freq_n^2\end{bmatrix}
+\]</span> the eigenvalue problem may be collectively expressed as <span id="eq-spectral"><span class="math display">\[
+\kmat \modmat = \mmat \modmat \spectmat
+\qquad(7.21)\]</span></span> Furthermore, the orthogonality conditions may now be expressed as <span class="math display">\[
+\modmat^T \mmat \modmat = \begin{bmatrix} \modm_1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \modm_2 &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \cdots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; \modm_{n-1} &amp; 0\\ 0 &amp; 0 &amp; 0 &amp; \cdots &amp; \modm_n\end{bmatrix} = \modmmat, \quad \modmat^T \kmat \modmat = \begin{bmatrix} \modk_1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \modk_2 &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \cdots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; \modk_{n-1} &amp; 0\\ 0 &amp; 0 &amp; 0 &amp; \cdots &amp; \modk_n\end{bmatrix} = \modkmat
+\]</span> where the diagonal matrices <span class="math inline">\(\modmmat\)</span> and <span class="math inline">\(\modkmat\)</span> are called the <em>modal mass matrix</em> and the <em>modal stiffness matrix</em>, respectively.</p>
+</section>
+<section id="coordinate-transformations-and-the-eigenvalue-problem" class="level2" data-number="7.3">
+<h2 data-number="7.3" data-anchor-id="coordinate-transformations-and-the-eigenvalue-problem"><span class="header-section-number">7.3</span> Coordinate Transformations and the Eigenvalue Problem</h2>
+<p>Do coordinate transformations affect frequencies and mode shapes? The answer is probably relatively easy to reason: frequencies characterize how fast the harmonic motions of the whole system take place and therefore they should not depend on which coordinates are used to describe the motion; mode shapes, on the other hand, depict what the system looks like so that different coordinates may require different coefficients to specify the shape of the system. How shall we approach this issue mathematically? Consider two sets of generalized coordinates, <span class="math inline">\(\gcvec\)</span> and <span class="math inline">\(\gcvec'\)</span>, both of which may be used to define the dynamics of a system. Assume these two coordinate sets are related through <span class="math display">\[
+\gcvec = \mtrx{T} \gcvec'
+\]</span> with the eigenvalue problem in <span class="math inline">\(\gcvec\)</span> coordinates given by: <span class="math display">\[
+(\kmat -\freq^2 \mmat) \eigvec = \zerocol
+\]</span> Remembering that <span class="math inline">\(\matabs{\mtrx{A}\mtrx{B}\mtrx{C}}=\matabs{\mtrx{A}}\matabs{\mtrx{B}}\matabs{\mtrx{C}}\)</span>, we note that the characteristic equation <span class="math display">\[
+\matabs{\kmat -\freq^2 \mmat} = 0
+\]</span> will have the same roots as <span class="math display">\[
+\matabs{\mtrx{T}^{-T}\mtrx{T}^{T}(\kmat -\freq^2 \mmat)\mtrx{T}\mtrx{T}^{-1}}=0
+\]</span> since <span class="math inline">\(\mtrx{T}\mtrx{T}^{-1}=\mtrx{T}^{-T}\mtrx{T}^{T}=\idmat\)</span> where <span class="math inline">\(\idmat\)</span> is the identity matrix (the determinant of which is equal to 1) and <span class="math inline">\(\mtrx{T}^{-T}\)</span> is the inverse of <span class="math inline">\(\mtrx{T}^{T}\)</span>. Proceeding with this line of inquiry, we have <span class="math display">\[
+\mtrx{T}^{-T} (\mtrx{T}^{T}\kmat\mtrx{T} -\freq^2 \mtrx{T}^{T}\mmat\mtrx{T}) \mtrx{T}^{-1}\eigvec = \mtrx{T}^{-T} (\barkmat -\freq^2 \barmmat) \mtrx{T}^{-1}\eigvec = \zerocol
+\]</span> which implies <span id="eq-coordtranseig1"><span class="math display">\[
+\mtrx{T}^{-T} (\barkmat -\freq^2 \barmmat) \mtrx{T}^{-1}\eigvec = \zerocol \quad \rightarrow \quad (\barkmat -\freq^2 \barmmat) \mtrx{T}^{-1}\eigvec = \zerocol
+\qquad(7.22)\]</span></span> since <span class="math inline">\(\mtrx{T}^{-T} \neq \zeromat\)</span>. Noting that the eigenvalue problem in the transformed coordinates would be given by, <span id="eq-coordtranseig2"><span class="math display">\[
+(\barkmat -(\freq')^2 \barmmat) \eigvec' = \zerocol
+\qquad(7.23)\]</span></span> we conclude, by comparing <a href="#eq-coordtranseig1">Equation&nbsp;<span>7.22</span></a> and <a href="#eq-coordtranseig2">Equation&nbsp;<span>7.23</span></a>, that <span class="math display">\[
+(\freq')^2 = \freq^2
+\]</span> and hence the eigenvalues are unique; i.e., the values of the frequencies of a system are independent of the generalized coordinates employed in writing the equations of motion. It also follows by comparison that <span class="math display">\[
+\eigvec' = \mtrx{T}^{-1}\eigvec
+\]</span> so that in general the mode shapes in the transformed coordinates will be different than those in the original coordinate as we had foreseen.</p>
+</section>
+<section id="modal-analysis-of-free-vibrations" class="level2" data-number="7.4">
+<h2 data-number="7.4" data-anchor-id="modal-analysis-of-free-vibrations"><span class="header-section-number">7.4</span> Modal Analysis of Free Vibrations</h2>
+<p>As in the SDOF case, free vibrations in the context of MDOF systems refers to motion that takes place due to some initial perturbation from the system’s original equilibrium configuration, with no other external disturbance present. Let’s first consider an undamped system subjected to a set of initial displacements and velocities at time <span class="math inline">\(t=0\)</span>: <span class="math display">\[
+\mmat \ddgctvec + \kmat \gctvec = \zerocol, \quad \{\gcvec (0) = \gcvecic, \dgcvec (0) = \dgcvecic\}
+\]</span> where <span class="math display">\[
+\gcvecic = \colmat{\gc_{1o} \\ \gc_{2o} \\ \vdots \\ \gc_{no}}, \quad \dgcvecic = \colmat{\dgc_{1o} \\ \dgc_{2o} \\ \vdots \\ \dgc_{no}}
+\]</span> are the generalized coordinate and generalized velocity vectors (column matrices), respectively, at time <span class="math inline">\(t=0\)</span>; we will refer to these two collectively as the initial conditions for the MDOF system. Since this matrix equation is a coupled set of equations, coming up with solutions simultaneously for all generalized coordinates directly is not an easy feat and in most cases simply not feasible. One way to approach this problem is to inquire if there is any way we can decouple the <span class="math inline">\(n\)</span> equations of motion describing our system. Let’s imagine an alternative set of coordinates, <span class="math display">\[
+\modcorvec (t) = \begin{bmatrix} \modcor_1(t) \\ \modcor_2(t) \\ \vdots \\ \modcor_N(t) \end{bmatrix}
+\]</span> such that if the equations were to be written in these coordinates, the mass and stiffness matrices would all become perfectly diagonal. In that case, the first equation would only involve terms with <span class="math inline">\(\modcor_1\)</span> and <span class="math inline">\(\ddmodcor_1\)</span>, the second equation with <span class="math inline">\(\modcor_2\)</span> and <span class="math inline">\(\ddmodcor_2\)</span>, and so forth. If this were possible, one would essentially have <span class="math inline">\(n\)</span>-many uncoupled single degree of freedom systems, each of which would execute simple harmonic motions due to their initial conditions. We have implicitly solved this problem when we derived the eigenvalue problem. Recall that we had asked if it were possible for an MDOF system to execute simple harmonic motion, and the answer we got was that the system had certain frequencies and mode shapes with which it indeed could execute such motion. Furthermore we also showed that these mode shapes were orthogonal in that <span class="math display">\[
+\modmat^T \mmat \modmat = \modmmat, \quad \modmat^T \kmat \modmat = \modkmat
+\]</span> where <span class="math inline">\(\modmmat\)</span> and <span class="math inline">\(\modkmat\)</span> were diagonal matrices! If we recall the coordinate transformation rules given by <a href="multidof.html#eq-coordtrans4">Equation&nbsp;<span>6.20</span></a>, we may guess where this discussion is going. Let us define a set of coordinates <span class="math inline">\(\modcorvec (t)\)</span> such that <span class="math display">\[
+\gctvec = \modmat \modcorvec (t)
+\]</span> The equations of motion when transformed to these coordinates would yield <span class="math display">\[
+\modmat^T \mmat \modmat \ddmodcorvec (t) + \modmat^T \kmat \modmat \modcorvec (t) = \modmmat \ddmodcorvec (t) + \modkmat \modcorvec (t) = \zerocol, \quad \{\modcorvec (0) = \modcorvecic, \dmodcorvec (0) = \dmodcorvecic\}
+\]</span> where <span class="math display">\[
+\modcorvecic = \colmat{\modcor_{1o} \\ \modcor_{2o} \\ \vdots \\ \modcor_{no}}, \quad \dmodcorvecic = \colmat{\dmodcor_{1o} \\ \dmodcor_{2o} \\ \vdots \\ \dmodcor_{no}},
+\]</span> are the initial conditions in the <span class="math inline">\(\modcorvec\)</span> coordinates. These will have to be calculated via the initial conditions in the <span class="math inline">\(\gcvec\)</span> coordinates: since the two sets of coordinates are related through the same transformation at all times, we have <span class="math display">\[
+\gcvecic = \modmat \modcorvecic \; \rightarrow \; \modcorvecic = \modmat^{-1} \gcvecic
+\]</span> and <span class="math display">\[
+\dgcvecic = \modmat \dmodcorvecic \; \rightarrow \; \dmodcorvecic = \modmat^{-1} \dgcvecic
+\]</span> Calculating the initial conditions via matrix inversion is costly, especially if the dimensions are large; furthermore, it may be that we are interested in only a handful of coordinates <span class="math inline">\(\modcor_i\)</span> (for reasons that will be soon discussed), for which evaluating the whole set by inverting the mode shape matrix is too inefficient. Instead we may proceed as follows: the orthogonality of the mode shapes lead to <span class="math display">\[\begin{align*}
+\teigveci{i} \mmat \gcvecic &amp; = \teigveci{i} \mmat \modmat \modcorvecic \\
+&amp; = \colmat{\teigveci{i} \mmat \eigveci{1}^T \;\; \teigveci{i} \mmat \eigveci{2} \;\; \cdots \;\; \teigveci{i} \mmat \teigveci{i} \;\; \cdots \;\; \teigveci{i} \mmat \eigveci{n}} \modcorvecic \\
+&amp; = \colmat{0 \;\; 0 \;\; \cdots \;\; \modm_{i} \;\; \cdots \;\; 0} \modcorvecic\\
+\teigveci{i} \mmat \gcvecic &amp; = \modm_i \modcor_{io}
+\end{align*}\]</span> so that <span id="eq-modic1"><span class="math display">\[
+\modcor_{io} = \ratio{\teigveci{i} \mmat \gcvecic}{\modm_i}
+\qquad(7.24)\]</span></span> and similarly, <span id="eq-modic2"><span class="math display">\[
+\dmodcor_{io} = \ratio{\teigveci{i} \mmat \dgcvecic}{\modm_i}
+\qquad(7.25)\]</span></span> Both these equations may be collectively written for all modal coordinates via matrix notation as <span id="eq-modicmat"><span class="math display">\[
+\modcorvecic = \modmmat^{-1} \modmat^{T} \mmat \gcvecic, \quad \dmodcorvecic = \modmmat^{-1} \modmat^{T} \mmat \dgcvecic
+\qquad(7.26)\]</span></span> This looks like a lot of work compared to a one-step matrix inversion but we must remember that with increasing dimensions, matrix multiplication becomes much less costly compared to matrix inversions (since the modal mass matrix is diagonal, its inversion is trivial). Keeping in mind that the mass matrix is frequently diagonal, the approach summarized above, which also allows for picking specific subsets, turns out to be quite an efficient way to calculate the initial conditions in the transformed coordinates.</p>
+<p>In any case, this is the brief summary of what happened so far: we aim to solve for the free vibration response of an MDOF system, governed by <span id="eq-eomudfree"><span class="math display">\[
+\mmat \ddgctvec + \kmat \gctvec = \zerocol \, ; \quad \{\gcvec (0) = \gcvecic, \dgcvec (0) = \dgcvecic\}
+\qquad(7.27)\]</span></span> and we attempt the solution via the transformation <span id="eq-modtrans"><span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t)
+\qquad(7.28)\]</span></span> with the governing equations in the new coordinates given by <span id="eq-modeomud"><span class="math display">\[
+\modmmat \ddmodcorvec (t) + \modkmat \modcorvec (t) = \zerocol \, ; \quad \{\modcorvec (0) = \modcorvecic, \dmodcorvec (0) = \dmodcorvecic\}
+\qquad(7.29)\]</span></span> It may be better to introduce some terminology to reduce the burden of keeping track of which coordinates are which. When we initially write the equations of motion, the generalized coordinates that we employ almost always have a physical correspondence; for example, a generalized coordinate may be the displacement of a particular point or a rotation of a rigid body about a particular axis. Therefore we will call the initial set of generalized coordinates <span class="math inline">\(\gcvec\)</span> that we use to derive the governing equations of motion the <em>physical coordinates</em>. In contrast, the transformation of <a href="#eq-modtrans">Equation&nbsp;<span>7.28</span></a> relates these physical coordinates to a set of coordinates that have no direct physical correspondence; the <span class="math inline">\(\modcorvec\)</span> coordinates are essentially a set of abstract variables which help us uncouple the initial set of equations. We will refer to this set of coordinates which are related to the physical coordinates via the mode shape matrix the <em>modal coordinates</em>.</p>
+<p>We already discussed that the mass and stiffness matrices in the modal coordinates are diagonal by virtue of mode shape orthogonality conditions. The set of equations of <a href="#eq-modeomud">Equation&nbsp;<span>7.29</span></a> are therefore <span class="math inline">\(n\)</span> uncoupled equations, each of the form: <span class="math display">\[
+\modm_i \ddmodcor_i (t) + \modk_i \modcor_i (t) = 0 \, ; \quad \{\modcor_i (0) = \modcor_{io}, \dmodcor_i (0) = \dmodcor_{io} \}
+\]</span> So by transforming to modal coordinates, we have converted our <span class="math inline">\(n\)</span>-DOF system to <span class="math inline">\(n\)</span> uncoupled SDOF systems! The good news is that we have solved the SDOF problem before: the free vibration response of an undamped SDOF system is given by <a href="singledof.html#eq-eomsdofsol4">Equation&nbsp;<span>2.11</span></a> or equivalently by <a href="singledof.html#eq-eomsdofsol5b">Equation&nbsp;<span>2.14</span></a>, which may be written for the <span class="math inline">\(i\)</span>-th modal coordinate as <span id="eq-modsolfreevib"><span class="math display">\[
+\modcor_i (t) = \modcor_{io} \cosp{\freq_i t} + \frac{\dmodcor_{io}}{\freq_i} \sinp{\freq_i t} = \modcoramp_i \cosp{\freq_i t - \phs_i}
+\qquad(7.30)\]</span></span> where <span id="eq-modsolfreevibampphs"><span class="math display">\[
+\freq_i = \sqrt{\ratio{\modk_i}{\modm_i}}, \quad \modcoramp_i = \sqrt{\modcor_{io}^2 + \left(\frac{\dmodcor_{io}}{\freq_i}\right)^2}, \quad \tan \phs_i = \frac{\left(\dmodcor_{io}/{\freq_i}\right)/\modcoramp_i}{\modcor_{io}/\modcoramp_i}
+\qquad(7.31)\]</span></span> We are not done yet. What we want is the response of the system in physical coordinates, i.e.&nbsp;the solution to the original set of equations of <a href="#eq-eomudfree">Equation&nbsp;<span>7.27</span></a>. Hence we must transform back to the physical coordinates via <span id="eq-modtophys"><span class="math display">\[
+\begin{array}{rcl}
+\gcvec (t) &amp; \!\!\! = &amp; \!\!\! \modmat \modcorvec (t) = \eigveci{1} \modcor_1 (t) + \eigveci{2} \modcor_2 (t) + \cdots + \eigveci{n} \modcor_n (t) \\
+&amp; \!\!\! = &amp; \!\!\! \modcoramp_1 \eigveci{1} \cosp{\freq_1 t - \phs_1}+ \modcoramp_2 \eigveci{2} \cosp{\freq_2 t - \phs_2} + \cdots + \modcoramp_n \eigveci{n} \cosp{\freq_n t - \phs_n}
+\end{array}
+\qquad(7.32)\]</span></span> and we should note that the solution in <a href="#eq-modtophys">Equation&nbsp;<span>7.32</span></a> is essentially the same (except for the number of modes involved) as the one we obtained at first when we were seeking the possibility of harmonic motion, i.e. <a href="#eq-dof2modsol">Equation&nbsp;<span>7.8</span></a>.</p>
+<p>The expansion <span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t) =  \sum_{i=1}^{n} \eigveci{i} \modcor_{i} (t)
+\]</span> is generally referred to as the <em>modal expansion</em>. This equation provides a particular interpretation of the response as being the superposition of some variables which are in some sense independent, this said independence being related to the orthogonality of the mode shapes. Consider, for example, what would happen if the system were to be set in motion via an initial displacement pattern that looked like one of the mode shapes, say the <span class="math inline">\(j\)</span>th mode shape; i.e.&nbsp;consider the following initial conditions: <span class="math display">\[
+\gcvecic = \epsilon \eigveci{j}, \; \dgcvecic = \zerocol
+\]</span> where <span class="math inline">\(\epsilon\)</span> is a non-zero real number. The initial conditions in modal coordinates are then given by <span class="math display">\[
+\modcor_{io} = \ratio{\teigveci{i} \mmat \gcvecic}{\modm_i} = \ratio{\teigveci{i} \mmat \epsilon \eigveci{j}}{\modm_i} = \epsilon \delta_{ij}
+\]</span> since <span class="math inline">\(\teigveci{i} \mmat \eigveci{j} = \modm_{i} \delta_{ij}\)</span> due to the orthogonality conditions. The initial velocities in modal coordinates, i.e.&nbsp;<span class="math inline">\(\modcorvecic\)</span>, are zero since all initial velocities in physical coordinates are zero. Therefore, when the initial displacements are a scaled version of the <span class="math inline">\(j\)</span>th mode shape, the only non-zero response comes from the <span class="math inline">\(j\)</span>th modal coordinate, and it is given by <span class="math display">\[
+\modcor_{j} (t) = \epsilon \cosp{\freq_j t}
+\]</span> with all other <span class="math inline">\(\modcor_{i} (t) \equiv 0\)</span> for <span class="math inline">\(i \neq j\)</span>. The response of the system is then given by <span class="math display">\[
+\gcvec (t) = \sum_{i=1}^{n} \eigveci{i} \modcor_{i} (t) = \epsilon \eigveci{j} \cosp{\freq_j t}
+\]</span> This result is important and it is worthwhile to state it again in plain language: if an MDOF system is set in motion by an initial perturbation that coincides with one of the mode shapes of the system, then the system will oscillate with only the frequency of that particular mode to which that mode shape belongs. No other mode will contribute to the response. It is yet speculative but somewhat foreseeable that if an initial displacement pattern does not fully comply with a particular mode shape but mostly resembles it, than the biggest contribution to the response may be expected to come from that particular mode, with smaller but possibly non-zero contributions from the others. This pattern we shall demonstrate through some examples.</p>
+<section id="sec-mdofxo" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdofxo">EXAMPLE 7 .1</h4>
+<div id="fig-xdof2mkfree" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof2mkfree.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.4: Two DOF system subject to free-vibration.</figcaption><p></p>
+</figure>
+</div>
+<p>Consider a 2-DOF system with masses and spring constants defined as shown in <a href="#fig-xdof2mkfree">Figure&nbsp;<span>7.4</span></a>. We would like to calculate its free vibration response to initial conditions <span class="math display">\[
+\gcvec (0) = \colmat{Q/2\\ Q} = Q \colmat{1/2\\ 1}, \; \dgcvec(0) = \colmat{0 \\ 0}
+\]</span> We first have to derive the governing equations of motion. Say we use the Lagrangian approach to construct the mass and stiffness matrices. The kinetic and potential energies are given by <span class="math display">\[
+\ke = \frac{1}{2} 2m \dgc_1^2 + \frac{1}{2} m \dgc_2^2, \quad \pe = \frac{1}{2} 2k \gc_1^2 + \frac{1}{2} k (\gc_2 - \gc_1)^2
+\]</span> so that, by <a href="multidof.html#eq-lagrangianmij">Equation&nbsp;<span>6.8</span></a> and <a href="multidof.html#eq-lagrangiankij">Equation&nbsp;<span>6.10</span></a>, <span class="math display">\[
+m_{11} = \ratio{\partial^2 \ke}{\partial \dgc_1 \partial \dgc_1} = 2m, \; m_{22} = \ratio{\partial^2 \ke}{\partial \dgc_2 \partial \dgc_2} = m, \, m_{12} = \ratio{\partial^2 \ke}{\partial \dgc_1 \partial \dgc_2} = 0 = m_{21}
+\]</span> and <span class="math display">\[
+k_{11} = \ratio{\partial^2 \pe}{\partial \gc_1 \partial \gc_1} = 3k, \; k_{22} = \ratio{\partial^2 \pe}{\partial \gc_2 \partial \gc_2} = k, \, k_{12} = \ratio{\partial^2 \pe}{\partial \gc_1 \partial \gc_2} = -k = k_{21}
+\]</span> The equations governing the free vibration are therefore given by <span class="math display">\[
+\begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{\ddgc_1 \\ \ddgc_2} + \begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} \colmat{\gc_1 \\ \gc_2} = \colmat{0 \\ 0}
+\]</span> Next, we find the eigenvalues by solving the characteristic equation that is obtained from <span class="math inline">\(\left|\kmat -\freq^2 \mmat \right|=0\)</span>. The characteristic equation is given by <span class="math display">\[
+\left|\begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} -\freq^2 \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right| = (3k-\freq^2 2m)(k-\freq^2 m)-k^2 = 2m(\freq^2)^2 - 5 k m \freq^2 + 2 k^2= 0
+\]</span> or equivalently by <span class="math display">\[
+(\freq^2)^2 - \frac{5 k}{2 m} \freq^2 + \left(\frac{k}{m}\right)^2 = 0
+\]</span> and therefore the squares of the frequencies are calculated as <span class="math display">\[
+\freq_1^2 = \ratio{1}{2}\ratio{k}{m}, \quad \freq_2^2 = 2 \ratio{k}{m}
+\]</span> The mode shapes are computed by plugging back each eigenvalue into the equation one at a time and solving for the corresponding eigenvector. For the first one we have <span class="math display">\[
+\left[\begin{bmatrix}3k &amp; -k \\ -k &amp; k \end{bmatrix} -\ratio{1}{2}\ratio{k}{m} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right]\colmat{\eigvecs_{11} \\ \eigvecs_{21}} = \colmat{0 \\ 0}
+\]</span> leading to: <span class="math display">\[
+\eigvecs_{21} = 2 \eigvecs_{11}
+\]</span> If per choice we set <span class="math inline">\(\eigvecs_{11} = 1\)</span>, we get <span class="math display">\[
+\eigveci{1} = \colmat{1 \\ 2}
+\]</span> Similarly for the second mode shape we have <span class="math display">\[
+\left[\begin{bmatrix}3k &amp; -k \\ -k &amp; k \end{bmatrix} -2\ratio{k}{m} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix}\right]\colmat{\eigvecs_{12} \\ \eigvecs_{22}} = \colmat{0 \\ 0}
+\]</span> so that <span class="math display">\[
+\eigvecs_{22} = - \eigvecs_{12}
+\]</span> and with <span class="math inline">\(\eigvecs_{12} = 1\)</span> we get <span class="math display">\[
+\eigveci{2} = \colmat{1 \\ -1}
+\]</span> The modal masses with these mode shapes are given by <span class="math display">\[
+\modmmat = \modmat^T \mmat \modmat = \begin{bmatrix} 1 &amp; 2 \\ 1 &amp; -1 \end{bmatrix} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \begin{bmatrix} 1 &amp; 1 \\ 2 &amp; -1 \end{bmatrix} = \begin{bmatrix} 6m &amp; 0 \\ 0 &amp; 3m \end{bmatrix}
+\]</span> and the modal stiffnesses are given by <span class="math display">\[
+\modkmat = \modmat^T \kmat \modmat = \begin{bmatrix} 1 &amp; 2 \\ 1 &amp; -1 \end{bmatrix} \begin{bmatrix} 3k &amp; -k \\ -k &amp; k \end{bmatrix} \begin{bmatrix} 1 &amp; 1 \\ 2 &amp; -1 \end{bmatrix} = \begin{bmatrix} 3k &amp; 0 \\ 0 &amp; 6k
+\end{bmatrix}
+\]</span> whence we can check <span class="math display">\[
+\freq_1^2 = \ratio{\modk_1}{\modm_1}=\ratio{1}{2}\ratio{k}{m}, \quad \freq_2^2 = \ratio{\modk_2}{\modm_2}=2\ratio{k}{m}
+\]</span> If instead we would like to work with mass normalized mode shapes, those we can obtain by scaling the mode shapes above according to <a href="#eq-massnormcoef">Equation&nbsp;<span>7.20</span></a> so that <span class="math display">\[
+\meigveci{1}=\ratio{1}{\sqrt{6m}}\colmat{1 \\ 2}, \quad \meigveci{2}=\ratio{1}{\sqrt{3m}}\colmat{1 \\ -1}
+\]</span> and the modal mass and stiffness matrices in this case would be given by <span class="math display">\[
+\modmmat = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}, \quad \modkmat = \begin{bmatrix} \frac{1}{2}\frac{k}{m} &amp; 0 \\ 0 &amp; 2\frac{k}{m} \end{bmatrix}
+\]</span> Since there is no particular advantage to use mass normalized mode shapes for this system, we will proceed with our original set of mode shapes.</p>
+<p>To solve for the response in modal coordinates, we must find the initial conditions in those coordinates. By <a href="#eq-modic1">Equation&nbsp;<span>7.24</span></a> and <a href="#eq-modic2">Equation&nbsp;<span>7.25</span></a> we have, <span class="math display">\[
+\modcor_{1o} = \frac{1}{\modm_1}\eigveci{1}^T \mmat \gcvecic = \frac{1}{6m} \left\{1 \;\;\; 2\right\} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{Q/2 \\ Q} = \ratio{Q}{2}
+\]</span> and <span class="math display">\[
+\modcor_{2o} = 0, \quad \dmodcor_{1o} = \dmodcor_{2o} = 0
+\]</span> which the reader may easily verify. This result should, of course, be expected as per our discussion preceding this example: the initial condition shape coincides with the first mode in that <span class="math inline">\(\gcvecic = (Q/2) \eigveci{1}\)</span>, and therefore it sets in motion only the corresponding first mode and does not induce any motion in the other mode. The amplitudes and the phase angles in modal coordinates are calculated via <a href="#eq-modsolfreevibampphs">Equation&nbsp;<span>7.31</span></a> to obtain <span class="math display">\[
+\modcoramp_1 = \frac{Q}{2}, \quad \phs_1 = \arctan \ratio{0}{1} = 0, \quad \modcoramp_2 = 0
+\]</span> so that <span class="math display">\[
+\modcor_1 (t) = \ratio{Q}{2} \cosp{\freq_1 t}, \quad \modcor_2 (t) \equiv 0
+\]</span> The response in physical coordinates is then given by <span class="math display">\[
+\gcvec (t) = \colmat{\gc_1 (t) \\ \gc_2 (t)} = \eigveci{1} \modcor_1 (t) + \eigveci{2} \modcor_2 (t) = Q \colmat{1/2 \\ 1} \cosp{\freq_1 t} = \colmat{\frac{Q}{2} \cosp{\freq_1 t} \\ Q \cosp{\freq_1 t}}
+\]</span> The response of the two masses are shown <a href="#fig-xdof2freevibic1">Figure&nbsp;<span>7.5</span></a>, plotted against dimensionless time <span class="math inline">\(\tau = t/\period_1 = (\freq_1 t)/(2 \pi)\)</span>. Due to the given initial conditions both masses move in phase, but the displacement of the first mass is half of that of the second mass.</p>
+<div id="fig-xdof2freevibic1" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof2freevibic1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.5: Free vibration response for the system shown in <a href="#fig-xdof2mkfree">Figure&nbsp;<span>7.4</span></a>, subject to initial conditions <span class="math inline">\(\gcvecic = \left\{Q/2 \;\;\; Q\right\}^T, \;\; \dgcvecic = \zerocol\)</span>. The plots show time histories with respect to normalized time <span class="math inline">\(\tau = t/\period_1\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>What if the system was subjected to some other initial conditions? Consider first what would happen if the initial displacement pattern didn’t exactly match one of the modes but was given by <span class="math display">\[
+\gcvecic = \colmat{2Q/3 \\ Q}, \quad \dgcvecic = \zerocol
+\]</span> Note that the initial displacement pattern still resembles the first mode more than the second one. In this case the initial conditions in modal coordinates will be given by <span class="math display">\[\begin{align*}
+\modcor_{1o} &amp; = \frac{1}{6m} \left\{1 \;\;\; 2\right\} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{2Q/3 \\ Q} = \ratio{5}{9}Q \\  
+\modcor_{2o} &amp; = \frac{1}{3m} \left\{1 \;\;\; -1\right\} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{2Q/3 \\ Q} = \ratio{1}{9}Q
+\end{align*}\]</span> and <span class="math inline">\(\dmodcor_{1o} = \dmodcor_{2o} = 0\)</span>. The modal amplitudes and phase angles will be <span class="math display">\[
+\modcoramp_1 = \frac{5}{9}Q, \quad \phs_1 = \arctan \ratio{0}{1} = 0, \quad \modcoramp_2 = \frac{1}{9}Q, \quad \phs_2 =\arctan \ratio{0}{1} = 0
+\]</span> with the modal responses given by <span class="math display">\[
+\modcor_1 (t) = \ratio{5}{9}Q \cosp{\freq_1 t}, \quad \modcor_2 (t) =\ratio{1}{9}Q \cosp{\freq_2 t}
+\]</span> leading to the following displacement time histories for the two masses: <span class="math display">\[
+\gcvec (t) = \colmat{\gc_1 (t) \\ \gc_2 (t)} = \eigveci{1} \modcor_1 (t) + \eigveci{2} \modcor_2 (t) = \colmat{\frac{5}{9}Q \cosp{\freq_1 t} + \frac{1}{9}Q \cosp{\freq_2 t} \\ \frac{10}{9}Q \cosp{\freq_1 t} - \frac{1}{9}Q \cosp{\freq_2 t}}
+\]</span> In terms of normalized time <span class="math inline">\(\tau = t/\period_1 = (\freq_1 t)/(2 \pi)\)</span>, the responses are given by <span class="math display">\[
+\colmat{\gc_1 (\tau) \\ \gc_2 (\tau)} = \colmat{\frac{5}{9}Q \cosp{2 \pi \tau} + \frac{1}{9}Q \cosp{4 \pi \tau} \\ \frac{10}{9}Q \cosp{2 \pi \tau} - \frac{1}{9}Q \cosp{4 \pi \tau}}
+\]</span> wherein we have incorporated the information that for our system, <span class="math inline">\(\freq_2 = 2 \freq_1\)</span>. These displacement time histories plotted against normalized time <span class="math inline">\(\tau\)</span> are shown in <a href="#fig-xdof2freevibic2">Figure&nbsp;<span>7.6</span></a>. It is noteworthy that even though there is no exact match between the initial displacement pattern and the first mode, they are relatively similar and therefore most of the physical response is contributed by the first mode.</p>
+<div id="fig-xdof2freevibic2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof2freevibic2.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.6: Free vibration response for the system shown in <a href="#fig-xdof2mkfree">Figure&nbsp;<span>7.4</span></a>, subject to initial conditions <span class="math inline">\(\gcvecic = \left\{2Q/3 \;\;\; Q\right\}^T, \dgcvecic = \zerocol\)</span>. The plots show time histories with respect to normalized time <span class="math inline">\(\tau = t/\period_1\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>Finally, consider what would happen if the system were now given a set of initial velocities, so that the initial conditions are given by <span class="math display">\[
+\gcvecic = \zerocol, \; \dgcvecic = \colmat{v \\ -v} = v \colmat {1 \\ -1}
+\]</span> In this case the initial conditions in modal coordinates are calculated to be <span class="math inline">\(\modcor_{1o} = \modcor_{2o}=0\)</span>, <span class="math display">\[\begin{align*}
+\dmodcor_{1o} &amp; = \frac{1}{6m}\left\{1 \;\;\; 2\right\} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{1 \\ -1} v = 0\\
+\dmodcor_{2o} &amp; = \frac{1}{3m} \left\{1 \;\;\; -1\right\} \begin{bmatrix} 2m &amp; 0 \\ 0 &amp; m \end{bmatrix} \colmat{1 \\ -1}v = v
+\end{align*}\]</span> so that modal amplitudes and phase angles obtained via <a href="#eq-modsolfreevibampphs">Equation&nbsp;<span>7.31</span></a> are <span class="math display">\[
+\modcoramp_1 = 0, \quad \modcoramp_2 = \frac{v}{\freq_2}, \quad \phs_2 = \arctan \ratio{1}{0} = \frac{\pi}{2}
+\]</span> leading to <span class="math display">\[
+\modcor_1 (t) \equiv 0, \quad \modcor_2 (t) = \frac{v}{\freq_2} \cosp{\freq_2 t - \frac{\pi}{2}} = \frac{v}{\freq_2} \sinp{\freq_2 t}
+\]</span> As the initial velocity distribution coincides with the second mode shape (i.e.&nbsp;since <span class="math inline">\(\modcorvecic = \zerocol\)</span> and <span class="math inline">\(\dmodcorvecic = v \eigveci{2}\)</span>), only the second mode gets excited and the first mode does not get excited at all. Accordingly, the displacements of the two masses will be given by <span class="math display">\[
+\colmat{\gc_1 (t) \\ \gc_2 (t)} = \underbrace{\eigveci{1} \modcor_1 (t)}_{\equiv \zerocol} + \eigveci{2} \modcor_2 (t) = \colmat{\frac{v}{\freq_2} \sinp{\freq_2 t}\\ - \frac{v}{\freq_2} \sinp{\freq_2 t}}
+\]</span> the plots of which are shown in <a href="#fig-xdof2freevibic3">Figure&nbsp;<span>7.7</span></a>. In this case the two masses start to move in opposite directions with the initial velocities imposed on them and oscillate with frequency <span class="math inline">\(\freq_2\)</span>, with no contribution form the first mode.</p>
+<div id="fig-xdof2freevibic3" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof2freevibic3.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.7: Free vibration response for the system shown in <a href="#fig-xdof2mkfree">Figure&nbsp;<span>7.4</span></a>, subject to initial conditions <span class="math inline">\(\gcvecic = \zerocol, \dgcvecic = \left\{v \;\;\; -v\right\}^T\)</span>. The plots show time histories with respect to normalized time <span class="math inline">\(\tau = t/\period_1\)</span>, with <span class="math inline">\(\period_2 = \period_1 / 2\)</span>.</figcaption><p></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="approximations-for-frequencies" class="level2" data-number="7.5">
+<h2 data-number="7.5" data-anchor-id="approximations-for-frequencies"><span class="header-section-number">7.5</span> Approximations for Frequencies</h2>
+<section id="rayleighs-quotient" class="level3" data-number="7.5.1">
+<h3 data-number="7.5.1" data-anchor-id="rayleighs-quotient"><span class="header-section-number">7.5.1</span> Rayleigh’s Quotient</h3>
+<p>Consider a particular mode of an MDOF system, with mode shape <span class="math inline">\(\eigveci{i}\)</span> and frequency <span class="math inline">\(\freq_i\)</span>. We have already seen that the following equation holds exactly true for undamped systems: <span id="eq-rayleighex"><span class="math display">\[
+\freq_i^2 = \ratio{\modk}{\modm} = \ratio{\teigveci{i} \kmat \eigveci{i}}{\teigveci{i} \mmat \eigveci{i}}
+\qquad(7.33)\]</span></span> Note that this ratio is also a statement about the equality of maximum kinetic and potential energies that the system attains as it oscillates harmonically in the <span class="math inline">\(i\)</span>-th mode. When the system oscillates as such, the generalized displacements and velocities are given by <span class="math display">\[
+\gcvec (t) = A_i \eigveci{i} \cosp{\freq_i t - \phs_i}, \quad \dgcvec (t) = -\freq_i A_i \eigveci{i} \sinp{\freq_i t - \phs_i}
+\]</span> so that the kinetic energy and potential energy at any instant are calculated as <span class="math display">\[\begin{align*}
+\ke  &amp; = \frac{1}{2} \dgcvec^T \mmat \dgcvec = \frac{1}{2} A_i^2 \freq_i^2 \teigveci{i} \mmat \eigveci{i}  \sin^2\left(\freq_i t - \phs_i\right)\\
+\pe  &amp; = \frac{1}{2} \gcvec^T \mmat \gcvec = \frac{1}{2} A_i^2 \teigveci{i} \kmat \eigveci{i}  \cos^2\left(\freq_i t - \phs_i\right)
+\end{align*}\]</span> The energies will reach their respective maximum values when the sine and cosine terms are equal to unity; note also that whenever the kinetic energy is at a maximum the potential energy is zero and vice versa. The maximum values are therefore given by<br>
+<span class="math display">\[
+\ke_{\max} = \frac{1}{2} A_i^2 \freq_i^2 \teigveci{i} \mmat \eigveci{i}, \quad \pe_{\max} = \frac{1}{2} A_i^2 \teigveci{i} \kmat \eigveci{i}
+\]</span> and if there is no energy feed or loss, conservation of energy requires <span class="math display">\[
+\ke_{\max} = \pe_{\max} \quad \rightarrow \quad \frac{1}{2} A_i^2 \freq_i^2 \teigveci{i} \mmat \eigveci{i} = \frac{1}{2} A_i^2 \teigveci{i} \kmat \eigveci{i}
+\]</span> so that <span class="math display">\[
+\freq_i^2 = \ratio{\teigveci{i} \kmat \eigveci{i}}{\teigveci{i} \mmat \eigveci{i}}
+\]</span> Now assume we do not exactly know the mode shape but maybe we have an estimate of what it may look like. This is not so unexpected, especially as an analyst gains experience over different models. Even at an introductory stage we may feel, for example, that if there was a beam with a few heavy masses attached to it, or a tall building that could be approximated by a shear building model, their fundamental mode shapes would look reasonably like those shown in <a href="#fig-rayleighex">Figure&nbsp;<span>7.8</span></a>. Yes, we probably will not know the exact mode shape, but a decent estimate may be possible; and yes, all this is somewhat vague.</p>
+<div id="fig-rayleighex" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rayleighex.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.8: Some deformation shapes estimates: a beam carrying heavy masses and a tall shear building.</figcaption><p></p>
+</figure>
+</div>
+<p>Assume that our estimate for the mode shape is denoted by <span class="math inline">\(\rayvec\)</span> and it is called the <em>shape vector</em>. We may at least require for consistency that were the system to oscillate harmonically with such a shape, the conservation of energy should still hold. If the frequency of oscillation is denoted by <span class="math inline">\(\rayfreq\)</span>, going through a similar set of steps, we find that conservation of energy requires: <span id="eq-rayleighQ"><span class="math display">\[
+(\rayfreq (\rayvec))^2 = \ratio{\trayvec \kmat \rayvec}{\trayvec \mmat \rayvec}
+\qquad(7.34)\]</span></span> This ratio is called <em>Rayleigh’s Quotient</em>. At this point we hope that the similarity of <a href="#eq-rayleighQ">Equation&nbsp;<span>7.34</span></a> to <a href="#eq-rayleighex">Equation&nbsp;<span>7.33</span></a> is sufficient to claim that if <span class="math inline">\(\rayvec\)</span> is similar to <span class="math inline">\(\eigveci{i}\)</span>, then <span class="math inline">\(\rayfreq\)</span> will provide an acceptable estimate for <span class="math inline">\(\freq_i\)</span>. The resemblance of the expressions to those discussed in <a href="singledof.html#sec-GeneralizedSDOF"><span>Section&nbsp;2.5</span></a> in the context of generalized single degree of freedom systems is not coincidental: the generalized SDOF approach is essentially the broader version of Rayleigh’s approach. Rayleigh’s Quotient generally works well and it is used in numerical methods to iteratively refine eigenvector estimates to solve an eigenvalue problem.</p>
+<p>Let us try to further investigate what it is that we are investigating. The mode shapes of an <em>n</em>-DOF system provide a set of bases in the <em>n</em>-dimensional space due to the orthogonality relations. For some set of coefficients <span class="math inline">\(a_i\)</span> (for <span class="math inline">\(i=1,2,\ldots,n\)</span>), we may express the shape column <span class="math inline">\(\rayvec\)</span> as<br>
+<span class="math display">\[
+\rayvec = a_1 \kmat \eigveci{1}+a_2 \kmat \eigveci{2}+\cdots+a_n \kmat \eigveci{n} = \sum_{i=1}^n a_i \kmat \eigveci{i} = \sum_{i=1}^n a_i \freq_i^2 \mmat \eigveci{i}
+\]</span> where the last equality follows from the eigenvalue problem, i.e.&nbsp;<span class="math inline">\(\kmat \eigveci{i} = \freq_i^2 \mmat \eigveci{i}\)</span>. The coefficients <span class="math inline">\(a_i\)</span> are unique and may be evaluated as <span class="math display">\[
+\teigveci{i}\rayvec = \teigveci{i}\left(\sum_{j=1}^n a_j \kmat \eigveci{j}\right) = \sum_{j=1}^n a_j \modk_j \delta_{ij} = a_i \modk_i = a_i \freq_i^2 \modm_i
+\]</span> where <span class="math inline">\(\teigveci{i}\kmat\eigveci{j}=\modk_j\delta_{ij}\)</span> and <span class="math inline">\(\teigveci{i}\mmat\eigveci{j}=\modm_j\delta_{ij}\)</span> are the orthogonality relations we had previously shown. With these expansions, we have <span class="math display">\[\begin{align*}
+\trayvec\kmat\rayvec &amp; = \left(\sum_{i=1}^n a_i \kmat \eigveci{i}\right)^T \kmat \left(\sum_{j=1}^n a_j \kmat \eigveci{j}\right) \\
+&amp; = \sum_{i=1}^n\sum_{j=1}^n a_i a_j \modk_i \delta_{ij} = \sum_{i=1}^n a_i^2 \modk_i = \sum_{i=1}^n a_i^2 \freq_i^2 \modm_i
+\end{align*}\]</span> and similarly <span class="math display">\[
+\trayvec\mmat\rayvec = \sum_{i=1}^n a_i^2 \modm_i
+\]</span> so that Rayleigh’s Quotient may be expressed as <span class="math display">\[
+(\rayfreq)^2 = \ratio{\trayvec\kmat\rayvec}{\trayvec\mmat\rayvec} = \ratio{\sum_{i=1}^n a_i^2 \freq_i^2 \modm_i}{\sum_{i=1}^n a_i^2 \modm_i}
+\]</span> As <span class="math inline">\(\freq_i \geq \freq_1\)</span> for all <span class="math inline">\(i\)</span>, if we express Rayleigh’s Quotient as <span class="math display">\[
+(\rayfreq)^2 = \ratio{\freq_1^2 \sum_{i=1}^n a_i^2 \ratio{\freq_i^2}{\freq_1^2} \modm_i}{\sum_{i=1}^n a_i^2 \modm_i}
+\]</span> we can argue that <span class="math display">\[
+\ratio{\sum_{i=1}^n a_i^2 \frac{\freq_i^2}{\freq_1^2} \modm_i}{\sum_{i=1}^n a_i^2 \modm_i} \geq 1
+\]</span> since <span class="math inline">\((\freq_i/\freq_1)\geq 1\)</span> for all <span class="math inline">\(i\)</span>. Therefore we may conclude that for any arbitrary (non-zero of course) shape vector <span class="math inline">\(\rayvec\)</span>, <span class="math display">\[
+(\rayfreq (\rayvec))^2 \geq \freq_1^2
+\]</span> so that Rayleigh’s Quotient always provides an <em>upper bound</em> to the lowest frequency. Going through a similar argument we may also show that it will provide a <em>lower bound</em> to the highest frequency.</p>
+</section>
+<section id="rayleigh-ritz-method" class="level3" data-number="7.5.2">
+<h3 data-number="7.5.2" data-anchor-id="rayleigh-ritz-method"><span class="header-section-number">7.5.2</span> Rayleigh-Ritz Method</h3>
+<p>An extension of Rayleigh’s Quotient is achieved by considering more than one shape factor and thereby introducing more flexibility in achieving optimality. Consider using in Rayleigh’s Quotient a shape vector that is composed of <span class="math inline">\(r\)</span> different candidates, i.e., <span class="math display">\[
+\rayvec = a_1 \ritzcandvec{1} + a_2 \ritzcandvec{2} + \cdots + a_r \ritzcandvec{r} = \ritzmat \nvec{a}
+\]</span> where <span class="math display">\[
+\ritzmat = \begin{bmatrix} \ritzcandvec{1} &amp; \ritzcandvec{2} &amp; \cdots \ritzcandvec{r} \end{bmatrix}, \quad \nvec{a} = \colmat{a_1 \\ a_2 \\ \vdots \\ a_r}
+\]</span> We may think of this approach as an attempt to approximate multiple modes simultaneously where we pick candidate shapes <span class="math inline">\(\ritzcandvec{i}\)</span> and try to adjust the coefficients <span class="math inline">\(a_i\)</span> to somehow get the best possible result. For a given set of <span class="math inline">\(\ritzcandvec{i}\)</span>, the value of Rayleigh’s Quotient will depend on <span class="math inline">\(a_i\)</span>’s since <span class="math display">\[
+(\rayfreq)^2 = \ratio{\trayvec \kmat \rayvec}{\trayvec \mmat \rayvec}  = \ratio{\nvec{a}^T \ritzmat^T \kmat \ritzmat \nvec{a}}{\nvec{a}^T \ritzmat^T \mmat \ritzmat \nvec{a}} = \ratio{\nvec{a}^T \ritzkmat \nvec{a}}{\nvec{a}^T \ritzmmat \nvec{a}}  
+\]</span> where <span class="math display">\[
+\ritzkmat = \ritzmat^T \kmat \ritzmat \quad \text{and} \quad \ritzmmat = \ritzmat^T \mmat \ritzmat
+\]</span> are both symmetric and of dimensions <span class="math inline">\(r \times r\)</span>. As Rayleigh’s Quotient provides an upper bound for the lowest frequency, it should make sense that we ought to seek values of <span class="math inline">\(a_i\)</span> which will make Rayleigh’s Quotient a minimum for the given set of candidate shapes so that we have the best possible estimate. In other words, we shall seek those values of <span class="math inline">\(a_i=a_i^{\ast}\)</span> for which <span class="math display">\[
+\ratio{\partial (\rayfreq)^2}{\partial a_i}\biggr|_{a_i=a_i^{\ast}} = 0 \quad \text{for } i=1,2,\ldots r
+\]</span> This condition may be expressed in matrix form as <span class="math display">\[
+\ratio{\partial (\rayfreq)^2}{\partial \nvec{a}}\biggr|_{\nvec{a}=\nvec{a{\ast}}} = \zerocol  
+\]</span> and when we use matrix differentiation rules we obtain <span class="math display">\[
+\ratio{\partial \nvec{a}^T \ritzmmat \nvec{a}}{\partial \nvec{a}} = 2 \ritzmmat \nvec{a}, \quad \ratio{\partial \nvec{a}^T \ritzkmat \nvec{a}}{\partial \nvec{a}} = 2 \ritzkmat \nvec{a}
+\]</span> so that <span class="math display">\[
+\ratio{\partial (\rayfreq)^2}{\partial \nvec{a}}\biggr|_{\nvec{a}=\nvec{a{\ast}}} = \ratio{2}{\nvec{a^{\ast}}^T \ritzmmat \nvec{a^{\ast}}} \left[\ritzkmat \nvec{a^{\ast}} - \ratio{\nvec{a^{\ast}}^T \ritzmmat \nvec{a^{\ast}}}{\nvec{a^{\ast}}^T \ritzmmat \nvec{a^{\ast}}} \ritzmmat \nvec{a^{\ast}} \right]= \zerocol  
+\]</span> Since by definition <span class="math display">\[
+(\rayfreq)^2 = \ratio{\nvec{a}^T \ritzkmat \nvec{a}}{\nvec{a}^T \ritzmmat \nvec{a}}
+\]</span> the condition that must be satisfied by <span class="math inline">\(a_i\)</span> to yield the minimum value of Rayleigh’s Quotient may be expressed as: <span id="eq-ritzeig"><span class="math display">\[
+\left(\ritzkmat - (\rayfreq)^2 \ritzmmat \right) \nvec{a^{\ast}} = \zerocol
+\qquad(7.35)\]</span></span> Well, this is an eigenvalue problem, reminiscent of our original eigenvalue problem; but we must note that this new problem is of dimension <span class="math inline">\(r\)</span>, with possibly <span class="math inline">\(r &lt;&lt; n\)</span>, so that computationally it is much more feasible. As with any such problem, there will be <span class="math inline">\(r\)</span> eigenvalues and eigenvectors that satisfy <a href="#eq-ritzeig">Equation&nbsp;<span>7.35</span></a>. The eigenvalues will yield <span class="math inline">\(r\)</span> natural frequency estimates, <span class="math display">\[
+\ritzfreq{1}, \ritzfreq{2},\ldots,\ritzfreq{r}
+\]</span> such that <span class="math display">\[
+\ritzfreq{i} \geq \freq_i, \quad \text{for } i=1,2,\ldots r
+\]</span> with estimates improving with better selection of candidate shapes. The eigenvectors obtained from <a href="#eq-ritzeig">Equation&nbsp;<span>7.35</span></a> are to be used in calculating estimates of the mode shapes of the system so that <span class="math display">\[
+\ritzvec{i} = \ritzmat \nvec{a^{\ast}_i} \approx \eigveci{i}
+\]</span></p>
+<section id="sec-mdofx1" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdofx1">EXAMPLE 7 .2</h4>
+<p>What we have is a taut string, subject to a high tension <span class="math inline">\(N\)</span>, and five equal masses attached to it, as shown in <a href="#fig-xdof5string">Figure&nbsp;<span>7.9</span></a>. Due to the high level of tensile force, the masses will move mainly along the vertical, with a total of five degrees of freedom for the system. We would like to estimate the fundamental frequency of the system with Rayleigh’s Quotient.</p>
+<div id="fig-xdof5string" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof5string.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.9: A taut string bearing five equal masses.</figcaption><p></p>
+</figure>
+</div>
+<p>The first order of business is to derive the mass and stiffness matrices. With the generalized coordinates <span class="math inline">\(\gc_i\)</span> denoting the translation of each mass and with masses concentrated at a point, it should be obvious that the mass matrix will be diagonal, with the values of the masses appearing on the diagonal. We may see that this should be so by considering a nonzero acceleration <span class="math inline">\(\ddgc_i\)</span> while all other accelerations are zero and see what external forces would be required for equilibrium; the only external force required in that case would be <span class="math inline">\(m \ddgc_i\)</span> acting along the <span class="math inline">\(i\)</span>th generalized coordinate.</p>
+<p>To construct the stiffness matrix, let us try to identify the stiffness influence coefficients via the force equilibrium approach discussed in <a href="multidof.html#sec-mkequib"><span>Section&nbsp;6.3.1</span></a>. What would be the forces required to keep the system in equilibrium when <span class="math inline">\(\gc_i &gt; 0\)</span> with all other generalized coordinates locked at zero? The free body diagrams of three consecutive masses, with the <span class="math inline">\(i\)</span>th mass at the center, are shown in <a href="#fig-xdof5stringfbd">Figure&nbsp;<span>7.10</span></a>. Due to the imposed displacement, there will be some deformation in the string resulting in a change <span class="math inline">\(\Delta N\)</span> in the tensile force. It makes a big difference how high the initial tensile force and how big the imposed displacement are. If the considered displacement were to be large, then horizontal effects would have to be included, for otherwise equilibrium would not be possible. For small displacements we can consider only vertical forces so that <span class="math display">\[
+k_{ii} \gc_i = 2 (N + \Delta N) \sin \theta, \quad k_{i(i-1)} \gc_i = k_{i(i+1)} \gc_i = - (N + \Delta N) \sin \theta
+\]</span> anf furthermore, since for <span class="math inline">\(\gc_i \ll 1\)</span> we would have <span class="math display">\[
+\sin \theta \approx \tan \theta = \ratio{\gc_i}{\ell/5}
+\]</span> we get <span class="math display">\[
+k_{ii} \gc_i = 2 (N + \Delta N) \ratio{\gc_i}{\ell/5}, \quad k_{i(i-1)} \gc_i = k_{i(i+1)} \gc_i = - (N + \Delta N) \ratio{\gc_i}{\ell/5}
+\]</span> Note that with <span class="math inline">\(\gc_{i(i-1)}\)</span> and <span class="math inline">\(\gc_{i(i+1)}\)</span> locked, no force needs to be applied along any other generalized coordinate since there will be no deformations in their neighborhoods.</p>
+<div id="fig-xdof5stringfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof5stringfbd.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.10: Stiffness influence coefficients: Free body diagrams of the <em>i</em>th mass and its neighbors for <span class="math inline">\(\gc_i &gt; 0\)</span> and all other <span class="math inline">\(\gc_j = 0\)</span> for <span class="math inline">\(j \neq i\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>When the initial tension in the string is large and the imposed displacement is small, the change <span class="math inline">\(\Delta N\)</span> due to deformations will remain very small compared to the initial tension and we may neglect <span class="math inline">\(\Delta N\)</span> compared to <span class="math inline">\(N\)</span> for an acceptable approximation. Therefore the stiffness coefficients will be given by <span class="math display">\[
+k_{ii}  =  \ratio{10 N}{\ell}, \quad k_{i(i-1)} = k_{i(i+1)} = - \ratio{5 N}{\ell}
+\]</span> and repeating this analysis for all the generalized coordinates, the stiffness matrix may be shown to be given by: <span class="math display">\[
+\kmat = \ratio{5 N}{\ell}
+\begin{bmatrix}
+2 &amp; -1 &amp; 0 &amp; 0 &amp; 0\\
+-1 &amp; 2 &amp; -1 &amp; 0 &amp; 0\\
+0 &amp; -1 &amp; 2 &amp; -1 &amp; 0\\
+0 &amp; 0 &amp; -1 &amp; 2 &amp; -1\\
+0 &amp; 0 &amp; 0 &amp; -1 &amp; 2
+\end{bmatrix}
+\]</span> Now we are ready to start our investigation of the frequencies. To use Rayleigh’s Quotient we need to estimate what the first mode of vibration might look like. Considering what we would expect if such masses were hung on a string, a sagged cable shape seems a reasonable guess. We will therefore use the two shapes shown in <a href="#fig-xdof5stringrq">Figure&nbsp;<span>7.11</span></a> as two different shape vectors to employ in Rayleigh’s Quotient: <span class="math display">\[
+\ritzvec{1} = \colmat{1/3 \\ 2/3 \\ 1 \\ 2/3 \\ 1/3}, \quad \ritzvec{2} = \colmat{1/2 \\ 3/4 \\ 1 \\ 3/4 \\ 1/2}
+\]</span></p>
+<div id="fig-xdof5stringrq" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof5stringrq.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.11: Two different shape columns for Rayleigh’s Quotient.</figcaption><p></p>
+</figure>
+</div>
+<p>These shape vectors lead to <span class="math display">\[\begin{align*}
+(\rayfreq (\ritzvec{1}))^2 &amp; = \ratio{\tritzvec{1} \kmat \ritzvec{1}}{\tritzvec{1} \mmat \ritzvec{1}} = \ratio{(10 N) /(3 \ell)}{19 m/9} = \ratio{30 N}{19 m \ell} \\
+(\rayfreq (\ritzvec{2}))^2 &amp; = \ratio{\tritzvec{2} \kmat \ritzvec{2}}{\tritzvec{2} \mmat \ritzvec{2}} = \ratio{(15 N) /(4 \ell)}{21 m/8} = \ratio{30 N}{21 m \ell}
+\end{align*}\]</span> so that the two upper bound estimates for the first mode frequency obtained from these respectively are <span class="math display">\[
+\rayfreq (\ritzvec{1}) = 1.27 \sqrt{\frac{N}{m \ell}} \quad \text{and} \quad \rayfreq (\ritzvec{2}) = 1.20 \sqrt{\frac{N}{m \ell}}
+\]</span> and the smaller of the two is our best estimate yet for the first frequency of the system: <span class="math display">\[
+\freq_1 \approx 1.20 \sqrt{\frac{N}{m \ell}}
+\]</span> We could try many different shapes and see if this upper bound may be further refined but it turns out that the estimate above is pretty good: the exact first two frequencies and mode shapes of the system are <span class="math display">\[\begin{align*}
+\freq_1  &amp; = 1.16 \sqrt{\frac{N}{m \ell}}, \quad \eigveci{1} = \left\{0.50 \;\;\; 0.87 \;\;\; 1 \;\;\; 0.87 \;\;\; 0.50\right\}^{T} \\
+\freq_2 &amp; = 2.24 \sqrt{\frac{N}{m \ell}}, \quad \eigveci{2} = \left\{-1 \;\;\; -1 \;\;\; 0 \;\;\; 1 \;\;\; 1\right\}^{T}
+\end{align*}\]</span> so that the estimate we get for the fundamental frequency from Rayleigh’s Quotient is quite good for many practical purposes.</p>
+</section>
+<section id="sec-mdofx2" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdofx2">EXAMPLE 7 .3</h4>
+<p>To illustrate an application of the Rayleigh-Ritz approach, let us consider the 8 story shear building shown in <a href="#fig-xdof8shear">Figure&nbsp;<span>7.12</span></a>. Based on our previous discussions regarding shear buildings, we may expect the first mode to have no crossovers and the second mode to have only one crossover. Candidate shapes <span class="math inline">\(u_1\)</span> and <span class="math inline">\(u_2\)</span> shown in <a href="#fig-xdof8shear">Figure&nbsp;<span>7.12</span></a> seem reasonable enough to be used in our analysis: <span class="math display">\[
+\ritzmat = \left[\ritzcandvec{1} \quad \ritzcandvec{2} \right] = \begin{bmatrix} 1/8 &amp;  1/3 \\ 2/8 &amp; 2/3 \\ 3/8 &amp; 1 \\ 4/8 &amp; 2/3 \\ 5/8 &amp; 1/3 \\ 6/8 &amp; 0\\ 7/8 &amp; -1/3 \\ 1 &amp; -2/3\end{bmatrix}
+\]</span></p>
+<div id="fig-xdof8shear" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof8shear.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.12: Eight story shear building model and two candidate vectors to be used in the Rayleigh-Ritz approach.</figcaption><p></p>
+</figure>
+</div>
+<p>The mass and stiffness matrices are relatively easy to derive. The mass matrix is diagonal as in all shear building models, with all diagonal elements equal to <span class="math inline">\(m\)</span> in this case. The stiffness matrix will follow the classic progression of shear building models as well and it will be given in this case by <span class="math display">\[
+\kmat = \begin{bmatrix} 4k &amp; -2k &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+-2k &amp; 4k &amp; -2k &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; -2k &amp; 3k &amp; -k &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; -k &amp; 2k &amp; -k &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; -k &amp; 2k &amp; -k &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; -k &amp; 2k &amp; -k &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -k &amp; 2k &amp; -k \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -k &amp; k \\ \end{bmatrix}
+\]</span> We now have to set up the eigenvalue problem whose solution will help us determine the frequency estimates and the coefficients <span class="math inline">\(\nvec{a_{i}^{\ast}}\)</span> which we will use in constructing our mode shape estimates. To this end we first calculate <span class="math display">\[
+\ritzkmat = \ritzmat^T \kmat \ritzmat =  \begin{bmatrix} \ratio{11 k}{64} &amp; \ratio{k}{24} \\ \ratio{k}{24} &amp; \ratio{11k}{9}\end{bmatrix}, \quad \ritzmmat = \ritzmat^T \mmat \ritzmat =  \begin{bmatrix} \ratio{51 m}{16} &amp; \ratio{m}{6} \\ \ratio{m}{6} &amp; \ratio{8m}{3}\end{bmatrix}
+\]</span> and then use these matrices in the eigenvalue problem <span class="math display">\[
+\left(\ritzkmat - (\ritzfreq{i})^2 \ritzmmat \right) \nvec{a_i^{\ast}} = \zerocol
+\]</span> to obtain <span class="math display">\[
+(\ritzfreq{1})^2 = 0.054 \ratio{k}{m}, \quad (\ritzfreq{2})^2 = 0.459 \ratio{k}{m}, \quad \nvec{a_1^{\ast}} = \colmat{-0.561 \\ 0.017}, \quad \nvec{a_2^{\ast}} = \colmat{-0.016 \\ 0.613}
+\]</span> Therefore our estimates for the frequencies of the first two modes become <span class="math display">\[
+\ritzfreq{1} = 0.232 \sqrt{\ratio{k}{m}} \quad \text{and} \quad \ritzfreq{2} = 0.677 \sqrt{\ratio{k}{m}}
+\]</span> and for the mode shape estimates we get, after scaling them so that their component at the top floor is equal to one, <span class="math display">\[
+\ritzvec{1} = \ritzmat \nvec{a_1^{\ast}} = = \colmat{0.11 \\ 0.23\\ 0.34\\ 0.47\\ 0.60\\ 0.74\\ 0.87\\ 1.00}, \quad \text{and} \quad \ritzvec{2} = \ritzmat \nvec{a_2^{\ast}} = \colmat{-0.48 \\ -0.95 \\ -1.43 \\ -0.94 \\ -0.46 \\ 0.03 \\ 0.51 \\ 1.00}
+\]</span> It turns out that these estimates are quite acceptable since the exact frequencies and mode shapes are given by <span class="math display">\[
+\freq_1 = 0.222 \sqrt{\ratio{k}{m}}, \quad \freq_2 = 0.623 \sqrt{\ratio{k}{m}}, \quad \eigveci{1} = \colmat{0.12 \\ 0.23 \\ 0.34 \\ 0.54 \\ 0.72 \\ 0.85 \\ 0.95 \\ 1.00}, \quad \eigveci{2} = \colmat{-0.44 \\ -0.79 \\ -0.99 \\ -1.01 \\ -0.63 \\ -0.01 \\ 0.61 \\ 1.00}
+\]</span> The errors in the frequency estimates and the first mode estimate are quite small, but the errors in the second mode estimate somewhat more pronounced. The success of this approach in general depends on how well the candidate shapes resemble the actual modes and how many such shapes are taken into consideration. If, say, we were to include three candidate vectors, with the addition of <span class="math display">\[
+\ritzcandvec{3} = \left\{\ratio{1}{3} \;\;\; \ratio{2}{3} \;\;\; 1 \;\;\; \ratio{2}{3} \;\;\; -\ratio{1}{3} \;\;\; 0 \;\;\; \ratio{1}{3} \;\;\; \ratio{2}{3}\right\}^T
+\]</span> so that with <span class="math inline">\(\ritzmat = [\ritzcandvec{1} \; \; \ritzcandvec{2} \;\; \ritzcandvec{3} ]\)</span>, the estimates for the first two modes will be (note that there will also be an estimate for the third mode which we do note report) <span class="math display">\[
+\ritzfreq{1} = 0.227 \sqrt{\ratio{k}{m}}, \quad \ritzfreq{2} = 0.668 \sqrt{\ratio{k}{m}}, \quad \ritzvec{1} = \colmat{0.11 \\ 0.23\\ 0.34\\ 0.49\\ 0.69\\ 0.79\\ 0.90\\ 1.00}, \quad \ritzvec{2} = \colmat{-0.38 \\ -0.77 \\ -1.15 \\ -0.79 \\ -0.57 \\ -0.05 \\ 0.48 \\ 1.00}
+\]</span> A quick overview of results will immediately reveal that increasing the number of candidate shapes have improved both the frequency and the mode shape estimates for the first two modes.</p>
+</section>
+</section>
+</section>
+<section id="sec-mdofdampfree" class="level2" data-number="7.6">
+<h2 data-number="7.6" data-anchor-id="sec-mdofdampfree"><span class="header-section-number">7.6</span> Free Vibration Response of Damped Systems</h2>
+<section id="damping-in-mdof-systems" class="level3" data-number="7.6.1">
+<h3 data-number="7.6.1" data-anchor-id="damping-in-mdof-systems"><span class="header-section-number">7.6.1</span> Damping in MDOF Systems</h3>
+<p>Damping. Well, at this point we can’t avoid the issue any further so let’s get into it. We already had a few words to say in <a href="singledof.html#sec-Damping"><span>Section&nbsp;2.4</span></a> and we will again promote the linear viscous damping model as the model of choice for energy dissipation in small amplitude vibrations, with energy dissipated due to post-yield deformations to be accounted for separately. There is, however, an added level of complexity that damping brings into analysis of MDOF systems: would one be able to uncouple the equations of motion by transforming to modal coordinates in the presence of damping?</p>
+<p>The answer is: not necessarily, but for many applications we will assume that is the case. To remind ourselves the mathematical structure on which we base our discussion, the equation of motion of free vibrations for a viscously damped linear MDOF system will be given by: <span id="eq-eomdmpd"><span class="math display">\[
+\mmat \ddgcvec (t) + \cmat \dgcvec (t) + \kmat \gcvec (t) = \zerocol \, ; \quad \{\gcvec (0) = \gcvecic, \dgcvec (0) = \dgcvecic \}
+\qquad(7.36)\]</span></span> If <span class="math inline">\(\modmat\)</span> is the matrix of eigenvectors (i.e.&nbsp;mode shapes) obtained from the <em>undamped eigenvalue problem</em> <span id="eq-udeigprob"><span class="math display">\[
+\kmat \modmat = \mmat \modmat \spectmat
+\qquad(7.37)\]</span></span> then we know from previous discussions that a coordinate transformation of the form <span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t)
+\]</span> will lead to <span class="math display">\[
+\modmmat \ddmodcorvec (t) + \modmat^T \cmat \modmat \dmodcorvec (t) + \modkmat \modcorvec (t) = \zerocol \, ; \quad \{\modcorvec (0) = \modcorvecic, \dmodcorvec (0) = \dmodcorvecic \}
+\]</span> where <span class="math inline">\(\modmmat\)</span> and <span class="math inline">\(\modkmat\)</span> are diagonal matrices. So the question is: is <span class="math inline">\(\modmat^T \cmat \modmat\)</span> a diagonal matrix? If so, then transformation to modal coordinates would successfully uncouple all equations; but if not, then equations would be coupled and the modal analysis approach discussed previously would have to be modified if not altogether abandoned.</p>
+<p>If transformation to modal coordinates uncouples also the damping terms so that the damping matrix in modal coordinates, given by <span class="math display">\[
+\modcmat = \modmat^T \cmat \modmat
+\]</span> is a diagonal matrix, the system is said to be <em>classically damped</em>, and the damping mechanism is classified as <em>classical</em>. There is no necessity that this should be the normative case. On the other hand it is by far the dominant model employed in analyses because it is simple to work with and its critical parameters may be estimated from (in other words, fit to) experimental observations. The eigenvalue problem that must be dealt with in classically damped systems is the undamped eigenvalue problem of <a href="#eq-udeigprob">Equation&nbsp;<span>7.37</span></a>. If, on the other hand, one would like to obtain eigenvectors that would simultaneously uncouple <span class="math inline">\(\mmat\)</span>, <span class="math inline">\(\kmat\)</span> and <span class="math inline">\(\cmat\)</span>, one would have to solve the <em>damped eigenvalue problem</em> defined by <span id="eq-deigprob"><span class="math display">\[
+(\eigval^2 \mmat + \eigval \cmat + \kmat)\deigvec = \zerocol
+\qquad(7.38)\]</span></span> where <span class="math inline">\(\eigval\)</span> is called the <em>damped eigenvalue</em> and <span class="math inline">\(\deigvec\)</span> is called the <em>damped eigenvector</em> or the <em>damped modeshape</em>. We shall not pursue the non-classical model further in this section and limit the current discussion to classically damped systems. We note in passing that if the system is classically damped, then the eigenvalues and eigenvectors obtained from <a href="#eq-deigprob">Equation&nbsp;<span>7.38</span></a> will be equivalent to those that will be obtained from the undamped eigenvalue problem of <a href="#eq-udeigprob">Equation&nbsp;<span>7.37</span></a>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="2">
+<li id="fn2"><p>The wording (“equivalent”) is suspiciously vague but on purpose so: without going into details now, we just note that for symmetric, positive definite matrices of dimensions <span class="math inline">\(n \times n\)</span> the damped eigenvalue problem will lead to <span class="math inline">\(2n\)</span> eigenvalues and eigenvectors that will appear in complex-conjugate pairs and the undamped eigenvalue problem will lead to <span class="math inline">\(n\)</span> real valued eigenvalues and eigenvectors. If the system is classically damped, the complex conjugate pairs of the damped eigenvalue problem may be easily transformed to the real valued eigenparameters of the undamped eigenvalue problem.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="modal-analysis-of-classically-damped-systems" class="level3" data-number="7.6.2">
+<h3 data-number="7.6.2" data-anchor-id="modal-analysis-of-classically-damped-systems"><span class="header-section-number">7.6.2</span> Modal Analysis of Classically Damped Systems</h3>
+<p>If an <span class="math inline">\(n\)</span>-DOF system is classically damped, the equations of motion given by <a href="#eq-eomdmpd">Equation&nbsp;<span>7.36</span></a>, when transformed to model coordinates, will yield <span id="eq-eomdmpdmod"><span class="math display">\[
+\modmmat \ddmodcorvec (t) + \modcmat \dmodcorvec (t) + \modkmat \modcorvec (t) = \zerocol \, ; \quad \{\modcorvec (0) = \modcorvecic, \dmodcorvec (0) = \dmodcorvecic \}
+\qquad(7.39)\]</span></span> where <span class="math display">\[
+\begin{array}{c}
+\modmmat = \begin{bmatrix}\modm_1 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \modm_2 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; \cdots &amp; 0 &amp; \modm_n \end{bmatrix}, \quad \modcmat = \begin{bmatrix}\modc_1 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \modc_2 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; \cdots &amp; 0 &amp; \modc_n \end{bmatrix}, \\  
+\modkmat = \begin{bmatrix}\modk_1 &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; \modk_2 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; \cdots &amp; 0 &amp; \modk_n \end{bmatrix}
+\end{array}
+\]</span> arr all diagonal so that <a href="#eq-eomdmpdmod">Equation&nbsp;<span>7.39</span></a> comprises <span class="math inline">\(n\)</span>-many uncoupled equations of the form <span id="eq-eomdmpdmodi1"><span class="math display">\[
+\modm_i \ddmodcor_i (t) + \modc_i \dmodcor_i (t) + \modk_i \modcor_i (t) = 0 \, ; \quad \{\modcor_i (0) = \modcoric{i}, \dmodcor_i (0) = \dmodcoric{i} \}
+\qquad(7.40)\]</span></span> This is obviously the equation of motion for a viscously damped linear oscillator, same as the one we discussed in much detail starting with its introduction in <a href="singledof.html#sec-Damping"><span>Section&nbsp;2.4</span></a>. As we did in the analysis of SDOF systems, it is beneficial to rewrite this equation dividing through by the modal mass so that <span id="eq-eomdmpdmodi2"><span class="math display">\[
+\ddmodcor_i (t) + 2 \damp_i \freq_i \dmodcor_i (t) + \freq_i^2 \modcor_i (t) = 0 \, ; \quad \{\modcor_i (0) = \modcoric{i}, \dmodcor_i (0) = \dmodcoric{i} \}
+\qquad(7.41)\]</span></span> where <span class="math display">\[
+\damp_i = \ratio{1}{2\freq_i} \ratio{\modc_i}{\modm_i}
+\]</span> is called the <em>modal damping ratio</em>. Preference of <span class="math inline">\(\damp_i\)</span> over <span class="math inline">\(\modc_i\)</span> (perhaps we could call this the <em>modal damping coefficient</em>) is based on the same reasons that we preferred <span class="math inline">\(\damp\)</span> over <span class="math inline">\(c\)</span> in SDOF systems: <span class="math inline">\(\damp_i\)</span> is a parameter that may be estimated from vibration data and its physical interpretation is more direct.</p>
+<p>The solution of <a href="#eq-eomdmpdmodi2">Equation&nbsp;<span>7.41</span></a> was derived previously for SDOF systems and it may be expressed (based on <a href="singledof.html#eq-underdampedic1">Equation&nbsp;<span>2.23</span></a>, <a href="singledof.html#eq-underdampedic2">Equation&nbsp;<span>2.24</span></a>, <a href="singledof.html#eq-underdampedic3a">Equation&nbsp;<span>2.25</span></a> and <a href="singledof.html#eq-underdampedic3b">Equation&nbsp;<span>2.26</span></a>) as <span id="eq-solfreemodcori"><span class="math display">\[
+\modcor_i (t)  = \expon{-\damp_i \freq_i t }\left[\modcoric{i} \cosp{\dfreq_i t} + \frac{\dmodcoric{i}+ \damp_i \freq_i \modcoric{i}}{\dfreq_i} \sinp{\dfreq_{i} t} \right]
+= \expon{-\damp_i \freq_i t } \modcoramp_{i} \cosp{\dfreq_i t - \phs_i}
+\qquad(7.42)\]</span></span> where <span class="math display">\[\begin{align*}
+\modcoramp_i &amp; = \frac{\sqrt{(\modcoric{i})^2 + 2 \damp \modcoric{i} \left(\ratio{\dmodcoric{i}}{\freq}\right)  + \left(\ratio{\dmodcoric{i}}{\freq}\right)^2}}{\sqrt{1-\damp^2}} \\
+\phs_i  &amp; = \arctan \frac{\sin \phs_i}{\cos \phs_i}= \arctan\ratio{(\dmodcoric{i}+\damp_i\freq_i\modcoric{i}) / (\dfreq_i \modcoramp_i)}{\modcoric{i} / \modcoramp_i}
+\end{align*}\]</span> and the <em>damped modal frequency</em> of the <em>i</em>th mode, <span class="math inline">\(\dfreq_i\)</span>, given by <span class="math display">\[
+\dfreq_i = \freq_i \sqrt{1-\damp_i^2}
+\]</span> Once the solutions for modal coordinates are obtained, the response in physical coordinates is given by modal superposition as for the undamped case: <span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t) = \sum_{i=1}^{n} \eigveci{i} \modcor_i (t)
+\]</span></p>
+</section>
+<section id="constructing-damping-matrices-in-classically-damped-systems" class="level3" data-number="7.6.3">
+<h3 data-number="7.6.3" data-anchor-id="constructing-damping-matrices-in-classically-damped-systems"><span class="header-section-number">7.6.3</span> Constructing Damping Matrices in Classically Damped Systems</h3>
+<p>What should the structure of the damping matrix <span class="math inline">\(\cmat\)</span> be so that the system will be classically damped? Or better yet: do we need a damping matrix at all? If we are to perform linear analysis and the system has a relatively uniform distribution of energy dissipation so that the classical damping model is acceptable, we need only estimate modal damping ratios. In classical modal analysis we may write the equations of motion for the system assuming it is undamped, transform to modal coordinates, and then simply add the damping term to the modal equations. As a relatively few modes generally will suffice to give a decent estimate of the response, we will not even need to estimate damping for all the modes and definitely will not need a full order damping matrix. There are instances however when such a damping matrix in physical coordinates is necessary. Clearly any attempt to numerically integrate the equations of motion in physical coordinates needs such a matrix. Such an approach will be especially important if one were to analyze nonlinear systems, say in structures which undergo yielding and hysteretic behavior under large demands.</p>
+<p>There are a few ways to go about this problem, some of which are discussed next.</p>
+<!-- 
+It can be shown that this holds when: 
+$$
+\cmat \mmat ^{-1}\kmat =\kmat \mmat ^{-1} \cmat
+$${#eq-cldampcond}
+ -->
+<section id="sec-rayleigh" class="level4" data-number="7.6.3.1">
+<h4 data-number="7.6.3.1" data-anchor-id="sec-rayleigh"><span class="header-section-number">7.6.3.1</span> Rayleigh Damping</h4>
+<p>As the mode shapes obtained from the undamped eigenvalue problem diagonalize both the mass and the stiffness matrices, they will also diagonalize any third matrix that may be written as a superposition of the two. There are two extreme points in this approach: the damping is said to be <em>mass proportional</em> if the damping matrix is given by <!-- 
+In the previous section, we discussed that modal analysis applies to systems that are classically damped, such that @eq-cldampcond holds. One might wonder whether the sort of matrices that satisfy this condition are realistic representations of damping in structures. The mechanisms of damping in a structure are generally quite complex, and may arise from friction at bolted joints, microcracking in concrete, hysteresis, soil-structure interactions, and movement of objects or equipment due to dynamic excitation, among many other factors. It is practically impossible to account for all of this exactly, but the net effect of all the factors contributing to damping can be qualitatively captures through the use of viscous linear dashpots as a mechanical model that makes analysis considerably simpler. If all damping is simply in the form of dashpots, then a central question becomes how these dampers must be placed in the structure to result classically damped systems. Generally, it is commonly assumed that damping should be proportional to the distribution of inertial and structural components within a structure, which is called proportional damping. The first special case of this is if all of the damping is assumed to act directly on the inertial components, which is called $\textbf{mass-proportional damping}$. In this case, the damping matrix is given as:  --> <span id="eq-dmpmassprop"><span class="math display">\[
+\cmat=\beta_M \mmat
+\qquad(7.43)\]</span></span> Here, <span class="math inline">\(\beta_M\)</span> is a proportionality constant (scalar) with units <span class="math inline">\(1/\punit{[unit \; of \; time]}\)</span>. With mass proportional damping we have <span class="math display">\[
+\modmat^T \cmat \modmat = \modcmat = \beta_M \modmat^T \mmat \modmat = \beta_M \modmmat
+\]</span> so that for the <em>i</em>th mode <span class="math display">\[
+{\modc_i} = 2 \damp_i \freq_i {\modm_i} = \beta_M {\modm_i} \quad \rightarrow \quad \damp_i = \ratio{\beta_M}{2 \freq_i}
+\]</span> This construct therefore imposes a decreasing damping ratio with increasing mode number so that higher modes are damped much less than lower modes. The other extreme is when the damping is assumed to be <em>stiffness proportional</em> so that <span id="eq-dmpstiffprop"><span class="math display">\[
+\cmat=\beta_K \kmat
+\qquad(7.44)\]</span></span> <!-- 
+![Classical damping models. (a) Mass-proportional damping where $c_i = a_0m_i$ (b) Stiffness proportional damping, where $c_i = a_1k_i$.](images/dampingMK.png){#fig-dampingMK width=80% fig-align="center"}
+ --> where <span class="math inline">\(\beta_K\)</span> is a proportionality constant with units of <span class="math inline">\([\punit{unit \; of \; time}]\)</span>. In this case we have <span class="math display">\[
+\modmat^T \cmat \modmat = \modcmat = \beta_K \modmat^T \kmat \modmat = \beta_K \modkmat
+\]</span> so that for the <em>i</em>th mode <span class="math display">\[
+{\modc_i} = 2 \damp_i \freq_i {\modm_i} = \beta_K {\modk_i} = \beta_K \freq_i^2 {\modm_i}  \quad \rightarrow \quad \damp_i = \ratio{\beta_K \freq_i}{2}
+\]</span> and therefore we end up with much higher modal damping percentages assigned to higher modes compared to those for lower modes. A superposition of the two cases imposes a more uniform range for damping ratios, at least for some portion of the modes, given by <span class="math display">\[
+\cmat = \beta_M \mmat + \beta_K \kmat \quad \rightarrow \quad  \damp_i = \beta_M \ratio{1}{2 \freq_i} + \beta_K \ratio{\freq_i}{2}
+\]</span></p>
+<div id="fig-rayleighdamp" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/rayleighdamp.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.13: Qualitative variation of modal damping ratios with frequency in mass proportional, stiffness proportional and (combined) Rayleigh damping models.</figcaption><p></p>
+</figure>
+</div>
+<p>This model is often called <em>Rayleigh Damping</em> after Lord Rayleigh who promoted it.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> The implication of this equation, which is a combination of inversely proportional (<span class="math inline">\(1/\freq_i\)</span>) and proportional (<span class="math inline">\(\freq_i\)</span>) terms is that the lower and higher frequency modes will possibly have larger damping ratios compared to intermediate modes, as sketched in <a href="#fig-rayleighdamp">Figure&nbsp;<span>7.13</span></a>. The two free parameters of the Rayleigh Damping model, <span class="math inline">\(\beta_M\)</span> and <span class="math inline">\(\beta_K\)</span>, could be determined by prescribing damping ratios for two modes: given <span class="math inline">\(\damp_i\)</span> and <span class="math inline">\(\damp_j\)</span>, we have <span class="math display">\[
+\colmat{\damp_i \\ \damp_j} = \begin{bmatrix} 1/(2 \freq_i) &amp; \freq_i / 2 \\
+1 / (2 \freq_j) &amp; \freq_j / 2\end{bmatrix} \colmat{\beta_M \\ \beta_K}
+\]</span> so that <span id="eq-rayleighcoeff"><span class="math display">\[
+\colmat{\beta_M \\ \beta_K} = \ratio{2\freq_i\freq_j}{\freq_j^2 - \freq_i^2}\begin{bmatrix} \freq_j &amp; -\freq_i \\
+- \ratio{1}{\freq_j} &amp; \ratio{1}{\freq_i}\end{bmatrix} \colmat{\damp_i \\ \damp_j}
+\qquad(7.45)\]</span></span> A common practice is to assume that the damping ratios of two modes, say modes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, are equal so that <span class="math inline">\(\damp_i = \damp_j = \damp\)</span>, in which case<br>
+<span id="eq-rayleighcoeff2"><span class="math display">\[
+\beta_M = \frac{2 \freq_i \freq_j}{\freq_j + \freq_i}\damp,  \quad  \beta_K =  \frac{2}{\freq_j + \freq_i}\damp
+\qquad(7.46)\]</span></span> In practice, the two modes at which the damping ratio is set equal to <span class="math inline">\(\damp\)</span> are the fundamental (lowest frequency) mode and one of the modes in the high frequency range that still contributes significantly to the response. This choice effectively damps out contributions from higher frequencies, whereas intermediate frequencies will have slightly lower damping ratios than the fundamental frequency.</p>
+<p>The obvious issue with Rayleigh Damping is the possibly unwanted variation of damping percentages in the modes other than those for which the damping ratios are prescribed. If one wants to prescribe damping ratios to more than two modes, other approaches should be considered.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="3">
+<li id="fn3"><p>A true classic in the field of classical mechanics, “The Theory of Sound” by Lord Rayleigh (formerly/also known as John William Strutt) was originally published in two volumes in 1877 and 1878, respectively.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="caughey-damping" class="level4" data-number="7.6.3.2">
+<h4 data-number="7.6.3.2" data-anchor-id="caughey-damping"><span class="header-section-number">7.6.3.2</span> Caughey Damping</h4>
+<p>The Rayleigh Damping approach could be extended to prescribe the damping ratios of more than two modes. In what is generally called <em>Caughey Damping</em> or <em>Extended Rayleigh Damping</em>, the damping matrix is written as a linear combination of some powers of mass and stiffness matrices. Consider the undamped eigenvalue problem given by <span id="eq-eigcaughey"><span class="math display">\[
+\kmat \eigveci{i} = \freq_i^2 \mmat \eigveci{i}
+\qquad(7.47)\]</span></span> with orthogonality conditions <span id="eq-ortcaughey"><span class="math display">\[
+\teigveci{j} \kmat \eigveci{i} = \modk_i \delta_{ij}, \quad \teigveci{j} \mmat \eigveci{i} = \modm_i \delta_{ij}
+\qquad(7.48)\]</span></span> If we premultiply <a href="#eq-eigcaughey">Equation&nbsp;<span>7.47</span></a> by <span class="math inline">\(\teigveci{j} \kmat \mmat^{-1}\)</span>, we get <span class="math display">\[
+\teigveci{j} \kmat \mmat^{-1} \kmat \eigveci{i} = \freq_i^2 \teigveci{j} \kmat \mmat^{-1} \mmat \eigveci{i} = \freq_i^2 \teigveci{j} \kmat \eigveci{i} = \freq_i^2 \modk_i \delta_{ij}
+\]</span> which means that the eigenvalues of the undamped eigenvalue problem diagonalize also the matrix <span class="math inline">\(\kmat \mmat^{-1} \kmat\)</span>. But if that is the case, then premultiplying <a href="#eq-ortcaughey">Equation&nbsp;<span>7.48</span></a> with <span class="math inline">\(\teigveci{j} \kmat \mmat^{-1} \kmat \mmat^{-1}\)</span> leads to <span class="math display">\[\begin{align*}
+\teigveci{j} \kmat \mmat^{-1} \kmat \mmat^{-1} \kmat \eigveci{i} &amp; = \freq_i^2 \teigveci{j} \kmat \mmat^{-1} \kmat \mmat^{-1} \mmat \eigveci{i} = \teigveci{j} \kmat \mmat^{-1} \kmat \eigveci{i} \\
+&amp; = \freq_i^4 \modk_i \Delta_{ij}
+\end{align*}\]</span> and therefore, by induction, it can be shown that <span id="eq-caugheykind"><span class="math display">\[
+\teigveci{j} \kmat \left(\mmat^{-1} \kmat \right)^s \eigveci{i} = \teigveci{j} \left(\kmat \mmat^{-1}\right)^s \kmat  \eigveci{i} = \freq_i^{2s} \modk_i \delta_{ij} \quad \text{for } s \geq 0
+\qquad(7.49)\]</span></span> Similarly, if we start by premultiplying <a href="#eq-ortcaughey">Equation&nbsp;<span>7.48</span></a> by <span class="math inline">\(\teigveci{j} \mmat \kmat^{-1}\)</span>, we have <span class="math display">\[
+\teigveci{j} \mmat \kmat^{-1} \kmat \eigveci{i} = \modm_{i} \delta_{ij} = \freq_i^2 \teigveci{j} \mmat \kmat^{-1} \mmat \eigveci{i}
+\]</span> which means that the eigenvalues of the undamped eigenvalue problem diagonalize also the matrix <span class="math inline">\(\mmat \kmat^{-1} \mmat\)</span>. Consequently, premultiplying <a href="#eq-ortcaughey">Equation&nbsp;<span>7.48</span></a> with <span class="math inline">\(\teigveci{j} \mmat \kmat^{-1} \mmat \kmat^{-1}\)</span> leads to <span class="math display">\[
+\teigveci{j} \mmat \kmat^{-1} \mmat \kmat^{-1} \kmat \eigveci{i}  = \teigveci{j} \mmat \kmat^{-1} \mmat \eigveci{i} = \ratio{1}{\freq_i^2}\modm_{i} \delta_{ij} \\
+  = \freq_i^2 \teigveci{j} \mmat \kmat^{-1} \mmat \kmat^{-1} \mmat \eigveci{i}
+\]</span> so that <span class="math display">\[
+\teigveci{j} \mmat \kmat^{-1} \mmat \kmat^{-1} \mmat \eigveci{i} = \ratio{1}{\freq_i^4}\modm_{i} \delta_{ij}
+\]</span> and by induction it may be shown that <span id="eq-caugheymind"><span class="math display">\[
+\teigveci{j} \left(\mmat \kmat^{-1}\right)^s \mmat \eigveci{i} = \teigveci{j} \mmat \left(\kmat^{-1} \mmat\right)^s \eigveci{i} = \ratio{1}{\freq_i^{2s}}\modm_{i} \delta_{ij} \quad \text{for } s \geq 0
+\qquad(7.50)\]</span></span> <a href="#eq-caugheykind">Equation&nbsp;<span>7.49</span></a> and <a href="#eq-caugheymind">Equation&nbsp;<span>7.50</span></a> may be combined in a single expression by allowing the powers to take on both positive and negative values as <span id="eq-caugheycomb"><span class="math display">\[
+\teigveci{j} \mmat \left(\mmat^{-1} \kmat\right)^s \eigveci{i} = {\freq_i^{2s}}\modm_{i} \delta_{ij} \quad \text{for } - \infty &lt; s  &lt;\infty
+\qquad(7.51)\]</span></span> Note that the classical orthogonality relationships may recovered from <a href="#eq-caugheycomb">Equation&nbsp;<span>7.51</span></a> using <span class="math inline">\(s = 0\)</span> and <span class="math inline">\(s=1\)</span>.</p>
+<p>The point of this exercise is: any damping matrix that has the form <span class="math display">\[
+\mmat \left(\mmat^{-1} \kmat\right)^s
+\]</span> will be diagonalized by the undamped mode shapes! A superposition of such matrices corresponding to various powers, which may be expressed as <span class="math display">\[
+\cmat = \mmat \sum_{s} \beta_s \left(\mmat^{-1} \kmat\right)^s
+\]</span> will therefore yield a damping matrix <span class="math inline">\(\cmat\)</span> that will lead to a classically damped system. The coefficients <span class="math inline">\(\beta_s\)</span> are the free variables we may adjust to prescribe damping ratios for different modes. Consider, for example, the <span class="math inline">\(i\)</span>-th mode of the system for which (knowing that <span class="math inline">\(\cmat\)</span> is diagonalized by the mode shapes and via <a href="#eq-caugheycomb">Equation&nbsp;<span>7.51</span></a>) we have <span class="math display">\[
+\teigveci{j} \cmat \eigveci{i} = 2 \damp_i \freq_i \modm_i \delta_{ij} = \sum_{s} \beta_s {\freq_i^{2s}}\modm_{i} \delta_{ij}
+\]</span> so that <span id="eq-caugheydamprat"><span class="math display">\[
+\damp_i = \ratio{1}{2 \freq_i} \sum_{s} \beta_s {\freq_i^{2s}}
+\qquad(7.52)\]</span></span> When trying to prescribe the damping ratios for <span class="math inline">\(n'\)</span>-many modes (with <span class="math inline">\(n' \leq n\)</span>) we should use <span class="math inline">\(n'\)</span>-many terms in the summation and therefore <span class="math inline">\(n'\)</span>-many coefficients <span class="math inline">\(\beta_i\)</span>. Therefore we will have <span class="math inline">\(n'\)</span>-many equations given by <a href="#eq-caugheydamprat">Equation&nbsp;<span>7.52</span></a>, containing <span class="math inline">\(n'\)</span>-many unknowns <span class="math inline">\(\beta_s\)</span> which we solve for using these equations. The question is: which powers of <span class="math inline">\(s\)</span> should be included? This is important since a particularly egregious error would be to end up with unphysical negative damping ratios, which turns out to be a common issue if an odd number of damping constants are prescribed. In practice it is generally recommended to include an even number of terms, with powers as close to zero as possible. It is straightforward to show that summing over just the two powers <span class="math inline">\(s=0\)</span> and <span class="math inline">\(s=1\)</span> will yield the Rayleigh Damping model.</p>
+</section>
+<section id="sec-mdofx3" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdofx3">EXAMPLE 7 .4</h4>
+<p>As an exercise, let us consider the 5-DOF system of masses on a taut string, shown in <a href="#fig-xdof5string2">Figure&nbsp;<span>7.14</span></a>. Recall that we had worked on this system before and shown that the mass and stiffness matrices were given by <span class="math display">\[
+\mmat =  
+\begin{bmatrix}
+m &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; m &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; m &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; m &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; m
+\end{bmatrix}, \quad
+\kmat = \ratio{N}{\ell}
+\begin{bmatrix}
+10 &amp; -5 &amp; 0 &amp; 0 &amp; 0\\
+-5 &amp; 10 &amp; -5 &amp; 0 &amp; 0\\
+0 &amp; -5 &amp; 10 &amp; -5 &amp; 0\\
+0 &amp; 0 &amp; -5 &amp; 10 &amp; -5\\
+0 &amp; 0 &amp; 0 &amp; -5 &amp; 10
+\end{bmatrix}
+\]</span> To turn this into a completely numerical problem, assume <span class="math inline">\(m=10 \unit{kg}\)</span>, <span class="math inline">\(N = 1000 \unit{N}\)</span> and <span class="math inline">\(\ell = 1 \unit{m}\)</span> so that <span class="math display">\[
+\mmat =  
+\begin{bmatrix}
+10 &amp; 0 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 10 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 10 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 10 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 10
+\end{bmatrix}, \quad
+\kmat =
+\begin{bmatrix}
+10000 &amp; -5000 &amp; 0 &amp; 0 &amp; 0\\
+-5000 &amp; 10000 &amp; -5000 &amp; 0 &amp; 0\\
+0 &amp; -5000 &amp; 10000 &amp; -5000 &amp; 0\\
+0 &amp; 0 &amp; -5000 &amp; 10000 &amp; -5000\\
+0 &amp; 0 &amp; 0 &amp; -5000 &amp; 10000
+\end{bmatrix}
+\]</span></p>
+<div id="fig-xdof5string2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof5string.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7.14: A taut string bearing five equal masses.</figcaption><p></p>
+</figure>
+</div>
+<p>Eigenvalue analysis yields the following values for the five frequencies of the system: <span class="math display">\[
+\begin{array}{c}
+\freq_1 = 11.575 \unit{rad/s}, \; \freq_2 = 22.361 \unit{rad/s}, \; \freq_3 = 31.623 \unit{rad/s}, \\
+\freq_4 = 38.730 \unit{rad/s}, \; \freq_5 = 43.198 \unit{rad/s}
+\end{array}
+\]</span> First say we want to prescribe a damping ratio of <span class="math inline">\(5\%\)</span> to the first and the fifth modes (i.e.&nbsp;we want <span class="math inline">\(\damp_1 = \damp_5 = \damp = 0.05\)</span>). Since we want to prescribe only two values we may use the Rayleigh Damping model. According to <a href="#eq-rayleighcoeff2">Equation&nbsp;<span>7.46</span></a>, the coefficients that should multiply the mass and stiffness matrices are given by <span class="math display">\[
+\beta_M = \frac{2 \freq_1 \freq_5}{\freq_1 + \freq_5}\damp = 0.91287,  \quad  \beta_K =  \frac{2}{\freq_1 + \freq_5}\damp = 0.00183
+\]</span> so that <span class="math display">\[
+\cmat = \beta_M \mmat + \beta_K \kmat = \begin{bmatrix}
+27.386 &amp; -9.1287 &amp; 0 &amp; 0 &amp; 0\\
+-9.1287 &amp; 27.386 &amp; -9.1287 &amp; 0 &amp; 0\\
+0 &amp; -9.1287 &amp; 27.386 &amp; -9.1287 &amp; 0\\
+0 &amp; 0 &amp; -9.1287 &amp; 27.386 &amp; -9.1287\\
+0 &amp; 0 &amp; 0 &amp; -9.1287 &amp; 27.386
+\end{bmatrix}
+\]</span> Now this damping matrix will lead to the following damping ratios: <span class="math display">\[
+\damp_1 = 5.0 \%, \; \damp_2 = 4.1 \%, \; \damp_3 = 4.3 \%, \; \damp_4 = 4.7 \%, \; \damp_5 = 5.0 \%
+\]</span> While we have prescribed only the first and the fifth mode damping ratios, the other three have come out relatively close to those two. If we had instead prescribed the damping ratios for the first and the second modes as <span class="math inline">\(\damp_1 = \damp_2 = 5\%\)</span>, the same procedure would yield <span class="math display">\[
+\beta_M = \frac{2 \freq_1 \freq_2}{\freq_1 + \freq_2}\damp = 0.76268,  \quad  \beta_K =  \frac{2}{\freq_1 + \freq_2}\damp = 0.00295
+\]</span> and the damping ratios would be obtained as <span class="math display">\[
+\damp_1 = 5.0 \%, \; \damp_2 = 5.0 \%, \; \damp_3 = 5.9 \%, \; \damp_4 = 6.7 \%, \; \damp_5 = 7.2 \%
+\]</span> If there were more modes, the higher ones would get increasing damping values so that one has to be careful. High value of damping in a mode will effectively render the contribution of that mode to the response insignificant: this may be something that is preferred by the analyst but it may also be the source of significant error.</p>
+<p>To prescribe the damping ratios for more than two modes we will use the Caughey Damping model. Assume we would like to prescribe the damping ratios for modes 1, 2 and 3 <span class="math inline">\(5 \%\)</span>. The first issue that must be addressed is which powers to include in the summation of <a href="#eq-caugheydamprat">Equation&nbsp;<span>7.52</span></a>. Since we want to prescribe three damping values, the summation should include four terms (for three coefficients <span class="math inline">\(\beta_s\)</span>). Assume, for no particular reason, that we would like to use the powers <span class="math inline">\(s=-4\)</span>, <span class="math inline">\(s=1\)</span> and <span class="math inline">\(s=6\)</span>. In this case, the coefficients <span class="math inline">\(\beta_s\)</span> will have to be determined from the following three equations: <span class="math display">\[\begin{align*}
+\damp_1 &amp; = 0.05  = \ratio{1}{2 \freq_1} \left(\beta_{-4} {\freq_1^{-8}} + \beta_{1} {\freq_1^{2}} + \beta_{6} {\freq_1^{12}} \right) \\
+\damp_2 &amp; = 0.05  = \ratio{1}{2 \freq_2} \left(\beta_{-4} {\freq_2^{-8}} + \beta_{1} {\freq_2^{2}} + \beta_{6} {\freq_2^{12}} \right) \\
+\damp_3 &amp; = 0.05  = \ratio{1}{2 \freq_3} \left(\beta_{-4} {\freq_3^{-8}} + \beta_{1} {\freq_3^{2}} + \beta_{6} {\freq_3^{12}} \right)
+\end{align*}\]</span> Solving for <span class="math inline">\(\beta_s\)</span> we get <span class="math display">\[
+\beta_{-4} = 1.783\times 10^{8}, \quad \beta_{1} = 4.509 \times 10^{-3}, \quad \beta_{6} = 0
+\]</span> The damping matrix will then be given by <span class="math display">\[
+\cmat = \mmat \left( \beta_{-4} \left(\mmat^{-1} \kmat\right)^{-4} + \beta_{1} \left(\mmat^{-1} \kmat\right)^{1} + \beta_{6} \left(\mmat^{-1} \kmat\right)^{6}\right)
+\]</span> which will lead to the following damping ratios for all modes: <span class="math display">\[
+\damp_1 = 5.0 \%, \; \damp_2 = 5.0 \%, \; \damp_3 = 5.0 \%, \; \damp_4 = -11.1 \%, \; \damp_5 = -56.1 \%
+\]</span> Obviously the damping values thus obtained are unacceptable for the last two modes. If instead we use the powers <span class="math inline">\(s=-1\)</span>, <span class="math inline">\(s=0\)</span> and <span class="math inline">\(s=1\)</span>, we would solve for the unknown <span class="math inline">\(\beta_s\)</span> values using the equations <span class="math display">\[\begin{align*}
+\damp_1 = 0.05  = \ratio{1}{2 \freq_1} \left(\beta_{-1} {\freq_1^{-2}} + \beta_{0} {\freq_1^{0}} + \beta_{1} {\freq_1^{2}} \right) \\
+\damp_2 = 0.05  = \ratio{1}{2 \freq_2} \left(\beta_{-1} {\freq_2^{-2}} + \beta_{0} {\freq_2^{0}} + \beta_{1} {\freq_2^{2}} \right) \\
+\damp_3 = 0.05  = \ratio{1}{2 \freq_3} \left(\beta_{-1} {\freq_3^{-2}} + \beta_{0} {\freq_3^{0}} + \beta_{1} {\freq_3^{2}} \right)
+\end{align*}\]</span> from which we find <span class="math display">\[
+\beta_{-1} = -84.65, \quad \beta_{0} = 1.5638, \quad \beta_{1} = 0.0017
+\]</span> and the damping matrix given by <span class="math display">\[
+\cmat = \mmat \left( \beta_{-1} \left(\mmat^{-1} \kmat\right)^{-1} + \beta_{0} \left(\mmat^{-1} \kmat\right)^{0} + \beta_{1} \left(\mmat^{-1} \kmat\right)^{1}\right)
+\]</span> leads to <span class="math display">\[
+\damp_1 = 5.0 \%, \; \damp_2 = 5.0 \%, \; \damp_3 = 5.0 \%, \; \damp_4 = 5.2 \%, \; \damp_5 = 5.4 \%
+\]</span> which are quite acceptable. As a final case, let us try to set the damping ratios for modes <span class="math inline">\(2\)</span>, <span class="math inline">\(3\)</span> and <span class="math inline">\(5\)</span> at <span class="math inline">\(5 \%\)</span> using powers <span class="math inline">\(s=-1\)</span>, <span class="math inline">\(s=0\)</span> and <span class="math inline">\(s=1\)</span>. Now the equations become <span class="math display">\[\begin{align*}
+\damp_2 &amp; = 0.05  = \ratio{1}{2 \freq_2} \left(\beta_{-1} {\freq_2^{-2}} + \beta_{0} {\freq_2^{0}} + \beta_{1} {\freq_2^{2}} \right) \\
+\damp_3 &amp; = 0.05  = \ratio{1}{2 \freq_3} \left(\beta_{-1} {\freq_3^{-2}} + \beta_{0} {\freq_3^{0}} + \beta_{1} {\freq_3^{2}} \right) \\
+\damp_5 &amp; = 0.05  = \ratio{1}{2 \freq_5} \left(\beta_{-1} {\freq_5^{-2}} + \beta_{0} {\freq_5^{0}} + \beta_{1} {\freq_5^{2}} \right)
+\end{align*}\]</span> from which we obtain <span class="math display">\[
+\beta_{-1} = -352.36, \quad \beta_{0} = 2.3669, \quad \beta_{1} = 0.00115
+\]</span> and the damping matrix obtained via these values leads to <span class="math display">\[
+\damp_1 = -0.5 \%, \; \damp_2 = 5.0 \%, \; \damp_3 = 5.0 \%, \; \damp_4 = 4.97 \%, \; \damp_5 = 5.0 \%
+\]</span> where the first mode is seen to have an unacceptable damping value.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./multidof.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./multidofforcedvib.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

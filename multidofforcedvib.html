@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 8&nbsp; Forced Vibrations of Linear Multi Degree of Freedom Systems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./multidoffreevib.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./multidofforcedvib.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#modal-analysis-for-forced-vibration-response" id="toc-modal-analysis-for-forced-vibration-response" class="nav-link active" data-scroll-target="#modal-analysis-for-forced-vibration-response"><span class="header-section-number">8.1</span> Modal Analysis for Forced Vibration Response</a>
+  <ul class="collapse">
+  <li><a href="#general-flow" id="toc-general-flow" class="nav-link" data-scroll-target="#general-flow"><span class="header-section-number">8.1.1</span> General Flow</a></li>
+  <li><a href="#sec-derivedresp" id="toc-sec-derivedresp" class="nav-link" data-scroll-target="#sec-derivedresp"><span class="header-section-number">8.1.2</span> Derived Response Quantities</a></li>
+  <li><a href="#harmonic-excitations" id="toc-harmonic-excitations" class="nav-link" data-scroll-target="#harmonic-excitations"><span class="header-section-number">8.1.3</span> Harmonic Excitations</a></li>
+  </ul></li>
+  <li><a href="#sec-modalcomb" id="toc-sec-modalcomb" class="nav-link" data-scroll-target="#sec-modalcomb"><span class="header-section-number">8.2</span> Modal Combination Rules</a>
+  <ul class="collapse">
+  <li><a href="#absolute-sum-abssum" id="toc-absolute-sum-abssum" class="nav-link" data-scroll-target="#absolute-sum-abssum"><span class="header-section-number">8.2.1</span> Absolute Sum (ABSSUM)</a></li>
+  <li><a href="#square-root-of-the-sum-of-squares-srss" id="toc-square-root-of-the-sum-of-squares-srss" class="nav-link" data-scroll-target="#square-root-of-the-sum-of-squares-srss"><span class="header-section-number">8.2.2</span> Square Root of the Sum of Squares (SRSS)</a></li>
+  <li><a href="#complete-quadratic-combination-cqc" id="toc-complete-quadratic-combination-cqc" class="nav-link" data-scroll-target="#complete-quadratic-combination-cqc"><span class="header-section-number">8.2.3</span> Complete Quadratic Combination (CQC)</a></li>
+  </ul></li>
+  <li><a href="#response-to-ground-motion" id="toc-response-to-ground-motion" class="nav-link" data-scroll-target="#response-to-ground-motion"><span class="header-section-number">8.3</span> Response to Ground Motion</a>
+  <ul class="collapse">
+  <li><a href="#modal-response-to-ground-motion" id="toc-modal-response-to-ground-motion" class="nav-link" data-scroll-target="#modal-response-to-ground-motion"><span class="header-section-number">8.3.1</span> Modal Response to Ground Motion</a></li>
+  <li><a href="#base-shear-and-overturning-moment" id="toc-base-shear-and-overturning-moment" class="nav-link" data-scroll-target="#base-shear-and-overturning-moment"><span class="header-section-number">8.3.2</span> Base Shear and Overturning Moment</a></li>
+  <li><a href="#spectral-analysis-and-modal-combination" id="toc-spectral-analysis-and-modal-combination" class="nav-link" data-scroll-target="#spectral-analysis-and-modal-combination"><span class="header-section-number">8.3.3</span> Spectral Analysis and Modal Combination</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="modal-analysis-for-forced-vibration-response" class="level2" data-number="8.1">
+<h2 data-number="8.1" data-anchor-id="modal-analysis-for-forced-vibration-response"><span class="header-section-number">8.1</span> Modal Analysis for Forced Vibration Response</h2>
+<section id="general-flow" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" data-anchor-id="general-flow"><span class="header-section-number">8.1.1</span> General Flow</h3>
+<p>Now that we have established the basic principles of modal analysis while discussing free vibrations, we will outline the procedure for its application to forced vibrations. Consider an MDOF system, with <span class="math inline">\(n\)</span> degrees of freedom, subject to time dependent excitations acting along various generalized coordinates and collected in a column matrix <span class="math inline">\(\ldtvec\)</span>, so that the equations of motion for the system are given by: <span id="eq-MDOFEOMforced"><span class="math display">\[
+\mmat \ddgcvec (t) + \cmat \dgcvec (t) + \kmat \gcvec (t) =\ldvec (t)
+\qquad(8.1)\]</span></span> Assume that the eigenvalue problem is solved so that mode shapes <span class="math inline">\(\eigveci{i}\)</span> and frequencies <span class="math inline">\(\freq_i\)</span> are known. For a classically damped system, transformation from physical coordinates <span class="math inline">\(\gcvec\)</span> to modal coordinates <span class="math inline">\(\modcorvec\)</span> via <span id="eq-modexp"><span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t) = \sum_{i} \eigveci{i} \modcor_i (t)
+\qquad(8.2)\]</span></span> leads to <span id="eq-modtransforced"><span class="math display">\[
+\modmat^T \mmat \modmat \ddmodcorvec + \modmat^T \cmat \modmat  \dmodcorvec + \modmat^T \kmat \modmat \modcorvec =  \modmat^T \ldvec (t)
+\qquad(8.3)\]</span></span> which may be written as <span id="eq-modalforced"><span class="math display">\[
+\modmmat \ddmodcorvec (t) + \modcmat \dmodcorvec (t) + \modkmat \modcorvec (t) = \modldvec (t)
+\qquad(8.4)\]</span></span> where we have defined the <em>modal load vector</em> <span class="math inline">\(\modldvec\)</span> as <span class="math inline">\(\modldvec (t) \equiv \modmat^T \ldvec (t)\)</span>. <a href="#eq-modalforced">Equation&nbsp;<span>8.4</span></a> is a collection of <span class="math inline">\(n\)</span>-many uncoupled equations, each of the form <span id="eq-modalMDOFmat"><span class="math display">\[
+\modm_i \ddmodcor_i (t) + \modc_i \dmodcor_i (t) + \modk_i \modcor_i (t) = \modextforce_i (t) \quad \text{for } i=1,2,\ldots n
+\qquad(8.5)\]</span></span> where <span class="math display">\[
+\modm_i = \teigveci{i} \mmat \eigveci{i}, \;
+\modc_i = \teigveci{i} \cmat \eigveci{i}, \;
+\modk_i = \teigveci{i} \kmat \eigveci{i}, \;
+\modextforce_i (t) = \teigveci{i} \ldvec (t)
+\]</span> Dividing by modal mass <span class="math inline">\(\modm_i\)</span> leads to <span id="eq-modalMDOF"><span class="math display">\[
+\ddmodcor_i (t) + 2\zeta_i \freq_i \dmodcor_i (t) + \freq_i^2 \modcor_i (t) =\frac{\modextforce_i (t)}{\modm_i} \quad \text{for } i=1,2,\ldots n
+\qquad(8.6)\]</span></span></p>
+<p><a href="#eq-modalMDOF">Equation&nbsp;<span>8.6</span></a> is the equation for a viscously damped SDOF system. The solution of such equations have been discussed in detail in <a href="singledofforced.html"><span>Chapter&nbsp;3</span></a> and <a href="numericalsdof.html"><span>Chapter&nbsp;4</span></a>. Once these equations are solved, we can combine the contributions from different modes to compute the response in physical coordinates via <span id="eq-modalsumnoddisp"><span class="math display">\[
+\gcvec (t) = \sum_{i=1}^{n} {\modgcvec{i} (t)} = \sum_{i=1}^{n} {\eigveci{i} \modcor_i (t) }  
+\qquad(8.7)\]</span></span> where <span id="eq-modalcont"><span class="math display">\[
+\modgcvec{i} (t) = \eigveci{i} \modcor_i (t)
+\qquad(8.8)\]</span></span> is the contribution of the <span class="math inline">\(i\)</span>-th mode to the generalized displacements. Such a dissolution is employed in analyzing the particular contributions of modes to many response quantities. We will use the terminology <em>modal [response quantity]</em> to refer to such contributions; for example, we will call the vector <span class="math inline">\(\modgcvec{i}\)</span> in <a href="#eq-modalcont">Equation&nbsp;<span>8.8</span></a> the <em>modal displacements</em>. We shall eventually refer other quantities such as <em>modal base shear</em>, <em>modal interstory drift</em>, <em>modal equivalent static loads</em>, etc.</p>
+<p>In summary, the procedure to solve MDOF forced vibration problems with modal analysis can be summarized as follows:</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Modal Analysis</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Construct <span class="math inline">\(\mmat, \kmat\)</span> (for example via the methods of <a href="multidof.html"><span>Chapter&nbsp;6</span></a>).</li>
+<li>Obtain <span class="math inline">\(\freq_i\)</span>, <span class="math inline">\(\eigveci{i}\)</span>.</li>
+<li>Transform the equations to modal coordinates.</li>
+<li>Solve for <span class="math inline">\(\modcor_i\)</span> from <a href="#eq-modalMDOF">Equation&nbsp;<span>8.6</span></a>.</li>
+<li>Calculate the modal responses (e.g.modal displacements via <a href="#eq-modalcont">Equation&nbsp;<span>8.8</span></a>).</li>
+<li>Calculate physical response quantities (e.g.&nbsp;generalized displacements via <a href="#eq-modalsumnoddisp">Equation&nbsp;<span>8.7</span></a>).</li>
+</ul>
+</div>
+</div>
+<p>In principle, for an <span class="math inline">\(n\)</span>-DOF system, it may not be necessary to include all <span class="math inline">\(n\)</span> modal responses while calculating a response quantity since some (or even many) of the modal contributions may be negligible and therefore not worthwhile to spend resources on, especially in solving the eigenvalue problem and the response calculations in modal coordinates. The answer to the question of how many and which modes to include, however, is not trivial since the acceptable subset to use will depend on both the spatial and temporal distributions of the inputs. We will revisit this issue in more detail while discussing earthquake response analysis.</p>
+</section>
+<section id="sec-derivedresp" class="level3" data-number="8.1.2">
+<h3 data-number="8.1.2" data-anchor-id="sec-derivedresp"><span class="header-section-number">8.1.2</span> Derived Response Quantities</h3>
+<p>When modal analysis is used to analyze the response of a system, any response quantity we may seek to find will depend on the modal coordinate responses. We have seen an example of this in <a href="#eq-modalsumnoddisp">Equation&nbsp;<span>8.7</span></a> where the displacement responses in physical coordinates were expressed as a superposition of the modal displacements which in turn were functions of modal coordinates <span class="math inline">\(\modcor_i\)</span>. In this section we will introduce a few derived quantities which are deemed important for design and control purposes, and try to evaluate the modal conributions to each.</p>
+<p>Consider, as an example, a multi-story shear building. We choose to analyze this model because certain response quantities are relatively easily visualized on this model. The structure is shown in <a href="#fig-shearbldgeqvar">Figure&nbsp;<span>8.1</span></a> (a), and we assume that it is subjected to a unidirectional ground motion given by <span class="math inline">\(\gdis (t)\)</span>. The response quantities we are about to introduce are frequently employed in earthquake related analyses but the formulations could be generalized to any external excitation with proper modifications.</p>
+<div id="fig-shearbldgeqvar" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgeqvar.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.1: Shear building: (a) unidirectional ground motion model, (b) d’Alembert forces, (c) equivalent static loads. Note that vertical forces (weights and ground reaction) are not shown here since only lateral effects are analyzed but they do exist and they may have to be accounted for in certain analyses.</figcaption><p></p>
+</figure>
+</div>
+<p>One of the design parameters often referred to in structural codes is the <em>base shear</em>, denoted here by <span class="math inline">\(\baseshear\)</span>. This is the total shear force that must be transmitted to the fixed base by the columns attached to the foundation. It may be calculated via the cumulative d’Alembert forces or the equivalent static loads as follows: At any time during its motion, the free body diagram of the whole shear building, including the d’Alembert forces, will be like the one shown in <a href="#fig-shearbldgeqvar">Figure&nbsp;<span>8.1</span></a> (b) (the free body diagram also includes the <em>overturning moment</em> <span class="math inline">\(\overturn\)</span> which will be subsequently introduced). Equilibrium demands that the net horizontal force shall be zero so that <span id="eq-baseshear1"><span class="math display">\[
+\baseshear (t) = - \sum_{i=1}^{n} m_i \aacc_i (t) = - \onecol^T \mmat \aaccvec (t)
+\qquad(8.9)\]</span></span> Alternatively, we define <em>equivalent static loads</em> <span id="eq-eqstat"><span class="math display">\[
+\estatvec (t) = \colmat{\estati{1} (t) \\ \estati{2} (t)\\ \vdots \\ \estati{n}(t)} = \kmat \gcvec (t)
+\qquad(8.10)\]</span></span> as the set of external loads that should be appplied to a fixed base structure to induce the displecement pattern <span class="math inline">\(\gcvec (t)\)</span> at time <span class="math inline">\(t\)</span>. The structure with these forces is shown in <a href="#fig-shearbldgeqvar">Figure&nbsp;<span>8.1</span></a> (c). The reasoning is that since <span class="math inline">\(\gcvec (t)\)</span> is imposed, the internal force distribution related to deformation (stiffness) elements must be compatible with that which would occur under external loads <span class="math inline">\(\estatvec = \kmat \gcvec\)</span>; this in turn implies that a static analysis under applied loads <span class="math inline">\(\estatvec\)</span> could be used to solve for internal forces. Under the action of <span class="math inline">\(\estatvec\)</span> shown in <a href="#fig-shearbldgeqvar">Figure&nbsp;<span>8.1</span></a> (c), the base shear will be simply equal to the sum of these forces so that it is given by <span id="eq-baseshear2"><span class="math display">\[
+\baseshear (t) = \onecol^T \kmat \gcvec (t) = \onecol^T \estatvec (t)
+\qquad(8.11)\]</span></span> which may be shown to be equal to <span class="math inline">\(\baseshear = k_1 \gc_1\)</span>. It is important to note that there are no such external forces that actually act on the system; the equivalent static force <span class="math inline">\(\estatvec\)</span> is a conceptual device that simply helps us in calculations and allows us to think about a problem as we are accustomed to do in our experience with static analyses. The expression in <a href="#eq-eqstat">Equation&nbsp;<span>8.10</span></a> is the same as that with which we have previously defined <span class="math inline">\(\stff\)</span> but these two sets of forces have a subtle conceptual difference and we feel that difference should be reflected in the symbolism. In any case we should note that if the system is undamped, then equations <a href="#eq-baseshear1">Equation&nbsp;<span>8.9</span></a> and <a href="#eq-baseshear2">Equation&nbsp;<span>8.11</span></a> actually yield the same results since by the equation of motion for a shear building subject to unidirectional ground motion we have <span class="math display">\[
+\mmat \aaccvec (t) + \kmat \gcvec (t) = \zerocol \quad \rightarrow \quad \kmat \gcvec (t) = - \mmat \aaccvec (t)
+\]</span> In the presence of damping, a portion of d’Alembert forces would be balanced with damping forces so that the values obtained from the two expressions would differ; for small values of damping, however, the difference may not have a significant impact on design. Due to its direct link with methods of static analysis, the equivalent static force formulation is often preferred.</p>
+<p>How do we calculate the base shear with modal analysis? If we replace the generalized displacement vector in <a href="#eq-eqstat">Equation&nbsp;<span>8.10</span></a> with its modal expansion given in <a href="#eq-modexp">Equation&nbsp;<span>8.2</span></a> we get <span id="eq-modexpestat"><span class="math display">\[
+\begin{array}{rcl}
+\estatvec (t)  &amp; \!\!\! = &amp; \!\!\! \kmat \gcvec (t) = \kmat \left(\sum_i \eigveci{i} \modcor_i (t) \right) \\
+&amp; \!\!\! = &amp; \!\!\! \kmat \eigveci{1} \modcor_1 (t) + \kmat \eigveci{2} \modcor_2 (t) + \cdots + \kmat \eigveci{n} \modcor_n (t) \\
+&amp; \!\!\! = &amp; \!\!\! \modestatvec{1} (t) + \modestatvec{2} (t) + \cdots + \modestatvec{n} (t)
+\end{array}
+\qquad(8.12)\]</span></span> where <span id="eq-modexpestati"><span class="math display">\[
+\modestatvec{i} (t) = \kmat \eigveci{i} \modcor_i (t)
+\qquad(8.13)\]</span></span> is the modal equivalent static force for the <span class="math inline">\(i\)</span>-th mode, i.e.&nbsp;the contribution of the <span class="math inline">\(i\)</span>-th mode to the equivalent static force at time <span class="math inline">\(t\)</span>. Consequently, the base shear may be written in the form <span id="eq-modexpbaseshear"><span class="math display">\[
+\begin{array}{rcl}
+\baseshear (t) &amp; \!\!\! = &amp; \!\!\!  \onecol^T \estatvec (t) = \onecol^T\modestatvec{1} (t) + \onecol^T\modestatvec{2} (t) + \cdots + \onecol^T \modestatvec{n} (t) \\
+&amp; \!\!\! = &amp; \!\!\! \modbaseshear{1} (t) + \modbaseshear{2} (t) + \cdots + \modbaseshear{n} (t)
+\end{array}
+\qquad(8.14)\]</span></span> where <span id="eq-modexpbasesheari"><span class="math display">\[
+\modbaseshear{i} (t) = \onecol^T\modestatvec{i} (t) = \onecol^T\kmat \eigveci{i} \modcor_i (t)
+\qquad(8.15)\]</span></span> is the modal base shear for the <span class="math inline">\(i\)</span>-th mode, i.e.&nbsp;the contribution of the <span class="math inline">\(i\)</span>-th mode to the base shear.</p>
+<p>Another design variable commonly referred to is the overturning moment <span class="math inline">\(\overturn\)</span>, which is the total moment generated during at the base of the structure. We may calculate this quantity as follows: assume that the <span class="math inline">\(i\)</span>-th floor is located at a height of <span class="math inline">\(h_i\)</span> measured from the base. Condsidering the equivalent static loads, the overturning moment may be derived from moment equilibrium as <span class="math display">\[
+\overturn (t) = h_1 \estati{1} + h_2 \estati{2} + \cdots + h_n \estati{n} = \nvec{h}^T \estatvec (t)
+\]</span> where <span class="math inline">\(\nvec{h} = \left\{h_1 \;\;\; h_2 \;\;\; \cdots \;\;\; h_n\right\}^T\)</span> is a column matrix that contains the heights, and it is generally referred to as the <em>height vector</em>. Considering modal expansion of the equivalent static loads given in <a href="#eq-modexpestat">Equation&nbsp;<span>8.12</span></a> we get <span id="eq-modexpoverturn"><span class="math display">\[
+\begin{array}{rcl}
+\overturn (t) &amp; \!\!\! = &amp; \!\!\! \nvec{h}^T \estatvec (t) = \nvec{h}^T\modestatvec{1} (t) + \nvec{h}^T\modestatvec{2} (t) + \cdots + \nvec{h}^T \modestatvec{n} (t) \\
+&amp; \!\!\! = &amp; \!\!\! \modoverturn{1} (t) + \modoverturn{2} (t) + \cdots + \modoverturn{n} (t)
+\end{array}
+\qquad(8.16)\]</span></span> with <span id="eq-modexpoverturni"><span class="math display">\[
+\modoverturn{i} (t) = \nvec{h}^T \modestatvec{i} (t) = \nvec{h}^T\kmat \eigveci{i} \modcor_i (t)
+\qquad(8.17)\]</span></span> denoting the modal overturning moment for the <span class="math inline">\(i\)</span>-th mode, i.e.&nbsp;the contribution of the <span class="math inline">\(i\)</span>-th mode to the overturning moment at time <span class="math inline">\(t\)</span>.</p>
+<p>One could contrive many other response quantities that may depend on displacements, deformations, and their time derivatives. The simple fact is that if a system has <span class="math inline">\(n\)</span> degrees of freedom, then it should be possible to express any of these quantities as some function of at most <span class="math inline">\(n\)</span>-many generalized coordinates and/or their time derivatives. Whenever modal analyses is possible, it will be convenient to express such response quantities via summation of modal contributions, and it will be possible to isolate and discuss the contribution of a specific mode to a particular response quantity. Such modal expansions of response quantities play important roles in determining how many modes to include in an analysis, or whenever it is not possible to obtain full time histories but estimates of maximum responses are available. We will visit these issues further down the text.</p>
+</section>
+<section id="harmonic-excitations" class="level3" data-number="8.1.3">
+<h3 data-number="8.1.3" data-anchor-id="harmonic-excitations"><span class="header-section-number">8.1.3</span> Harmonic Excitations</h3>
+<p>With the modal analysis procedure described above, we can examine how systems will respond to time varying external forces <span class="math inline">\(\ldvec (t)\)</span>. As in the case of SDOF systems, the excitation may be impulsive, periodic, harmonic or random in nature. The preferred analysis method for each scenario may differ. Most generally, time-stepping based numerical approaches can be used to compute the response for a broad range of excitations. For simple loading scenarios such as a harmonic excitation distributed to nodes, the modal analysis technique allows us to obtain analytical solutions with relative ease. In addition, response of MDOF systems to harmonic excitations gives us a window through which we can observe how concepts such as resonance translate to MDOF systems.</p>
+<p>A particularly relevant class of problems involves situations where the whole system is excited with a single frequency harmonic excitation but with excitation amplitudes varying at each node. The equation of motion for this system is given by <span id="eq-675"><span class="math display">\[
+\mmat \ddgcvec (t) + \cmat \dgcvec (t) + \kmat \gcvec (t) = \ldvec \sinp{\extfreq t - \extphs}
+\qquad(8.18)\]</span></span> wherein the load vector is expressed as <span class="math inline">\(\ldvec (t) = \ldvec \sinp{\extfreq t}\)</span> to separate the time varying harmonic component and time invariant amplitude distribution of the loading. Let’s recall the modal equations for forced excitations, <a href="#eq-modalforced">Equation&nbsp;<span>8.4</span></a>, where the modal load vector is obtained as <span class="math inline">\(\modldvec (t)= \modmat^T \ldvec (t)\)</span>. For each mode then we have, <span class="math display">\[
+\modm_i \ddmodcor_i (t)+ \modc_i \dmodcor_i (t)+ \modk_i \modcor_i (t)= \modextforce_i (t) \quad \text{for } i=1,2,\ldots,n
+\]</span> where, for our harmonic force, <span id="eq-676"><span class="math display">\[
+\modextforce_i (t)= \eigveci{i}^T \ldvec \sinp{\extfreq t - \extphs}
+\qquad(8.19)\]</span></span> so that the equation of motion for the <span class="math inline">\(i\)</span>-th mode, after dividing through by its modal mass, may be written as <span id="eq-modharmexc"><span class="math display">\[
+\ddmodcor_i (t)+ 2\damp_i \freq_i \dmodcor_i (t)+\freq_i^2 \modcor_i(t)=\frac{\eigveci{i}^T \ldvec}{\modm_i} \sinp{\extfreq t - \extphs}
+\qquad(8.20)\]</span></span></p>
+<p><a href="#eq-modharmexc">Equation&nbsp;<span>8.20</span></a> is the equation of motion for an SDOF system subjected to harmonic excitation and we have solved this problem before: the solution is given by <a href="singledofforced.html#eq-harmdmpd">Equation&nbsp;<span>3.39</span></a>, which may be adapted to the modal SDOF equation as <span id="eq-modharmdmpd"><span class="math display">\[
+\begin{array}{rcl}
+\modcor_i (t) &amp; \!\!\! = &amp; \!\!\! \frac{\eigveci{i}^T \ldvec}{\freq_i^2 \modm_i} \dynamp_i \expon{-\damp_i \freq_i t} \biggl[\sinp{\extphs + \phs_i} \cos \dfreq_i t
++ \biggl(\frac{\damp_i \sinp{\extphs + \phs_i}-\ratfreq_i \cosp{\extphs + \phs_i}}{\sqrt{1-\damp_i^2}}\biggr) \sin \dfreq_i t \biggr] \\
+&amp; &amp; \quad + \frac{\eigveci{i}^T \ldvec}{\freq_i^2 \modm_i} \dynamp_i\sinp{\extfreq t - \extphs - \phs_i}
+\end{array}
+\qquad(8.21)\]</span></span> where <span class="math display">\[
+\begin{array}{c}
+\dfreq_i = \freq_i \sqrt{1-\damp_i^2} \; ;  \quad \ratfreq_i = \ratio{\extfreq}{\freq_i} \\
+\dynamp_i = \ratio{1}{\sqrt{\left(1 - \ratfreq_i^2 \right)^2 + \left(2 \damp_i \ratfreq_i \right)^2}} \; ; \quad \tan \phs_i = \ratio{ ({2 \damp_i \ratfreq_i})/{\dynamp_i}}{({1-\ratfreq_i^2})/{\dynamp_i}}
+\end{array}
+\]</span> Once the response in modal coordinates are evaluated, the response time histories in physical coordinates are obtained via modal superposition, i.e. <a href="#eq-modalsumnoddisp">Equation&nbsp;<span>8.7</span></a>.</p>
+<p>It is difficult to make sense of what the solution looks like by investigating the equations alone, so let us try to investigate a relatively simple case to gain some physical insight. Consider what the response would be when the system is subjected to a sinusoidal excitation with unit amplitudes, i.e.&nbsp;for the case with <span class="math display">\[
+\ldvec (t) = \onecol \sinp{\extfreq t}
+\]</span> As the response will eventually comprise only the steady state solution let us focus solely on that part, so that the response of the <span class="math inline">\(i\)</span>-th mode will be given by <span id="eq-modharmss1"><span class="math display">\[
+\modcor_i (t) = \frac{\eigveci{i}^T \onecol}{\freq_i^2 \modm_i} \dynamp_i\sinp{\extfreq t - \phs_i}
+\qquad(8.22)\]</span></span> and the responses in physical coordinates will be given by <span class="math display">\[
+\gcvec (t) = \sum_{i=1}^{n} \eigveci{i} \frac{\eigveci{i}^T \onecol}{\freq_i^2 \modm_i} \dynamp_i\sinp{\extfreq t - \phs_i}
+\]</span> There are two distinct contributions to the amplitude of the modal response. One is the term <span class="math display">\[
+\frac{\eigveci{i}^T \onecol}{\freq_i^2 \modm_i}
+\]</span> which is in part associated with the spatial distribution of the excitation and in part by the modal stiffness (i.e.&nbsp;<span class="math inline">\(\modk_i =\freq_i^2 \modm_i\)</span>). As we get to higher modes the number of sign changes in a mode shape increases, and so it is forseeable that <span class="math inline">\(\eigveci{i}^T \onecol\)</span> will most likely decrease with increasing mode number. This decrease is also exacerbated with the increase in the value of the frequency as the mode number increases (recall that by convention we order modes in increasing frequency values). The second contribution, however, comes from the dynamic amplification factor <span class="math inline">\(\dynamp_i\)</span>, which is a function of <span class="math inline">\(\ratfreq_i\)</span> and <span class="math inline">\(\damp_i\)</span>. Whenever the excitation frequency approaches the frequency of a particular mode, the dynamic amplification factor for that mode will increase significantly (theoretically it will asymptotically reach an infinitely large value for an undamped system), and in that case the response will be dominated by that mode. It is the interplay of the spatial and temporal components that eventually determines the dominance of a mode in the response.</p>
+<section id="sec-mdof2" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdof2">EXAMPLE 8 .2</h4>
+<p>Let’s consider a special case of an undamped 2-DOF system subject to a harmonic excitation on the first mass only. A question we can immediately ask is: how does the presence of the second mass and spring affect the response of the first mass? In other words, imagine an SDOF system with mass <span class="math inline">\(m\)</span> and stiffness <span class="math inline">\(k\)</span>; could we attach a second mass-spring unit to reduce or altogether suppress the motion of this system, assuming we can adjust <span class="math inline">\(m_d\)</span> and <span class="math inline">\(k_d\)</span> as we like? The answer is yes, and in fact this is commonly utilized in engineering practice to dampen out structural vibrations. These systems are broadly called <strong>tuned mass damper</strong> (TMD) systems, where unlike viscous damping, the vibration amplitudes are reduced by the addition of a well-calibrated mass-spring system.</p>
+<div id="fig-tmd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/tmd.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.2: A tuned-mass damper system consisting of two masses and no dashpots.</figcaption><p></p>
+</figure>
+</div>
+<p>The SDOF system with the mass-spring attachement is shown in <a href="#fig-tmd">Figure&nbsp;<span>8.2</span></a>. For the combined system the matrix equation of motion is<br>
+<span class="math display">\[
+\begin{bmatrix}
+m &amp; 0\\ 0 &amp; m_d \end{bmatrix} \colmat{\ddgc_1 (t)\\ \ddgc_2 (t)} + \begin{bmatrix}  k +k_d &amp; -k_d \\ -k_d &amp; k_d \\ \end{bmatrix} \colmat{\gc_1 (t) \\ \gc_2 (t)}= \colmat{\sforce \\ 0} \sinp {\extfreq t} = \ldvec \sinp{\extfreq t}
+\]</span> The two equations are coupled through <span class="math inline">\(\kmat\)</span>. This system is simple enough that we can either solve it by assuming a sinusoidal solution in physical coordinates. The equation of motion for each mode will be <span class="math display">\[
+\ddmodcor_i (t) +\freq_i^2 \modcor_i (t)=\frac{\eigveci{i}^T \ldvec}{\modm_i} \sinp{\extfreq t}
+\]</span> Noting that <span class="math display">\[
+\eigveci{i}^T \ldvec = \left\{\eigvecs_{1i} \;\;\; \eigvecs_{2i}\right\}\colmat{\sforce \\ 0} = \eigvecs_{1i}\sforce   
+\]</span> and that <span class="math display">\[
+\dynamp = \ratio{1}{\sqrt{(1-\ratfreq_i^2)^2}} \; ;\quad \phs = \begin{cases} 0 &amp; \text{if }\ratfreq &lt; 1 \\ \pi &amp; \text{if } \ratfreq &gt; 1\end{cases}
+\]</span> the steady state solution for the <span class="math inline">\(i\)</span>-th mode may be derived via <a href="#eq-modharmdmpd">Equation&nbsp;<span>8.21</span></a> to obtain<br>
+<span class="math display">\[
+\modcor_i (t) = \frac{\eigvecs_{1i} \sforce}{\freq_i^2 \modm_{i}} \ratio{1}{1-\ratfreq_i^2} \sinp{\extfreq t}
+\]</span> Summing up the contributions of the two modes, the response of the primary mass (the original SDOF system) is obtained as <span class="math display">\[
+\gc_1 (t) =\left[ \frac{\eigvecs_{11} \eigvecs_{11} }{\modk_1 (1-\ratfreq_1^2)} + \frac{\eigvecs_{12} \eigvecs_{12} }{\modk_2 (1-\ratfreq_2^2)} \right] \sforce \sinp{\extfreq t}
+\]</span> where <span class="math inline">\(\modk_i = \freq_i^2 \modm_i\)</span>.</p>
+<p>Let’s consider a simple numerical case to illustrate the response. Intuitively, we can imagine that if the second mass-spring complex is tuned to move out of phase with the first during steady-state response, this will result in reduced motion of the first mass. Defining the natural frequency of the isolated SDOF primary system as <span class="math inline">\(\freq = \sqrt{k/m}\)</span>, we will investigate how the response amplitude varies for different values of <span class="math inline">\(\extfreq/\freq\)</span>. Let’s consider a special case where we define a mass ratio of <span class="math inline">\(m_d / m=0.1\)</span>, and use the same ratio to scale the stiffnesses as <span class="math inline">\(k_d / k = m_d / m = 0.1\)</span>) such that both the primary and the damper system would, if they were considered as two separate SDOF systems, have the same natural frequency. In this case, <span class="math display">\[
+\mmat = m \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 0.1 \end{bmatrix}, \quad \kmat = k \begin{bmatrix} 1.1 &amp; -0.1 \\ -0.1 &amp; 0.1 \end{bmatrix}
+\]</span> so that solving the eigenvalue problem, we get the natural frequencies as <span class="math display">\[ \omega_1^2 = 0.7298 \omega^2 \; , \quad \omega_2^2 = 1.3702\omega^2 \]</span> and a set of mode shapes given by <span class="math display">\[
+\eigveci{1} = \colmat{-0.6495 \\ -2.4043} \; , \quad \eigveci{2} = \colmat{-0.7603 \\ 2.0541}
+\]</span></p>
+<div id="fig-tmdresp" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/tmdresp.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.3: The steady state displacement response amplitude (normalized by <span class="math inline">\(\sforce/k\)</span>) of the primary mass in a tuned mass damper system with mass ratio <span class="math inline">\(m_d / m =0.1\)</span>, plotted here against excitation frequencies <span class="math inline">\(\extfreq\)</span> normalized by the primary system’s resonant frequency <span class="math inline">\(\freq = \sqrt{k/m}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>With these mode shapes, the modal mass and stifness values are calculated as <span class="math display">\[
+\modm_1 = \modm_2 = m \; ; \quad \modk_1 = 0.7298 k, \; \modk_2 = 1.3702 k
+\]</span> The absolute value of the displacement response amplitude <span class="math inline">\(Q_1\)</span> of the primary mass, normalized with <span class="math inline">\(\sforce/k\)</span> (as in static deflection under <span class="math inline">\(\sforce\)</span>) is then given by <span class="math display">\[
+\abs{\ratio{Q_1}{\sforce/k}} = \abs{\ratio{0.578}{1-\rho_1^2} + \frac{0.422}{1-\rho_2^2}}
+\]</span></p>
+<p>The normalized response amplitude plotted in <a href="#fig-tmdresp">Figure&nbsp;<span>8.3</span></a> shows that the response was completely suppressed at the original natural frequency of the primary system. Even in damped systems, for the critical scenario where the primary system would exhibit resonance, we will have a significantly diminished response, with the displacements being much smaller than static response. In the damped scenarioes, the lowest amplification happens near but not exactly at <span class="math inline">\(\extfreq/\freq\)</span>. It can be shown that by increasing the mass ratio <span class="math inline">\(m_d / m\)</span>, it would be possible to broaden the operational frequency range (e.g.&nbsp;the range where response is less than static equivalent) and further reduce the resonant amplitude (considering primary only), but such an increase becomes practically challenging given the need to add a substantial amount of weight to the system. An additional constraint is the displacement bounds on the second mass which may reach excessive amplitudes. Designs typically consider these criteria and try to determine optimal solutions under viable constraints imposed on both variables.</p>
+</section>
+</section>
+</section>
+<section id="sec-modalcomb" class="level2" data-number="8.2">
+<h2 data-number="8.2" data-anchor-id="sec-modalcomb"><span class="header-section-number">8.2</span> Modal Combination Rules</h2>
+<p>Obtaining response time histories with modal analysis requires a complete characterisation of how the excitation varies in time. This may simply not be possible under certain types of loads or analyses, a prime example of which is the analysis frequently encountered in design of structures for earthquakes. Recall that the concept of earthquake spectra was developed specifically for such an issue since the actual time history of a future earthquake is impossible to estimate but some bounds on the response of SDOF systems may be estimated. So the question is, how may we proceed when we do not know the full excitation but may estimate peak values of some modal response quantities?</p>
+<p>This question is not so trivial since there is no precise approach suitable for all cases although one is more likely to err by over-estimating. Let us first clarify what the problem is: consider an analytically tractable problem such as a 3-DOF shear building subject to a harmonic ground motion given by <span class="math inline">\(\gacc (t) = \sinp{\extfreq t}\)</span>. Assume we would like to calculate the <em>peak response</em> for the first floor displacement <span class="math inline">\(\gc_1\)</span> that will be observed during steady state vibrations. By <em>peak response</em> we shall refer to that value of the response quantity whose absolute value would be the maximum of all the absolute values of that response quantity for a particular excitation and/or duration; in other words, the peak value <span class="math inline">\(\overline {R}\)</span> of a response quantity <span class="math inline">\(R (t)\)</span> is its value at time <span class="math inline">\(t=t'\)</span>, i.e.&nbsp;<span class="math inline">\(\overline {R} = R (t')\)</span> such that <span class="math inline">\(\abs{R (t')}\)</span> is the maximum of all <span class="math inline">\(\abs{R (t)}\)</span>. The sign of a peak response quantity may be positive or negative, and this sign will be prescribed by the definition of the response quantity as will be evident later on. There is a slight but consequential difference between the peak response that we have defined and the peak response that is often refferred to which represents a maximum absolute quantity. For example, a spectral quantity like the pseudo-acceleration or the deformation that will be obtained from a given spectrum, which denotes a maximum response or sometimes a maximum excitation value, will always have a positive value by definition, since by definition we would have <span class="math inline">\(\overline {R} = \abs{R (t')}\)</span>. If differentiation is necessary, we will refer to such maxima as <em>peak absolute response</em> or <em>peak spectral response</em>. Recall that ground motion parameters such as peak ground acceleration introduced previously in <a href="eqsdof.html"><span>Chapter&nbsp;5</span></a> are in fact also quantities of this sort.</p>
+<div id="fig-modcomb" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/modcomb.png" class="img-fluid figure-img" style="width:98.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.4: Steady state response (extracts) of modal coordinates for the 3-DOF shear building subjected to harmonic ground motion.</figcaption><p></p>
+</figure>
+</div>
+<p>For the problem at hand, the steady state vibrations of the modal coordinates <span class="math inline">\(\modcor_i\)</span> will have the time histories shown in part in <a href="#fig-modcomb">Figure&nbsp;<span>8.4</span></a>. If the time histories are known, then straightforward superposition leads to <span class="math display">\[
+\gc_1 (t) = \eigvecs_{11} \modcor_1 (t) + \eigvecs_{12} \modcor_2 (t) + \eigvecs_{13} \modcor_3 (t)
+\]</span> and the peak first floor displacement <span class="math inline">\(\overline{Q}_1\)</span> that is observed during steady state vibrations may be directly identified from the time history of <span class="math inline">\(\gc_1 (t)\)</span>. What if we do not have the time histories but only estimates of the amplitudes of steady state vibrations of modal coordinates, i.e.&nbsp;estimates for <span class="math inline">\(\overline{\modcoramp}_1\)</span>, <span class="math inline">\(\overline{\modcoramp}_2\)</span> and <span class="math inline">\(\overline{\modcoramp}_3\)</span> shown in <a href="#fig-modcomb">Figure&nbsp;<span>8.4</span></a>? Such esimates could be available from a given spectrum, for example in the form of a graph of dynamic amplification, which shows how vibration amplitude varies with the ratio <span class="math inline">\(\extfreq/\freq\)</span>.</p>
+<p>Estimating <span class="math inline">\(\overline{Q}_1\)</span> from <span class="math inline">\(\overline{\modcoramp}_1\)</span>, <span class="math inline">\(\overline{\modcoramp}_2\)</span> and <span class="math inline">\(\overline{\modcoramp}_3\)</span> alone is not a trivial issue. The obvious problem is the phase difference. If we look at the time histories we will see that when <span class="math inline">\(\modcor_1(t)\)</span> reaches a maximum, <span class="math inline">\(\modcor_2(t)\)</span> is near zero and <span class="math inline">\(\modcor_3 (t)\)</span> is almost at its minimum. Therefore if we were to superpose the time histories, the sign differences would most likely lead to a peak value less than what we would obtain by superposing the modal peak values, i.e. <span class="math display">\[
+\overline{Q}_1 \leq \abs{\eigvecs_{11} \overline{\modcoramp}_1} + \abs{\eigvecs_{12} \overline{\modcoramp}_2} + \abs{\eigvecs_{13} \overline{\modcoramp}_3}
+\]</span> If phase information is not available this may be an option but most likely it is a very conservative estimate. The absolute values are in fact there to ensure that our estimation error does not lead to increased risk of safety; if errors can not be avoided, we should at least make sure that we remain conservative and not give way to any unwarranted concerns.</p>
+<p>The estimation issue we have tried to exemplify is generally investigated under the heading <em>modal combination rules</em>. The concise form of the problem is as follows: Assume there is a response quantity <span class="math inline">\(R (t)\)</span> generated in a system under a certain load, and that its peak value is <span class="math inline">\(\overline {R}\)</span>. The contribution of mode <span class="math inline">\(i\)</span> to this response quantity is given by <span class="math inline">\(R^{(i)} (t)\)</span> and its peak value is <span class="math inline">\(\overline{R^{(i)}}\)</span>, with <span class="math inline">\(i = 1,2,\ldots,n' \leq n\)</span> where <span class="math inline">\(n'\)</span> is the number of modes that will be included in the analysis; this number may be less that the total number of modes <span class="math inline">\(n\)</span> if it is known that the contribution of some modes may be neglected. The question is: knowing <span class="math inline">\(\overline{R^{(i)}}\)</span>, how could we produce an estimate of <span class="math inline">\(\overline{R}\)</span>? There could obviously be many ways of doing this but we will discuss only three of the most commonly used combination rules.</p>
+<section id="absolute-sum-abssum" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" data-anchor-id="absolute-sum-abssum"><span class="header-section-number">8.2.1</span> Absolute Sum (ABSSUM)</h3>
+<p>The most obvious and most conservative way to combine the modal response is to consider the worst case scenario where all modal peaks occur at the same time with the same sign so that <span class="math display">\[
+\overline{R} \approx \abs{\overline{R^{(1)}}} + \abs{\overline{R^{(2)}}} + \cdots + \abs{\overline{R^{(n')}}} = \sum_i^{n' \leq n} \abs{\overline{R^{(i)}}}
+\]</span> It is rarely if ever possible that such a complete concurrence occurs and therefore this modal combination is generally considered to be over-conservative.</p>
+</section>
+<section id="square-root-of-the-sum-of-squares-srss" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" data-anchor-id="square-root-of-the-sum-of-squares-srss"><span class="header-section-number">8.2.2</span> Square Root of the Sum of Squares (SRSS)</h3>
+<p>Initially considered as a less conservative combination that favors the larger contributions more, the <em>square root of the sum of squares</em> (SRSS) rule estimates the peak response via <span class="math display">\[
+\overline{R} \approx \sqrt{\Bigl(\overline{R^{(1)}}\Bigr)^2 + \Bigl(\overline{R^{(2)}}\Bigr)^2 + \cdots + \Bigl(\overline{R^{(n')}}\Bigr)^2} = \biggl(\sum_i^{n' \leq n} \Bigl(\overline{R^{(i)}}\Bigr)^2 \biggr)^{1/2}
+\]</span> Theoretical justification of the SRSS may be given via random vibration analysis and it has been shown that SRSS works best when modes are well separated; in any case it is not so overly conservative as the ABSSUM. When, however, the majority of the estimate is contributed by close modes, the results are more questionable and the complete quadratic combination rule may be considered as an alternative with a stronger theoretical justification.</p>
+</section>
+<section id="complete-quadratic-combination-cqc" class="level3" data-number="8.2.3">
+<h3 data-number="8.2.3" data-anchor-id="complete-quadratic-combination-cqc"><span class="header-section-number">8.2.3</span> Complete Quadratic Combination (CQC)</h3>
+<p>It may not be possible to specify a single combination rule that would be optimum for all arbitrary inputs but certain types of excitations are conducive for classification. <em>Stationary random excitations</em> are one such set which, although quite idealized, may be used to model certain inputs such as wind and earthquake excitations. Neither of the two are in fact stationary and their probabilistic characteristics are always time dependent; in any case, analysis of response to stationary excitations have provided very useful theoretical frameworks and some practical results that have been employed with satisfactory accuracy. In the analysis of earthquake excitations, for example, considering the ground motion to be a stationary random process have helped tracking how modal response may vary with respect to each other and how this variation affects the response. This investigation have led to the modal combination rule known as the <em>complete quadratic combination</em> which proposes<br>
+<span id="eq-cqc"><span class="math display">\[
+\overline{R} \approx \biggl(\sum_i^{n' \leq n} \sum_j^{n' \leq n} \ccor{ij}\overline{R^{(i)}} \; \overline{R^{(j)}} \biggr)^{1/2}
+\qquad(8.23)\]</span></span></p>
+<p>Parameter <span class="math inline">\(\ccor{ij}\)</span>, called the <em>correlation coefficient</em>, provides in general a measure of the reciprocal relationship between two random variables, and in this particular case it provides a measure of temporal reciprocity between mode <em>i</em> and mode <em>j</em>. There are different estimates for this coeefficient all of which depend on some measure of separation between the frequencies of the two modes. For example, a frequently cited proposal is<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <span id="eq-ccorK"><span class="math display">\[
+\ccor{ij} = \ratio{8 \sqrt{\damp_i \damp_j}(\damp_i r_{ij} + \damp_j)r_{ij}^{3/2}}{(1-r_{ij}^2)^2 + 4 \damp_i \damp_j r_{ij} (1+r_{ij}^2)+ 4 (\damp_i^2 + \damp_j^2)r^2_{ij}}
+\qquad(8.24)\]</span></span> where <span class="math inline">\(r_{ij} = \freq_i / \freq_j\)</span>. It may be easily shown that <span class="math inline">\(0 &lt; \ccor{ij} \leq 1\)</span>, <span class="math inline">\(\ccor{ij} = \ccor{ji}\)</span>, and <span class="math inline">\(\ccor{ii} = 1\)</span>. In a simpler version, if two modes have the same damping ratios with <span class="math inline">\(\damp_i = \damp_j = \damp\)</span>, then <a href="#eq-ccorK">Equation&nbsp;<span>8.24</span></a> reduces to <span id="eq-ccorK2"><span class="math display">\[
+\ccor{ij} = \ratio{8 \damp^2 (1 + r_{ij})r_{ij}^{3/2}}{(1-r_{ij}^2)^2 + 4 \damp^2 r_{ij} (1+r_{ij})^2}
+\qquad(8.25)\]</span></span></p>
+<div id="fig-correlationcoef" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/correlationcoef.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.5: Variation of the correlation coefficient of <a href="#eq-ccorK2">Equation&nbsp;<span>8.25</span></a> with the ratio of frequencies for three different modal dmaping values.</figcaption><p></p>
+</figure>
+</div>
+<p>The correlation coefficient depends very much on the separation of the two frequencies and this trend is most readily observed in a simple plot like the one in <a href="#fig-correlationcoef">Figure&nbsp;<span>8.5</span></a> which shows the variation of the correlation coefficient between two modes <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> with the ratio of the modal frequencies <span class="math inline">\(\freq_i / \freq_j\)</span>. For simplicity we have assumed both modes to have the same damping ratio <span class="math inline">\(\damp\)</span> and have provided curves for three different values of modal dmaping ratio. Two things are immediately identified: i. the correlation coefficient steeply decreases from its maximum value of 1 as the separation of the frequencies increases, ii. the correlation coefficient is quite sensitive to damping and the more lightly damped the modes are, the steeper is the decent from the peak value. These observation support the use of SRSS in many application as well. If we note that <span class="math inline">\(\ccor{ii} = 1\)</span> and write the CQC rule given by <a href="#eq-cqc">Equation&nbsp;<span>8.23</span></a> in the form <span id="eq-cqc2"><span class="math display">\[
+\overline{R} \approx \biggl(\sum_i^{n' \leq n} \Bigl(\overline{R^{(i)}}\Bigr)^2 + \sum_i^{n' \leq n} \sum_{j \neq i}^{n' \leq n} \ccor{ij}\overline{R^{(i)}} \; \overline{R^{(j)}} \biggr)^{1/2}
+\qquad(8.26)\]</span></span> then it is obvious that the first part comprising the single summation is the SRSS rule and the second part comprising the double summation is the additional contribution brought about by the CQC. If the modal frequencies are sufficiently separated then <span class="math inline">\(\ccor{ij} \approx 0\)</span> and the difference between SRSS and CQC becomes negligible.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>E.L. Wilson, A. Der Kiureghian and E.P. Bayo, ``A Replacement for the SRSS Method in Seismic Analysis’’, <em>Earthquake Engineering and Structural Dynamics</em>, Vol. 9, pp.&nbsp;187-194, 1981.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+<section id="response-to-ground-motion" class="level2" data-number="8.3">
+<h2 data-number="8.3" data-anchor-id="response-to-ground-motion"><span class="header-section-number">8.3</span> Response to Ground Motion</h2>
+<p>Extension of the discussions and formulation hereto presented to structures subjected to ground motoions is both trivial and not-so-simple. It is trivial because mathematically the equations of motion for a system subjected to ground motion, as discussed in detail in <a href="multidof.html#sec-mdofbase"><span>Section&nbsp;6.7</span></a>, are analogous to the equations discussed in the current chapter. For a linear, classically damped system these equations are of the form <span id="eq-eommdofbase"><span class="math display">\[
+\mmat \ddgcvec (t) + \cmat \dgcvec (t) + \kmat \gcvec (t) = - \mmat \ininfmat \gaccvec (t)
+\qquad(8.27)\]</span></span> as was developed in <a href="multidof.html#sec-mdofbase"><span>Section&nbsp;6.7</span></a>, with the current addition of the damping term. This equation is identical to <a href="#eq-MDOFEOMforced">Equation&nbsp;<span>8.1</span></a> where <span class="math inline">\(\ldvec (t) \equiv - \mmat \ininfmat \gaccvec (t)\)</span>; in fact, due to this analogy, the term <span class="math inline">\(- \mmat \ininfmat \gaccvec (t)\)</span> is sometimes referred to as the <em>effective earthquake force</em>. When the system is classically damped, all that we have said about modal analysis is valid and the time history of any response quantity may be determined provided that the input signal <span class="math inline">\(\gaccvec (t)\)</span> is known. But therein lies the difficulty. The primary example of ground motion is earthquakes, generally governing the design of a structure in earthquake prone areas. As was discussed in the context of SDOF systems, it is impossible to preciely predict what a future earthquake will look like, and therefore the design procedure is often based on a <em>design spectrum</em> that is established from historical analysis of past earthquakes and that hopefully represents the typical earthquake loads that may be expected in the lifetime of a structure considering its location and ground conditions. Use of a spectrum necessitates the use of modal combination rules that were discussed in <a href="#sec-modalcomb"><span>Section&nbsp;8.2</span></a>. Uncertainty in the input is ever present in earthquake resistant design and still the subject of many reasearch effrots.</p>
+<section id="modal-response-to-ground-motion" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" data-anchor-id="modal-response-to-ground-motion"><span class="header-section-number">8.3.1</span> Modal Response to Ground Motion</h3>
+<p>To walk through the basic steps involved in analyses and introduce some terminology, let us consider the simple shear building shown in <a href="#fig-dof3shearbldgbase">Figure&nbsp;<span>8.6</span></a>, subject to a 1-D translational ground motion <span class="math inline">\(\gdis (t)\)</span>. The position of the masses can be defined in response to an inertial frame of reference in absolute terms by <span class="math inline">\(\adisvec (t)\)</span>, or relative to the ground by <span class="math inline">\(\gcvec (t)\)</span>, while the ground itself is displaced by an amount <span class="math inline">\(\gdis (t)\)</span>. As shown in <a href="multidof.html#sec-mdofbase"><span>Section&nbsp;6.7</span></a>, the absolute and relative displacements of the masses are related through <span class="math display">\[
+\adisvec (t) = \gcvec (t) + \onecol \gdis (t)
+\]</span> where <span class="math inline">\(\onecol\)</span> is the <span class="math inline">\(1 \times n\)</span> column matrix of ones. Differentiating with respect to time yields <span class="math display">\[
+\aaccvec (t) = \ddgcvec (t) + \onecol \gacc (t)
+\]</span> and the equation of motion governing the relative displacements are given by <span id="eq-MDOFEOMGR"><span class="math display">\[
+\mmat \ddgcvec (t) + \cmat \dgcvec (t) + \kmat \gcvec (t) = - \mmat \onecol \gacc (t)
+\qquad(8.28)\]</span></span></p>
+<div id="fig-dof3shearbldgbase" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3shearbldgbase.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.6: 3 story shear building subject to unidirectional base excitation.</figcaption><p></p>
+</figure>
+</div>
+<p>We might recall that this version was generally preferred over the equations regarding the absolute displacements since the relative displacements are more directly associated with deformations; also note that ground motions from earthquakes are often recorded as time-histories of accelerations, typically captured by means of seismometers. It should also be noted that this equation is essentially the same as <a href="#eq-eommdofbase">Equation&nbsp;<span>8.27</span></a> with <span class="math inline">\(\gaccvec (t) \equiv \gacc (t)\)</span> and <span class="math inline">\(\ininfmat \equiv \onecol\)</span>, with dimension reductions due to the fact that we have a single ground motion component in the current example.</p>
+<p>Transforming to modal coordinates with <span class="math inline">\(\gcvec (t) = \modmat \modcorvec (t)\)</span>, equations in modal coordinates are obtained as <span id="eq-modshearbase"><span class="math display">\[
+\ddmodcor_i (t) + 2\damp_i \freq_i \dmodcor_i (t) +\freq_i^2 \modcor_i (t)= - \frac{\excifact_i}{\modm_i} \gacc (t)
+\qquad(8.29)\]</span></span> where the scalar coefficient <span class="math inline">\(\excifact_i\)</span>, referred to as the <em>earthquake excitation factor</em>, is given by <span id="eq-excifact"><span class="math display">\[
+\excifact_i = {\teigveci{i}} \mmat \onecol
+\qquad(8.30)\]</span></span> The earthquake excitation factor provides some measure of the extent the ground motion excites a particular mode although it is not the only determinant in the contributio of a mode to the overall response. In any case there is a trend that is relatively easily spotted. Recall that as the mode number increases (in accordance with our convention of ordering modes in increasing order of frequency), the number of sign changes in the mode shape also increases. For an <span class="math inline">\(n\)</span>-story shear building for which the mass matrix will be diagonal with floor masses <span class="math inline">\(m_j\)</span>, for example, we have<br>
+<span class="math display">\[
+\excifact_i = {\teigveci{i}} \mmat \onecol = \sum_{j}^n \eigvecs_{ij} m_j
+\]</span> so that for the first mode we will have all positive terms in the summation but for the second mode onward we will have both positive and negative terms. The earthquake excitation factor therefore tends to decrease with increasing mode number. Furthermore, consider a conjugate SDOF system that has the same frequency and damping ratio as the <span class="math inline">\(i\)</span>-th mode, subjected to the same ground motion <span class="math inline">\(\gdis (t)\)</span>; this system’s equation of motion will given by <span class="math display">\[
+\ddot{d}_i (t) + 2 \damp_i \freq_i \dot{d}_i (t)+ \freq^2 d_i (t) = - \gacc (t)
+\]</span> where <span class="math inline">\(d_i (t)\)</span> is the generalized coordinate for the conjugate SDOF system of the <span class="math inline">\(i\)</span>-th mode. Since the equations of motion are linear, the response of the <span class="math inline">\(i\)</span>-th mode and the response of the conjugate SDOF system are related through <span id="eq-conjsdof"><span class="math display">\[
+\modcor_i (t) = \frac{\excifact_i}{\modm_i} d_i (t)
+\qquad(8.31)\]</span></span> since, due to linearity, a scaling of the input leads directly to a scaling of the output with the same factor. Consequently, if the peak absolute displacement of the conjugate system is given by <span class="math display">\[
+\dspec_i = \max_t \abs{d_i (t)}
+\]</span> such that <span class="math inline">\(\dspec_i\)</span> may be calculated or read from a spectrum, then we may estimate the peak modal coordinate response as <span class="math display">\[
+\overline{\modcoramp_i} = \frac{\excifact_i}{\modm_i} \dspec_i
+\]</span> Once the response in modal coordinates is known, the response in physical coordinates may be obtained via modal superposition so that, for example, displacements are given by <span class="math display">\[
+\gcvec (t) = \modmat \modcorvec (t) = \sum_i \eigveci{i} \frac{\excifact_i}{\modm_i} d_i (t)
+\]</span></p>
+</section>
+<section id="base-shear-and-overturning-moment" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" data-anchor-id="base-shear-and-overturning-moment"><span class="header-section-number">8.3.2</span> Base Shear and Overturning Moment</h3>
+<p>Base shear <span class="math inline">\(\baseshear\)</span> and overturning moment <span class="math inline">\(\overturn\)</span> play such an important role in aseismic design that it is worthwhile to revisit them even though we had previously introduced them in <a href="#sec-derivedresp"><span>Section&nbsp;8.1.2</span></a>. The equivalent static loads for our simple shear building are sketched in <a href="#fig-dof3shearbldgeqvar">Figure&nbsp;<span>8.7</span></a>. Recall that these forces are given by <span class="math display">\[
+\estatvec (t) = \kmat \gcvec (t)
+\]</span> and that the base shear, which may be obtained for a shear building as the sum of the equivalent static loads, is given by <span class="math display">\[
+\baseshear (t) = \onecol^T \estatvec (t) = \onecol^T \kmat \gcvec (t)
+\]</span></p>
+<div id="fig-dof3shearbldgeqvar" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3shearbldgeqvar.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.7: Equaivelent static forces, base shear and overturning moment for the shear building of <a href="#fig-dof3shearbldgbase">Figure&nbsp;<span>8.6</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<p>Modal expansion of the physical displacements as <span class="math inline">\(\gcvec (t) = \modmat \modcorvec (t)\)</span> allows us to express equivalent static loads as <span class="math display">\[
+\estatvec (t) = \kmat \modmat \modcorvec (t) = \kmat \eigveci{1} \modcor_1 + \kmat \eigveci{2} \modcor_2 + \ldots = \modestatvec{1} + \modestatvec{2} + \ldots
+\]</span> where, with the use of the conjugate SDOF response and <a href="#eq-conjsdof">Equation&nbsp;<span>8.31</span></a>, <span class="math display">\[
+\modestatvec{i} (t) = \kmat \eigveci{i} \modcor_i = \kmat \eigveci{i} \frac{\excifact_i}{\modm_i} d_i (t)
+\]</span> is the equivalent static force that would be associated with the <span class="math inline">\(i\)</span>-th mode alone. Since <span class="math display">\[
+\kmat \eigveci{i} = \mmat \eigveci{i}\freq_i^2
+\]</span> we may also use <span class="math display">\[
+\modestatvec{i} (t) = \mmat \eigveci{i} \frac{\excifact_i}{\modm_i} \freq_i^2 d_i (t)
+\]</span> to calculate the modal equivalent static force for the <span class="math inline">\(i\)</span>-th mode. Now the base shear may be expressed as <span class="math display">\[
+\baseshear (t) = \onecol^T \estatvec (t) = \onecol^T \modestatvec{1} + \onecol^T \modestatvec{2} + \ldots = \modbaseshear{1} (t) + \modbaseshear{2} (t) + \ldots
+\]</span> where <span class="math display">\[
+\modbaseshear{i} (t) = \onecol^T \modestatvec{i} = \onecol^T \kmat \eigveci{i} \frac{\excifact_i}{\modm_i} d_i (t)  = \onecol^T \mmat \eigveci{i} \frac{\excifact_i}{\modm_i} \freq_i^2 d_i (t)
+\]</span> is the contribution of the <span class="math inline">\(i\)</span>-th mode to the base shear. Furthermore, since <span class="math display">\[
+\excifact_i = {\teigveci{i}} \mmat \onecol = \onecol^T \mmat \eigveci{i}
+\]</span> we have <span class="math display">\[
+\modbaseshear{i} (t) = \frac{\excifact_i^2}{\modm_i} \freq_i^2 d_i (t)
+\]</span> which is the simplest expression for modal base shear. The factor <span class="math inline">\(\excifact_i^2/\modm_i\)</span> is referred to as the <em>effective modal mass</em>. This nomenclature is more mnemonic than physical and it aims to help via resemblance to force being the product of mass (in this context, <span class="math inline">\(\excifact_i^2/\modm_i\)</span>, with units of mass) and acceleration (in this context, <span class="math inline">\(\freq_i^2 d_i (t)\)</span>, with units of acceleration).</p>
+<p><em>In shear buildings</em>, the sum of effective modal masses equals the total mass of the structure; i.e., for an <span class="math inline">\(n\)</span>-story shear building we will have <span id="eq-sheareffective"><span class="math display">\[
+\sum_i^n \frac{\excifact_i^2}{\modm_i} = \onecol^T \colmat{\ratio{\excifact_1^2}{\modm_1} \\ \ratio{\excifact_2^2}{\modm_2} \\ \vdots \\ \ratio{\excifact_n^2}{\modm_n}} = \onecol^T \mmat \onecol = \sum_i^n m_i
+\qquad(8.32)\]</span></span> That this is so may be shown via writing the column matrix of ones as a linear combination of the mode shapes so that <span class="math display">\[
+\onecol = \modmat \colmat{e_1 \\ e_2 \\ \vdots \\ e_n} = \modmat \nvec{e}
+\]</span> To find out what the coefficients <span class="math inline">\(e_i\)</span> should be we can use the orthogonality of the mode shapes whereby we get <span class="math display">\[
+\teigveci{i} \mmat \onecol = \teigveci{i} \mmat \modmat \colmat{e_1 \\ e_2 \\ \vdots \\ e_n} = \modm_i e_i
+\]</span> and since <span class="math inline">\(\teigveci{i} \mmat \onecol = \excifact_i\)</span>, we obtain <span class="math inline">\(e_i = {\excifact_i}/{\modm_i}\)</span> and <span class="math display">\[
+\nvec{e} = \left\{\frac{\excifact_1}{\modm_1} \;\;\; \frac{\excifact_2}{\modm_2} \;\;\; \cdots \;\;\; \frac{\excifact_n}{\modm_n}\right\}^T
+\]</span> Therefore we have <span class="math display">\[
+\sum_i^n m_i = \onecol^T \mmat \onecol =  \nvec{e} ^T \modmat^T \mmat \modmat \nvec{e} =
+\nvec{e} ^T \modmmat \nvec{e} = \sum_i^n \frac{\excifact_i^2}{\modm_i}
+\]</span> as was the claim. This equality has presented itself as the basis for a commonly used criterion in modal analysis regarding how many modes to include: it is possible to state a normalized target such as to include as many modes as necessary so that effective modal masses represent <span class="math inline">\(90\%\)</span> (or more or less) of the total mass of the building.</p>
+<p>We could proceed along similar lines to develop relationships regarding the overturning moment. Multiplying equivalent static loads with their respective heights leads to <span class="math display">\[\begin{align*}
+\overturn (t)  &amp; = \left\{h_1 \;\;\; h_2 \;\;\; \ldots\right\} \colmat{\estati{1} (t) \\ \estati{2} (t) \\ \vdots} = \nvec{h}^T \estatvec (t) \\
+&amp; = \nvec{h}^T \modestatvec{1} (t) + \nvec{h}^T \modestatvec{2} (t) + \ldots  = \modoverturn{1} (t) + \modoverturn{2} (t) + \ldots
+\end{align*}\]</span> where <span class="math display">\[
+\modoverturn{i} (t) = \nvec{h}^T \modestatvec{i} (t) = \nvec{h}^T \mmat \eigveci{i} \frac{\excifact_i}{\modm_i} \freq_i^2 d_i (t)
+\]</span> is the modal overturning moment for the <span class="math inline">\(i\)</span>-th mode, i.e.&nbsp;the contribution of the <span class="math inline">\(i\)</span>-th mode alone to the overturning moment.</p>
+<div id="fig-dof2rotlat" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rotlat.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.8: A 2-DOF system with translational and rotational degrees of freedom, and the equivalent static loads associated with the ground motion.</figcaption><p></p>
+</figure>
+</div>
+<p>It should be noted that the formulations for base shear and overturning moment developed above have to be modified for arbitrary systems. Obtaining the base shear via the direct sum of all the equivalent static loads is a consequence of their common lateral direction. If rotational or vertical degrees of freedom were present, a direct sum of all equivalent static loads would not be meaningful. Consider as a simple example a heavy rigid bar supported by a single column of negligible mass as shown in <a href="#fig-dof2rotlat">Figure&nbsp;<span>8.8</span></a>. Even if the bar is assumed axially rigid, the system has two degrees of freedom such that the center of mass may translate laterally and the rigid bar may rotate about its center of mass. The equivalent static loads <span class="math inline">\(\estatvec = \kmat \gcvec\)</span> in this case would be a lateral force and a moment, also shown in <a href="#fig-dof2rotlat">Figure&nbsp;<span>8.8</span></a>, and the base shear and overturning moment would be given by <span class="math display">\[
+\baseshear = \estati{1} \quad \text{and} \quad \overturn = h \estati{1} + \estati{2}
+\]</span> and it should be clear that these expressions differ from the previously derived ones. On the other hand, in any case, the base shear and the overturning moment will be given by some linear combination of the equivalent static loads. In an effort to generalize the formulations we shall use the notation <span class="math inline">\(\nvec{b}_{{V}}\)</span> and <span class="math inline">\(\nvec{b}_{{M}}\)</span> to denote the column matrices comprising the coefficients that multiply the equivalent static loads to obtain the base shear and the overturning moment, respectively, so that in general <span class="math display">\[
+\baseshear = \nvec{b}_{{V}}^T \estatvec \quad \text{and} \quad \overturn = \nvec{b}_{{M}}^T \estatvec
+\]</span> In the case of a shear building we will have <span class="math inline">\(\nvec{b}_{{V}} = \onecol\)</span> and <span class="math inline">\(\nvec{b}_{{M}} = \nvec{h}\)</span>, whereas for example in the case of the column supported slab of <a href="#fig-dof2rotlat">Figure&nbsp;<span>8.8</span></a> we will have <span class="math display">\[
+\nvec{b}_{{V}} = \colmat{1 \\ 0} \; ; \nvec{b}_{{M}} = \colmat{h \\ 1}
+\]</span></p>
+</section>
+<section id="spectral-analysis-and-modal-combination" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" data-anchor-id="spectral-analysis-and-modal-combination"><span class="header-section-number">8.3.3</span> Spectral Analysis and Modal Combination</h3>
+<p>When the time history of base excitation is known, the modal analysis approach hereto detailed allows us to derive the time history of any response quantity. In earthquake analyses, however, the ground motion is more often than not unknown. The concepts of response and design spectra were introduced previously in <a href="eqsdof.html"><span>Chapter&nbsp;5</span></a>. Here we will try to discuss how the use of such spectra may help in analysis of MDOF systems.</p>
+<p>To remind ourselves the basic terminology and notation, assume that a spectrum for some ground motion <span class="math inline">\(\gdis (t)\)</span> is available. Such a spectrum would give the variation(s) of peak response(s) for a SDOF system governed by <span class="math display">\[
+\ddot{d} (t) + 2 \damp \freq \dot{d} (t) + \freq^2 d (t) = - \gacc (t)
+\]</span> The displacement spectrum <span class="math inline">\(\dspec = \dspec (\period,\damp)\)</span> would show the variation of the maximum absolute relative displacement (deformation), defined by <span class="math display">\[
+\dspec = \max_t \abs{d (t)}
+\]</span> as the period of the system varies for different values of damping ratio. The pseudo-velocity <span class="math inline">\(\vspec\)</span> and the pseudo-acceleration <span class="math inline">\(\aspec\)</span> are defined through <span class="math display">\[
+\freq \dspec  = \vspec = \ratio{\aspec}{\freq}
+\]</span> so that knowing one, the other two may be easily calculated.</p>
+<div id="fig-kobepaccspec" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kobepaccspec.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.9: A pesudo-acceleration response spectrum.</figcaption><p></p>
+</figure>
+</div>
+<p>Say that we have the pseudo-acceleration spectrum <span class="math inline">\(\aspec\)</span> for a specific value of the damping ratio, as shown in <a href="#fig-kobepaccspec">Figure&nbsp;<span>8.9</span></a>. For simplicity assume all modes have the same damping ratio with <span class="math inline">\(\damp = 0.05\)</span> so that this single spectrum is sufficient for the system we are investigating. Our 3-DOF system of <a href="#fig-dof3shearbldgbase">Figure&nbsp;<span>8.6</span></a> will have three periods, say <span class="math inline">\(\period_1\)</span>, <span class="math inline">\(\period_2\)</span> and <span class="math inline">\(\period_3\)</span>, corresponding to three frequencies <span class="math inline">\(\freq_1\)</span>, <span class="math inline">\(\freq_2\)</span> and <span class="math inline">\(\freq_3\)</span>, respectively. Each period is associated with a modal equation in the form <span class="math display">\[
+\ddmodcor (t) + 2 \damp_i \freq_i \dmodcor (t) + \freq_i^2 \modcor (t) = -\ratio{\excifact_i}{\modm_i} \gacc (t)
+\]</span> and for each period, the corresponding pseudo-acceleration value will be read from the spectrum as <span class="math inline">\(\aspec_1\)</span>, <span class="math inline">\(\aspec_2\)</span> and <span class="math inline">\(\aspec_3\)</span>. With these values, the peak modal coordinate responses will be estimated by <span class="math display">\[
+\overline{\modcoramp_1} = \ratio{\excifact_1}{\modm_1} \ratio{\aspec_1}{\freq_1^2} , \quad \overline{\modcoramp_2} = \ratio{\excifact_2}{\modm_2} \ratio{\aspec_2}{\freq_2^2}, \quad \overline{\modcoramp_3} = \ratio{\excifact_3}{\modm_3} \ratio{\aspec_3}{\freq_3^2}
+\]</span> Now we have to make a choice: how do we want to combine the modal responses to estimate a specific response quantity? Assume we would like to estimate the maximum deformation suffered by the third story, i.e.&nbsp;the interstory drift between floors 2 and 3. The quantity we are trying to estimate is the peak value of <span class="math display">\[
+\Delta_{23} (t)= \gc_3 (t) - \gc_2 (t) = \left[\sum_i \eigvecs_{3i} \modcor_i (t) \right] - \left[\sum_i \eigvecs_{2i} \modcor_i (t) \right]
+\]</span> where, to remind ourselves, <span class="math inline">\(\eigvecs_{ji}\)</span> denotes the component of the <span class="math inline">\(i\)</span>-th mode along the <span class="math inline">\(j\)</span>-th generalized coordinate. We first have to figure out the contribution of each mode to the interstory drift. Modal expansion of the displacements lead to <span class="math display">\[
+\Delta_{23} (t) = (\eigvecs_{31} - \eigvecs_{21}) \modcor_1 (t) + (\eigvecs_{32} - \eigvecs_{22}) \modcor_2 (t) + (\eigvecs_{33} - \eigvecs_{23}) \modcor_3 (t)
+\]</span> The contributions of each of the modes to the interstory drift <span class="math inline">\(\Delta_{23}\)</span> are therefore given by <span class="math display">\[
+\Delta_{23}^{(1)} = (\eigvecs_{31} - \eigvecs_{21}) \modcor_1, \quad  \Delta_{23}^{(2)} = (\eigvecs_{32} - \eigvecs_{22}) \modcor_2, \quad \Delta_{23}^{(3)} = (\eigvecs_{33} - \eigvecs_{23}) \modcor_3
+\]</span> The peak values for each of the modal contributions are then given by <span class="math display">\[\begin{align*}
+\overline{\Delta_{23}^{(1)}}  &amp; = (\eigvecs_{31} - \eigvecs_{21}) \overline{\modcoramp_1} = (\eigvecs_{31} - \eigvecs_{21}) \ratio{\excifact_1}{\modm_1} \ratio{\aspec_1}{\freq_1^2}  \\  
+\overline{\Delta_{23}^{(2)}}  &amp; = (\eigvecs_{32} - \eigvecs_{22}) \overline{\modcoramp_2} = (\eigvecs_{32} - \eigvecs_{22}) \ratio{\excifact_2}{\modm_2} \ratio{\aspec_2}{\freq_2^2} \\
+\overline{\Delta_{23}^{(3)}}  &amp; = (\eigvecs_{33} - \eigvecs_{23}) \overline{\modcoramp_3} = (\eigvecs_{33} - \eigvecs_{23}) \ratio{\excifact_3}{\modm_3} \ratio{\aspec_3}{\freq_3^2}
+\end{align*}\]</span> where we note that the peak modal interstory drifts <span class="math inline">\(\overline{\Delta_{23}^{(i)}}\)</span> may be positive or negative valued. Next step is to pick the method with which we would like to combine these peak values. If, for example, we would like to use the SRSS approach we have: <span class="math display">\[
+\overline{\Delta_{23}}  = \sqrt{\biggl(\overline{\Delta_{23}^{(1)}}\biggr)^2 + \biggl(\overline{\Delta_{23}^{(2)}}\biggr)^2 + \biggl(\overline{\Delta_{23}^{(3)}}\biggr)^2}
+\]</span></p>
+<section id="sec-mdof3" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdof3">EXAMPLE 8 .3</h4>
+<p>A three-story shear building model has story stiffnesses and masses as shown in <a href="#fig-xdof3shearbldg">Figure&nbsp;<span>8.10</span></a> with <span class="math inline">\(m = 100 \unit{kg}\)</span>, and <span class="math inline">\(k = 9870 \unit{N/m}\)</span>. System is assumed to be classically damped with all modes having a damping ratio of <span class="math inline">\(\damp = 5\%\)</span>. The ground motion <span class="math inline">\(\gacc (t)\)</span> this structure will be subjected to is defined by the spectrum also shown in <a href="#fig-xdof3shearbldg">Figure&nbsp;<span>8.10</span></a>, scaled for a peak ground acceleration (PGA) of 0.5 g. We want to find, using the SRSS combination rule, (i) an estimate for the maximum top displacement, (ii) an estimate for the maximum deformation in the second story columns, (iii) an estimate for maximum base shear.</p>
+<div id="fig-xdof3shearbldg" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof3shearbldg.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.10: Three story shear building model.</figcaption><p></p>
+</figure>
+</div>
+<ol type="a">
+<li>Find the natural modes of vibration for this structure, as well as the modal masses and stiffnesses:</li>
+</ol>
+<p>In order to find the vibration modes, we will need to determine the mass and stiffness matrices and then solve the eigenvalue problem. The mass matrix <span class="math inline">\(\mmat\)</span> is given by <span class="math display">\[
+\mmat = 100 \begin{bmatrix}
+    1 &amp; 0 &amp; 0\\
+    0 &amp; 1 &amp; 0\\
+    0 &amp; 0 &amp; 1/3
+\end{bmatrix} \unit{kg}
+\]</span> and the stiffness matrix <span class="math inline">\(\kmat\)</span> by <span class="math display">\[
+\kmat= 9870 \left[ \begin{array}{rrr}
+7 &amp; -3 &amp; 0 \\
+-3 &amp; 4 &amp; -1 \\
+0 &amp; -1 &amp; 1
+\end{array} \right] \unit{N/m}
+\]</span> The eigenvalue problem we have to solve to find the natural frequencies and mode shapes is <span class="math display">\[
+[\kmat-\freq_i^2 \mmat] {\eigvec}_{i}  = 0
+\]</span> which yields<br>
+<span class="math display">\[\begin{align*}
+\freq_1  &amp; = \pi \sqrt{10} \unit{rad/s}, \quad \period _1 = 0.63 \unit{s} \\
+\freq_2  &amp; = 2 \pi \sqrt{10} \unit{rad/s}, \quad \period _2 = 0.32 \unit{ s}\\
+\freq_3  &amp; = 3\pi \sqrt{10} \unit{rad/s}, \quad  \period _3 = 0.21 \unit{ s}
+\end{align*}\]</span> with mode shapes given in <a href="#tbl-xdof3">Table&nbsp;<span>8.1</span></a> and illustrated in <a href="#fig-xdof3shearbldgms">Figure&nbsp;<span>8.11</span></a>. These mode shapes are scaled so that their largest (in absolute value) componenent is equal to unity. <a href="#tbl-xdof3">Table&nbsp;<span>8.1</span></a> also includes the modal mass and stiffness values calculated with these mode shapes.</p>
+<div id="tbl-xdof3">
+<table class="table">
+<caption>Table&nbsp;8.1: Results from modal analysis.</caption>
+<colgroup>
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(i\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\freq_i\)</span> <span class="math inline">\([\punit{rad/s}]\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\period_i\)</span> <span class="math inline">\([\punit{s}]\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\eigvecs_{1i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\eigvecs_{2i}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\eigvecs_{3i}\)</span></th>
+<th style="text-align: center;">modal mass <span class="math inline">\([\punit{kg}]\)</span></th>
+<th style="text-align: center;">modal stiffness <span class="math inline">\([\punit{N / m}]\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">\(\pi \sqrt{10}\)</span></td>
+<td style="text-align: center;">0.63</td>
+<td style="text-align: center;">0.33</td>
+<td style="text-align: center;">0.67</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">88.89</td>
+<td style="text-align: center;">8773.33</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">\(2\pi \sqrt{10}\)</span></td>
+<td style="text-align: center;">0.32</td>
+<td style="text-align: center;">-0.33</td>
+<td style="text-align: center;">-0.33</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">55.56</td>
+<td style="text-align: center;">21933.33</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><span class="math inline">\(3\pi \sqrt{10}\)</span></td>
+<td style="text-align: center;">0.21</td>
+<td style="text-align: center;">1.00</td>
+<td style="text-align: center;">-0.67</td>
+<td style="text-align: center;">0.33</td>
+<td style="text-align: center;">148.15</td>
+<td style="text-align: center;">131600.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="fig-xdof3shearbldgms" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof3shearbldgms.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8.11: Mode shapes of the shear building of <a href="#fig-xdof3shearbldg">Figure&nbsp;<span>8.10</span></a>.</figcaption><p></p>
+</figure>
+</div>
+<ol start="2" type="a">
+<li>Determine the peak modal responses:</li>
+</ol>
+<p>For the three periods of our system, the spectral accelerations we read from the spectrum of <a href="#fig-xdof3shearbldg">Figure&nbsp;<span>8.10</span></a> scaled to <span class="math inline">\(0.5\gravity\)</span> peak ground acceleration are<br>
+<span class="math display">\[\begin{align*}
+0.25 \unit{s} &lt; \period_1 = 0.63 \unit{s} \leq 1 \unit{s} \;\;\; \quad &amp; \rightarrow \quad \aspec_1 = \left(\ratio{0.5 \gravity}{1 \gravity} \right) \left(2 \gravity \right) = 1 \gravity  \\
+0.25 \unit{s} &lt; \period_2 = 0.32 \unit{s} \leq 1 \unit{s} \;\;\; \quad &amp; \rightarrow \quad \aspec_2 = \left(\ratio{0.5 \gravity}{1 \gravity} \right) \left(2 \gravity \right) = 1 \gravity  \\
+\period_3 = 0.21 \unit{s} \leq 0.25 \unit{s} \;\;\;  \quad &amp; \rightarrow \quad \aspec_3 = \left(\ratio{0.5 \gravity}{1 \gravity} \right) \left(1 \gravity + \ratio{2 \gravity - 1 \gravity}{0.25 \unit{s}} 0.21 \unit{s} \right) = 0.92 \gravity  
+\end{align*}\]</span> whence the spectral displacements are calculated as: <span class="math display">\[
+\dspec_1 = \ratio{\aspec_1}{\freq_1^2} = 0.0994 \unit{m}, \quad \dspec_2 = \ratio{\aspec_2}{\freq_2^2} = 0.0248 \unit{m}, \quad \dspec_3 = \ratio{\aspec_3}{\freq_3^2} = 0.0102 \unit{m}
+\]</span></p>
+<p>The earthquake excitation factors are given by <span class="math display">\[
+\excifact_1 = \teigveci{1} \mmat \onecol = 133.33 \unit{kg}, \quad \excifact_2 = \teigveci{2} \mmat \onecol = -33.33 \unit{kg}, \quad \excifact_3 = \teigveci{3} \mmat \onecol = 44.44 \unit{kg}
+\]</span> so that the peak modal coordinate responses are calculated as <span class="math display">\[
+\overline{\modcoramp_1} = \frac{\excifact_1}{\modm_1} \dspec_1 = 0.1491 \unit{m}, \quad \overline{\modcoramp_2} = \frac{\excifact_2}{\modm_2} \dspec_2 = -0.0149 \unit{m}, \quad \overline{\modcoramp_3} = \frac{\excifact_3}{\modm_3} \dspec_3 = 0.0030 \unit{m}
+\]</span></p>
+<ol start="3" type="a">
+<li>Determine the estimates for the maximum responses:</li>
+</ol>
+<ol type="i">
+<li><p>The maximum top displacement is the maximum relative (to the ground) displacement of the third floor (i.e.&nbsp;the floor at the top). The time history of this displacement is given by <span class="math display">\[
+\gc_3 (t) = \eigvecs_{31} \modcor_1 (t) + \eigvecs_{32} \modcor_2 (t) + \eigvecs_{33} \modcor_3 (t)
+\]</span> so that the peak modal top displacements are given by <span class="math display">\[
+\overline{\gc_3^{(1)}} = \eigvecs_{31} \overline{\modcoramp_1} = 0.1491 \unit{m}, \quad \overline{\gc_3^{(2)}} = \eigvecs_{32} \overline{\modcoramp_2} = -0.0149 \unit{m}, \quad \overline{\gc_3^{(3)}} = \eigvecs_{33} \overline{\modcoramp_3} = 0.0010 \unit{m}
+\]</span> and the estimate we calculate via the SRSS rule for the maximum top displacement is: <span class="math display">\[
+\overline{\gc_3} = \sqrt{\left(\overline{\gc_3^{(1)}}\right)^2 + \left(\overline{\gc_3^{(2)}}\right)^2 + \left(\overline{\gc_3^{(3)}}\right)^2} = 0.1498 \unit{m}
+\]</span> Note that this estimate is very close to the estimate we would obtain using only mode 1, and the error we would make by not including mode 3 is completely negligible.</p></li>
+<li><p>The maximum deformation of the second story columns is governed by the interstory drift that occurs between the first and second floors. This interstory drift is given by <span class="math display">\[
+\Delta_{12} = (\eigvecs_{21} - \eigvecs_{11}) \modcor_1 (t) + (\eigvecs_{22} - \eigvecs_{12}) \modcor_2 + (\eigvecs_{23} - \eigvecs_{13}) \modcor_3 (t)
+\]</span> so that peak modal interstory drifts are calculated as <span class="math display">\[\begin{align*}
+\overline{\Delta_{12}^{(1)}}  &amp; = (\eigvecs_{21} - \eigvecs_{11}) \overline{\modcoramp_1} = 0.0497 \unit{m} \\
+\overline{\Delta_{12}^{(2)}}  &amp; = (\eigvecs_{22} - \eigvecs_{12}) \overline{\modcoramp_2} = 0 \unit{m} \\
+\overline{\Delta_{12}^{(3)}}  &amp; = (\eigvecs_{23} - \eigvecs_{13}) \overline{\modcoramp_3} = - 0.0051 \unit{m}
+\end{align*}\]</span> and the SRSS estimate for the maximum interstory drift is given by: <span class="math display">\[
+\overline{\Delta_{12}} = \sqrt{\left(\overline{\Delta_{12}^{(1)}}\right)^2 + \left(\overline{\Delta_{12}^{(2)}}\right)^2 + \left(\overline{\Delta_{12}^{(3)}}\right)^2} = 0.050 \unit{m}
+\]</span></p></li>
+<li><p>The base shear is calculated via <span class="math display">\[
+\baseshear (t) = \onecol^T \estatvec (t) = \onecol^T \modestatvec{1} + \onecol^T \modestatvec{2} + + \onecol^T \modestatvec{3} = \modbaseshear{1} (t) + \modbaseshear{2} (t) + \modbaseshear{3} (t)
+\]</span> and we showed previously that for shear building systems the peak modal base shears may be calculated as <span class="math display">\[
+\overline{\modbaseshear{i}} = \frac{\excifact_i^2}{\modm_i} \freq_i^2 \dspec_i = \frac{\excifact_i^2}{\modm_i} \aspec_i  
+\]</span> so that <span class="math display">\[
+\overline{\modbaseshear{1}} = \frac{\excifact_1^2}{\modm_1} \aspec_1 = 1962 \unit{N}, \quad \overline{\modbaseshear{2}} = \frac{\excifact_2^2}{\modm_2} \aspec_2 = 196.2 \unit{N}, \quad \overline{\modbaseshear{3}} = \frac{\excifact_3^2}{\modm_3} \aspec_3 = 120.3 \unit{N}
+\]</span> The SRSS estimate for the maximum base shear is therefore given by <span class="math display">\[
+\overline{\baseshear} = \sqrt{\left(\overline{\modbaseshear{1}}\right)^2 + \left(\overline{\modbaseshear{2}}\right)^2 + \left(\overline{\modbaseshear{3}}\right)^2} = 1975.5 \unit{N} = 0.86 W
+\]</span> where <span class="math inline">\(W\)</span> is the total weight of the structure.</p></li>
+</ol>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./multidoffreevib.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

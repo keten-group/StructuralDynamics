@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 6&nbsp; Models for Linear Multi Degree of Freedom Systems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./multidoffreevib.html" rel="next">
+<link href="./eqsdof.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./multidof.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-matrixform" id="toc-sec-matrixform" class="nav-link active" data-scroll-target="#sec-matrixform"><span class="header-section-number">6.1</span> Equations of Motion in Matrix Form</a></li>
+  <li><a href="#symmetry-of-system-matrices" id="toc-symmetry-of-system-matrices" class="nav-link" data-scroll-target="#symmetry-of-system-matrices"><span class="header-section-number">6.2</span> Symmetry of System Matrices</a></li>
+  <li><a href="#stiffness-and-inertia-influence-coefficients" id="toc-stiffness-and-inertia-influence-coefficients" class="nav-link" data-scroll-target="#stiffness-and-inertia-influence-coefficients"><span class="header-section-number">6.3</span> Stiffness and Inertia Influence Coefficients</a>
+  <ul class="collapse">
+  <li><a href="#sec-mkequib" id="toc-sec-mkequib" class="nav-link" data-scroll-target="#sec-mkequib"><span class="header-section-number">6.3.1</span> Force Equilibrium</a></li>
+  <li><a href="#equivalent-forces-and-virtual-work" id="toc-equivalent-forces-and-virtual-work" class="nav-link" data-scroll-target="#equivalent-forces-and-virtual-work"><span class="header-section-number">6.3.2</span> Equivalent Forces and Virtual Work</a></li>
+  </ul></li>
+  <li><a href="#coordinate-transformations" id="toc-coordinate-transformations" class="nav-link" data-scroll-target="#coordinate-transformations"><span class="header-section-number">6.4</span> Coordinate Transformations</a></li>
+  <li><a href="#rigid-floor-plate-model" id="toc-rigid-floor-plate-model" class="nav-link" data-scroll-target="#rigid-floor-plate-model"><span class="header-section-number">6.5</span> Rigid Floor Plate Model</a></li>
+  <li><a href="#shear-building" id="toc-shear-building" class="nav-link" data-scroll-target="#shear-building"><span class="header-section-number">6.6</span> Shear Building</a></li>
+  <li><a href="#sec-mdofbase" id="toc-sec-mdofbase" class="nav-link" data-scroll-target="#sec-mdofbase"><span class="header-section-number">6.7</span> Models for Base Excited Systems</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-mdofmodels" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>When more than one but still a finite number of generalized coordinates are required to model the dynamics (inertial effects) of a system, the system is classified as multi degree of freedom (MDOF). Even locating a single particle may, in the most general case, require three coordinates when its motion is unconstrained. Unconstrained rigid bodies require six generalized coordinates, comprising generally the three coordinates of its center of mass and the body’s three rotations about the same point. The horizontal floor plate of a single-story structure, for example, may require three generalized coordinates as it translates and rotates in its own plane, when it is modeled as a rigid body and the vertical members are assumed axially rigid so that the motion of the floor plate is assumed to be restricted in the vertical direction. A simple but frequently employed model is that of a multi-story structure in which all floor plates are assumed to translate in only one horizontal direction, but the existence of multiple such stories requires as many coordinates as the number of floors to track each one.</p>
+<p>The fundamental principles/laws that we use to derive the governing equations for multi degree of freedom systems are of course the same ones we have used heretofore. The difference is that now we will end up with multiple equations, as many as the number of degrees of freedom, which will be coupled through stiffness and/or inertia terms (or sometimes even through requirements regarding the distribution of damping). The solution of these equations will either require a direct numerical integration scheme, or an analytical approach (often coupled with a numerical scheme) in which an intermediary step will lead to uncoupling the governing equations and reduce the problem to solving for the response of a number of single degree of freedom systems.</p>
+<p>In this chapter we limit our investigations solely to linear systems. The analysis of nonlinear MDOF systems is almost always conducted via numerical integration algorithms and contain additional complexities the introduction of which may wait until a thorough understanding of linear response is accomplished.</p>
+<section id="sec-matrixform" class="level2" data-number="6.1">
+<h2 data-number="6.1" data-anchor-id="sec-matrixform"><span class="header-section-number">6.1</span> Equations of Motion in Matrix Form</h2>
+<p>To begin thinking about the equations that govern the dynamics of linear MDOF systems let’s first consider the simple case of a three degree of freedom system. A tinker toy model of a 3-DOF system is shown in <a href="#fig-3DOF">Figure&nbsp;<span>6.1</span></a> a in which three point masses connected by springs and dashpots are allowed to move in one direction. Since the individual masses may move in differing amounts, we need to track the position of each separately. The positions of the masses <span class="math inline">\(m_1\)</span>, <span class="math inline">\(m_2\)</span> and <span class="math inline">\(m_3\)</span> are denoted by <span class="math inline">\(\gc_1\)</span>, <span class="math inline">\(\gc_2\)</span> and <span class="math inline">\(\gc_3\)</span>, respectively, and these are the generalized coordinates of our model. External forces <span class="math inline">\(\extforce_1 (t)\)</span>, <span class="math inline">\(\extforce_2 (t)\)</span> and <span class="math inline">\(\extforce_3 (t)\)</span> may in general be imposed on the masses.</p>
+<div id="fig-3DOF" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3mck.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.1: Three degree of freedom system: (a) the model, (b) free-body diagrams of the individual masses.</figcaption><p></p>
+</figure>
+</div>
+<p>Since we have three distinct point masses, Newton’s second law may be applied to each individual mass separately, which will in turn yield the governing equation for that mass in terms of the generalized coordinates and system parameters. Since the motion of each mass is one dimensional, we may develop the equations using scalar analysis. To this end we first have to sketch the free body diagram of each mass at an instant at which all kinematic variables (displacements, velocities and accelerations) are positive valued to obtain algebraically consistent signs and implied directions. Such free body diagrams are shown in <a href="#fig-3DOF">Figure&nbsp;<span>6.1</span></a> b in which all the masses are assumed to be in those states for which <span class="math inline">\(\gc_i &gt; 0\)</span>, <span class="math inline">\(\dgc_i &gt; 0\)</span> and <span class="math inline">\(\ddgc_i &gt; 0\)</span>. The directions of the forces, indicated by the arrowheads, are consistent with the assumed states and relative motions.</p>
+<p>Considering the sum of forces for each particle, we deduce the following equations from the individual free body diagrams: <span class="math display">\[
+\extforce_1 + k_2(\gc_2 - \gc_1) + c_2 (\dgc_2 - \dgc_1) - c_1 \dgc_1 - k_1 \gc_1 = m_1 \ddgc_1  
+\]</span> <span id="eq-eom3DOF"><span class="math display">\[
+\extforce_2 + k_3(\gc_3 - \gc_2) + c_3(\dgc_3 - \dgc_2) - k_2(\gc_2 - \gc_1) - c_2(\dgc_2 - \dgc_1) = m_2 \ddgc_2
+\qquad(6.1)\]</span></span> <span class="math display">\[
+\extforce_3 - k_3(\gc_3 - \gc_2) - c_3(\dgc_3 - \dgc_2)= m_3 \ddgc_3
+\]</span> Now it is important to note that these equations are coupled, meaning that the variables <span class="math inline">\(\gc_i\)</span> and their time derivatives appear in multiple equations. If, for example, the first equation had only <span class="math inline">\(\gc_1\)</span> and its time derivatives, the second <span class="math inline">\(\gc_2\)</span> and its time derivatives, and the third <span class="math inline">\(\gc_3\)</span> and its time derivatives, then we would have three uncoupled equations that govern the dynamics of three separate single degree of freedom systems. These systems would be able to move independently of what the others are doing. For our system, however, the equations are coupled in that, for example, to solve for <span class="math inline">\(\gc_1\)</span> using the first equation we need to know <span class="math inline">\(\gc_2\)</span> which also appears in that equation. The motions of the masses affect each other and their responses must be determined simultaneously. This is the major difficulty with analyses of MDOF systems.</p>
+<p>A more general representation is possible if we choose to write these equations in matrix form. A simple rearrangement of terms leads to <span class="math display">\[\begin{align*}
+\underbrace{\begin{bmatrix}
+m_1 &amp; 0 &amp; 0  \\
+0 &amp; m_2 &amp; 0 \\
+0 &amp; 0 &amp; m_3 \\
+\end{bmatrix}}_{\mmat}  
+\underbrace{\colmat{\ddgc_1 \\ \ddgc_2 \\ \ddgc_3}}_{\ddgcvec}  &amp; + \underbrace{\begin{bmatrix}
+c_1 + c_2 &amp; -c_2 &amp; 0 \\ -c_2 &amp; c_2+c_3 &amp; -c_3  \\ 0 &amp;-c_3 &amp; c_3 \end{bmatrix}}_{\cmat} \underbrace{\colmat{\dgc_1 \\ \dgc_2 \\ \dgc_3}}_{\dgcvec} + \\
+&amp; \underbrace{\begin{bmatrix}
+k_1 + k_2 &amp; -k_2 &amp; 0 \\ -k_2 &amp; k_2+k_3 &amp; -k_3  \\ 0 &amp;-k_3 &amp; k_3 \end{bmatrix}}_{\kmat} \underbrace{\colmat{\gc_1 \\ \gc_2 \\ \gc_3}}_{\gcvec}= \underbrace{\colmat{
+\extforce_1 \\ \extforce_2 \\ \extforce_3}}_{\ldvec}
+\end{align*}\]</span> In this representation, the accelerations are collected in the column matrix <span class="math inline">\(\ddgcvec\)</span>, the velocities in the column matrix <span class="math inline">\(\dgcvec\)</span>, and the displacements in the column matrix <span class="math inline">\(\gcvec\)</span>, all having dimensions of <span class="math inline">\(n \times 1\)</span> with <span class="math inline">\(n\)</span> being the number of degrees of freedom (<span class="math inline">\(n=3\)</span> for our current example). The matrix <span class="math inline">\(\mmat\)</span> that multiplies the accelerations <span class="math inline">\(\ddgcvec\)</span> is called the <em>mass matrix</em>, the matrix <span class="math inline">\(\cmat\)</span> that multiplies the velocities <span class="math inline">\(\dgcvec\)</span> is called the <em>damping matrix</em>, and the matrix <span class="math inline">\(\kmat\)</span> that multiplies the displacements/deformations <span class="math inline">\(\gcvec\)</span> is called the <em>stiffness matrix</em> of the system. These are square matrices with dimensions equal to the number of degrees of freedom of the system (i.e., <span class="math inline">\(n \times n\)</span>, with <span class="math inline">\(n=3\)</span> for our example). The column matrix <span class="math inline">\(\ldvec\)</span> appearing on the right hand side of the equation comprises the external forces. <span class="math inline">\(\ldvec\)</span> also has dimensions <span class="math inline">\(n \times 1\)</span> and, for ease of reference, it is often called the <em>external force vector</em> or the <em>load vector</em>. With these definitions, the equations of motion for our example may now be stated as <span id="eq-MDOFEOM"><span class="math display">\[
+\mmat \ddgctvec + \cmat \dgctvec + \kmat \gctvec = \ldtvec
+\qquad(6.2)\]</span></span> and, more importantly, the equations of motion for <em>any</em> linear MDOF system will be given by this matrix expression. For different systems the sizes of matrices will differ, the coefficients in the matrices will differ, but once the equations are written in matrix form, they will be identical to the expression that we see in <a href="#eq-MDOFEOM">Equation&nbsp;<span>6.2</span></a>. If the system is undamped, then its equations of motion will be given by <span class="math display">\[
+\mmat \ddgctvec +  \kmat \gctvec = \ldtvec
+\]</span> and if this undamped system is undergoing free vibrations, then the equations of motion will be given by <span class="math display">\[
+\mmat \ddgctvec +  \kmat \gctvec = \zerocol
+\]</span> where <span class="math inline">\(\zerocol\)</span> denotes a column matrix, of dimensions <span class="math inline">\(n \times 1\)</span>, whose elements are all equal to zero. Clearly both of these equations may be derived from <a href="#eq-MDOFEOM">Equation&nbsp;<span>6.2</span></a> by enforcing <span class="math inline">\(\cmat = \zeromat\)</span> and/or <span class="math inline">\(\ldvec = \zerocol\)</span>; <span class="math inline">\(\zeromat\)</span> is the zero matrix, of dimensions <span class="math inline">\(n \times n\)</span>, with all of its elements equal to zero.</p>
+<p>It is therefore of utmost importance to develop solution strategies that will directly deal with the matrix form of equations so that such strategies will be applicable to all linear MDOF systems. To solve the matrix equation of motion means to find <span id="eq-64"><span class="math display">\[
+\gctvec = \colmat{
+\gc_1(t)  \\
+\gc_2(t) \\
+\gc_3(t) \\
+}
+\qquad(6.3)\]</span></span> for all relevant time instances <span class="math inline">\(t\)</span>. This solution must satisfy the equilibrium condition specified by <a href="#eq-MDOFEOM">Equation&nbsp;<span>6.2</span></a> at all times and furthermore it must also satisfy the initial conditions <span class="math inline">\(\gcvec (0)\)</span> and <span class="math inline">\(\dgcvec (0)\)</span>.</p>
+</section>
+<section id="symmetry-of-system-matrices" class="level2" data-number="6.2">
+<h2 data-number="6.2" data-anchor-id="symmetry-of-system-matrices"><span class="header-section-number">6.2</span> Symmetry of System Matrices</h2>
+<p>To introduce some additional concepts and details, let us consider as a second example the simple rigid bar shown in <a href="#fig-dof2rigidbar">Figure&nbsp;<span>6.2</span></a>. In order to simplify the problem, we will assume that horizontal motion of the bar is negligible. Any horizontal forces, including those that are associated with the rotation of the bar, will remain so small that they may be neglected. This assumption also implies that vertical motion, although not negligible, also remains relatively small such that circular arcs may be approximated by tangent lines and angles by their tangents. With these approximations the problem is drastically simplified but consequently, at least in principle, the analyses are limited to immediate vicinity of the initial equilibrium configuration. Gravity is assumed to play no role in this particular problem.</p>
+<div id="fig-dof2rigidbar" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbar.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.2: A rigid bar constrained to move vertically.</figcaption><p></p>
+</figure>
+</div>
+<p>The first order of business is to determine the generalized coordinates to be employed in the analysis. One way to think about the problem is to visualize the possible motion of the bar and identify possible candidates with which this motion may be described. As the bar is said to be rigid, this particular problem essentially boils down to choosing variables to describe a straight line. Furthermore, since the parts of the bar is assumed to move vertically, knowing the vertical positions of any two points on this straight line suffices to sketch the line. The system therefore has only two degrees of freedom in that once any two points on the bar are located at any instant, the positions of all its other parts may be determined in relation to those two points. One could also choose to identify the orientation of the bar through the angle it makes with the horizontal, so that knowing the vertical translation of any point on the bar and the rotation of the bar about that point also suffices to sketch the current spatial configuration of the whole bar. There is therefore an infinite number of choices that we may use as our generalized coordinates, three sets of which are shown in <a href="#fig-dof2rigidbardof">Figure&nbsp;<span>6.3</span></a>. The sketches shown in the figure greatly exaggerate the displacements for visual purposes and they clearly do not conform to our stated assumptions of small amplitude motions, hence they should be regarded with care. So which choice shall we proceed with? Some choices may lead to simpler structures in the system matrices but it is somewhat early to introduce these investigations and therefore we postpone relevant discussions to after our initial analyses.</p>
+<div id="fig-dof2rigidbardof" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbardof.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.3: Possible choices of generalized coordinates for modeling the dynamics of the rigid bar.</figcaption><p></p>
+</figure>
+</div>
+<p>For no particular reason, let us choose as our generalized coordinates the vertical translations of the two ends of the bar as shown in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a> wherein the top sketch shows the kinematic variables and the bottom figure shown the free body diagram of the bar. Here we have to note some issues which follow from our initial assumption of small displacements. The location of any point on the bar should in general be specified via the coordinate <span class="math inline">\(s'\)</span>, which denotes a positional variable in the deformed configuration. Since, however, the vertical displacements are assumed to be small and the horizontal displacements (and velocities and accelerations) are assumed to be comparatively negligible, we may instead use the horizontal position variable <span class="math inline">\(s\)</span> since by assumption <span class="math inline">\(s \approx s'\)</span>. The vertical position <span class="math inline">\(\gc (s,t)\)</span> of the piece of the bar located at <span class="math inline">\(s\)</span> at time <span class="math inline">\(t\)</span> is given by <span class="math display">\[
+\gc (s,t) = \gc_1 (t) + \ratio{s}{\ell} (\gc_2 (t) - \gc_1 (t))
+\]</span> and the vertical velocity of that same piece is <span id="eq-rbvel"><span class="math display">\[
+\dgc (s,t) = \dgc_1 (t) + \ratio{s}{\ell} (\dgc_2 (t) - \dgc_1 (t))
+\qquad(6.4)\]</span></span> Let us first use the Newton-Euler approach to derive the governing equations of motion. To this end we have to calculate the linear and angular momenta (about the center of mass), take their time derivatives, and equate these time derivatives to the sums of external forces and moments, i.e. <span class="math display">\[
+\dlinmom = \fvec, \quad \dangmom{\com} = \moment{\com}
+\]</span></p>
+<div id="fig-dof2rigidbardof2" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbardof2.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.4: Vertical motion of the rigid bar and the employed generalized coordinates.</figcaption><p></p>
+</figure>
+</div>
+<p>If the bar is homogeneous, its center of mass is located at <span class="math inline">\(s = \ell/2\)</span>, and the mass of an infinitesimal segment of width <span class="math inline">\(\diff s\)</span> is given by <span class="math inline">\((m / \ell) \diff s\)</span>. The vertical linear momentum of this infinitesimal piece given by the product of its mass and its vertical velocity so that when the piece is located at <span class="math inline">\(s\)</span>, its vertical linear momentum is <span class="math display">\[
+\left[\left(\frac{m}{\ell}\right)\diff s\right]\left[\dgc_1 (t) + \ratio{s}{\ell} (\dgc_2 (t) - \dgc_1 (t))\right]
+\]</span> and the vertical linear momentum of the whole bar is therefore given by <span class="math display">\[
+\int_{0}^{\ell} \left(\frac{m}{\ell}\right)\left[\dgc_1 (t) + \ratio{s}{\ell} (\dgc_2 (t) - \dgc_1 (t))\right]\diff s = m \left(\ratio{\dgc_1 + \dgc_2}{2} \right)
+\]</span> which of course is equal to the total mass of the bar times the vertical velocity of its center of mass.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Since the time derivative of the vertical linear momentum is equal to the resultant of the external forces we have, from the free body diagram in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a>, <span class="math display">\[
+m \left(\ratio{\ddgc_1 + \ddgc_2}{2} \right) = - k \gc_1 - 2k\gc_2 - \sforce_1 + \sforce_2
+\]</span> which, after rearranging, may be written as <span id="eq-rblinmom"><span class="math display">\[
+\ratio{m}{2} \ddgc_1 + \ratio{m}{2} \ddgc_2 + k \gc_1 + 2k\gc_2 = \sforce_2 - \sforce_1
+\qquad(6.5)\]</span></span> To derive the expression for angular momentum about the center of mass, we note that the position of the infinitesimal segment with respect to the center of mass is given by <span class="math inline">\(s-\ell/2\)</span>. Note that angular momentum is a vectorial quantity given by an expression of the sort <span class="math inline">\(\pvec \times \linmom\)</span> (i.e.&nbsp;position times linear momentum): for the infinitesimal segment to the right of the center of mass the position variable is positive, its velocity (and hence its linear momentum) is positive if it is upward, and their vectorial product yields a vector perpendicular to the plane of the bar with the sense given by the right hand rule (i.e.&nbsp;positive when out of the screen or page on which you are reading this text). The scalar component of the angular momentum for the infinitesimal piece is therefore given by <span class="math display">\[
+\left[s-\frac{\ell}{2}\right]\left[\left(\frac{m}{\ell}\right)\diff s\right]\left[\dgc_1 (t) + \ratio{s}{\ell} (\dgc_2 (t) - \dgc_1 (t))\right]
+\]</span> and the angular momentum of the whole bar about its center of mass is <span class="math display">\[
+\int_{0}^{\ell} \left(\frac{m}{\ell}\right)\left[s-\frac{\ell}{2}\right]\left[\dgc_1 (t) + \ratio{s}{\ell} (\dgc_2 (t) - \dgc_1 (t))\right]\diff s = \ratio{m \ell}{12} \left(\dgc_2 - \dgc_1\right)
+\]</span> which, of course, is equal to the product of the bar’s moment of inertia about its center of mass (i.e.&nbsp;<span class="math inline">\(m \ell^2 / 12\)</span>) and its angular velocity (i.e.&nbsp;<span class="math inline">\((\dgc_2 - \dgc_1)/\ell\)</span>). As the time derivative of this angular momentum should be equal to the resultant moment of the external forces and moments about the center of mass, we have, based on the free body diagram in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a>, <span class="math display">\[
+\ratio{m \ell}{12} \left(\ddgc_2 - \ddgc_1\right) = \ratio{k \ell}{2} \gc_1 - \ratio{2 k \ell}{2} \gc_2 - \ratio{\ell}{4} \sforce_1 - \smoment
+\]</span> which could be rewritten as <span id="eq-rbangmom"><span class="math display">\[
+- \ratio{m \ell}{12} \ddgc_1 + \ratio{m \ell}{12} \ddgc_2 - \ratio{k \ell}{2} \gc_1 + k \ell \gc_2 = - (\ratio{\ell}{4} \sforce_1 + \smoment)
+\qquad(6.6)\]</span></span> When the two equations derived from linear and angular momenta are written in matrix form one gets <span id="eq-rbNEmat"><span class="math display">\[
+\begin{bmatrix}
+\ratio{m}{2} &amp; \ratio{m}{2}  \\
+-\ratio{m \ell}{12} &amp; \ratio{m \ell}{12}
+\end{bmatrix}
+\colmat{\ddgc_1 \\\ddgc_2} + \begin{bmatrix}
+k &amp; 2k \\ - \ratio{k \ell}{2} &amp; k \ell \end{bmatrix} \colmat{\gc_1 \\ \gc_2} = \colmat{\sforce_2 - \sforce_1 \\ - \ratio{\sforce_1 \ell}{4} - \smoment}
+\qquad(6.7)\]</span></span> These equations are perfectly fine in terms of representing the dynamics, but the coefficient matrices are not symmetric as were those of the 3-DOF model discussed previously. Symmetry is a desirable property for computational purposes and it follows naturally if certain physical expectations (such as Betti’s law of reciprocity for example) are accounted for. One drawback about the Newton-Euler approach for MDOF systems is that the symmetry of the coefficient matrices is not guaranteed when an arbitrary set of generalized coordinates are employed. It should be mentioned that if, for example, we were to use the vertical translation of the center of mass of the bar and its rotation about that point as our generalized coordinates, we would end up with symmetric coefficient matrices with the Newton-Euler approach.</p>
+<p>The Lagrangian approach, on the other hand, ensures symmetry naturally for all choices of generalized coordinates. To exemplify this statement, let us use the same two coordinates <span class="math inline">\(\gc_1\)</span> and <span class="math inline">\(\gc_2\)</span> shown in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a>, and this time use Lagrange’s equations. The velocity of an infinitesimal segment of the bar is given by the expression in <a href="#eq-rbvel">Equation&nbsp;<span>6.4</span></a> so that the kinetic energy of the bar is: <span class="math display">\[
+\ke = \int \frac{1}{2} \dgc^2 \dm = \int_{0}{\ell} \frac{1}{2}  \left[\dgc_1 + \frac{s}{\ell} (\dgc_2 - \dgc_1)\right]^2 \frac{m}{\ell}\diff s = \frac{m}{6} \left[\dgc_1^2 + \dgc_2^2 + \dgc_1 \dgc_2\right]
+\]</span> This form of the kinetic energy is representative of most systems and in the most general case one may expect to have a kinetic energy function of the form<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> <span class="math display">\[
+\ke = \ke(\{\gc\},\{\dgc\},t) = \ratio{1}{2} \sum_{i}\sum_{j} m_{ij}(\{\gc\},t) \dgc_i \dgc_j + \sum_{i} \widehat{m}_{i}(\{\gc\},\,t) \dgc_i + \widehat{m}_o(\{\gc\},t)
+\]</span> where <span class="math inline">\(\{\gc\}\)</span> denotes the set of generalized coordinates used for the system and <span class="math inline">\(\{\dgc\}\)</span> denotes the set of generalized velocities, with the summations over all generalized coordinates. The coefficients themselves may be functions of generalized coordinates and time so that <span class="math inline">\(m_{ij}=m_{ij}(\{\gc\},t)\)</span>, <span class="math inline">\(\widehat{m}_{i} = \widehat{m}_{i}(\{\gc\},\,t)\)</span>, and <span class="math inline">\(\widehat{m}_o =\widehat{m}_o(\{\gc\},t)\)</span>. Whenever time does not <em>explicitly</em> appear in the relations the last two terms disappear and the kinetic energy becomes a homogeneous quadratic form of the generalized velocities as <span class="math display">\[
+\ke = \ke(\{\gc\},\{\dgc\}) = \ratio{1}{2} \sum_{i}\sum_{j} m_{ij}(\{\gc\}) \dgc_i \dgc_j
+\]</span> and it may be shown that the coefficients are such that <span class="math inline">\(m_{ij} = m_{ji}\)</span> for all <span class="math inline">\(i,j\)</span>. Furthermore, when we consider small oscillations around the equilibrium configuration, these coefficients cease to depend explicitly on generalized coordinates so that <span class="math display">\[
+\ke(\{\dgc\}) = \ratio{1}{2} \sum_{i}\sum_{j} m_{ij} \dgc_i \dgc_j
+\]</span> with <span class="math inline">\(m_{ij} = m_{ji}\)</span>, given by: <span id="eq-lagrangianmij"><span class="math display">\[
+m_{ij} = \ratio{\partial^2 \ke}{\partial \dgc_i \partial \dgc_j}
+\qquad(6.8)\]</span></span> In this case the kinetic energy of the system may be expressed using matrix notation as <span id="eq-lagrangiankemat"><span class="math display">\[
+\ke = \ratio{1}{2} \dgcvec^T \mmat \dgcvec
+\qquad(6.9)\]</span></span> where, for an <em>n</em>-DOF system, <span class="math display">\[
+\mmat = \begin{bmatrix} m_{11} &amp; m_{12} &amp; \cdots &amp; m_{1n} \\ m_{21} &amp; m_{22} &amp; \cdots &amp; m_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ m_{n1} &amp; m_{n2} &amp; \cdots &amp; m_{nn} \end{bmatrix} \quad \text{and} \quad \dgcvec = \colmat{\dgc_1 \\ \dgc_2 \\ \vdots \\ \dgc_n}
+\]</span> The potential energy of the system of <a href="#fig-dof2rigidbar">Figure&nbsp;<span>6.2</span></a> comprises the energy stored in the two springs so that we have <span class="math display">\[
+\pe = \frac{1}{2} k \gc_1^2 + \frac{1}{2} 2k \gc_2^2
+\]</span> The potential function may in general depend on generalized coordinates and time, i.e.&nbsp;we may have to deal with a function <span class="math inline">\(\pe = \pe(\{\gc\},t)\)</span>. Most often this function does not explicitly depend on time. Moreover, when we consider small oscillations around the equilibrium configuration, it may be shown that the potential energy has the form <span class="math display">\[
+\pe = \pe(\{\gc\}) = \frac{1}{2} \sum_{i} \sum_{j} k_{ij} \gc_i \gc_j
+\]</span> where the coefficients do not explicitly deped on generalized coordinates, and that they are given by <span id="eq-lagrangiankij"><span class="math display">\[
+k_{ij} = \ratio{\partial^2 \pe}{\partial \gc_i \partial \gc_j}
+\qquad(6.10)\]</span></span> such that <span class="math inline">\(k_{ij}=k_{ji}\)</span> for all <span class="math inline">\(i,j\)</span>. In this case the potential energy of the system may be expressed using matrix notation <span id="eq-lagrangianpemat"><span class="math display">\[
+\pe = \ratio{1}{2} \gcvec^T \kmat \gcvec
+\qquad(6.11)\]</span></span> where, for an <em>n</em>-DOF system, <span class="math display">\[
+\kmat = \begin{bmatrix} k_{11} &amp; k_{12} &amp; \cdots &amp; k_{1n} \\ k_{21} &amp; k_{22} &amp; \cdots &amp; k_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ k_{n1} &amp; k_{n2} &amp; \cdots &amp; k_{nn} \end{bmatrix} \quad \text{and} \quad \gcvec = \colmat{\gc_1 \\ \gc_2 \\ \vdots \\ \gc_n}
+\]</span></p>
+<div id="fig-dof2rigidbarvwdisp" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarvwdisp.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.5: Virtual displacements and resulting patterns.</figcaption><p></p>
+</figure>
+</div>
+<p>The last step before we write Lagrange’s equations is identifying the generalized forces. Recall that the generalized forces are the coefficients in the virtual work expression when arbitrary virtual variations of the generalized coordinates are considered. Considering the external forces <span class="math inline">\(\sforce_1\)</span>, <span class="math inline">\(\sforce_2\)</span> and <span class="math inline">\(\smoment\)</span> shown in the free body diagram in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a> and imposing virtual displacements <span class="math inline">\(\virt \gc_1\)</span> and <span class="math inline">\(\virt \gc_2\)</span> shown in <a href="#fig-dof2rigidbarvwdisp">Figure&nbsp;<span>6.5</span></a>, the virtual work done by the external forces<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> as the system goes through these virtual displacements is given by <span class="math display">\[
+\ratio{\virt \gc_1}{2} F_2 - \ratio{\virt \gc_1}{4} F_1 + \ratio{\virt \gc_1 - \virt \gc_2}{\ell} \smoment - \ratio{3 \virt \gc_2}{4} F_1 + \ratio{\virt \gc_2}{2} F_2 = \vforce_1 \virt \gc_1 + \vforce_2 \virt \gc_2  
+\]</span> so that the generalized forces are identified as the coefficients of the virtual displacements as <span class="math display">\[
+\vforce_1 = \ratio{1}{2} F_2 - \ratio{1}{4} F_1 + \ratio{1}{\ell} \smoment, \qquad  \vforce_2 = \ratio{1}{2} F_2 - \ratio{3}{4} F_1 - \ratio{1}{\ell} \smoment
+\]</span> Now we are ready to derive the governing equations for our model. Lagrange’s equations specify that for our 2-DOF system, <span id="eq-rbL1"><span class="math display">\[
+\frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc_{i}}\right) - \frac{\partial \ke}{\partial \gc_{i}} + \frac{\partial \pe}{\partial \gc_{i}} = \vforce_i \qquad \text{for} \quad i=1,2
+\qquad(6.12)\]</span></span> Substituting the energy expressions and evaluating the derivatives lead to <span id="eq-rbL2"><span class="math display">\[
+\ratio{m}{3} \ddgc_1 + \ratio{m}{6} \ddgc_2 + k \gc_1  = \ratio{1}{2} F_2 - \ratio{1}{4} F_1 + \ratio{1}{\ell} \smoment
+\qquad(6.13)\]</span></span> and <span id="eq-rbL3"><span class="math display">\[
+\ratio{m}{6} \ddgc_1 + \ratio{m}{3} \ddgc_2 + 2k \gc_2  = \ratio{1}{2} F_2 - \ratio{3}{4} F_1 - \ratio{1}{\ell} \smoment
+\qquad(6.14)\]</span></span> which may be combined into a single matrix equation as follows: <span id="eq-rbLmat"><span class="math display">\[
+\begin{bmatrix}
+\ratio{m}{3} &amp; \ratio{m}{6}  \\
+\ratio{m}{6} &amp; \ratio{m}{3}
+\end{bmatrix}
+\colmat{\ddgc_1 \\\ddgc_2} + \begin{bmatrix}
+k &amp; 0 \\ 0 &amp; 2k  \end{bmatrix} \colmat{\gc_1 \\ \gc_2} = \colmat{\ratio{1}{2} F_2 - \ratio{1}{4} F_1 + \ratio{1}{\ell} \smoment \\ \ratio{1}{2} F_2 - \ratio{3}{4} F_1 - \ratio{1}{\ell}\smoment}
+\qquad(6.15)\]</span></span> So how is it that we come up with two different equations that govern the same set of generalized coordinates; in other words, can <a href="#eq-rbNEmat">Equation&nbsp;<span>6.7</span></a> and <a href="#eq-rbLmat">Equation&nbsp;<span>6.15</span></a> both be valid? These two sets of equations are indeed interrelated as one set is a linear combination of the other (e.g.&nbsp;simple addition of <a href="#eq-rbL1">Equation&nbsp;<span>6.12</span></a> and <a href="#eq-rbL2">Equation&nbsp;<span>6.13</span></a> leads to <a href="#eq-rblinmom">Equation&nbsp;<span>6.5</span></a>). As we have the possibility of obtaining symmetric coefficient matrices by a choice of method or coordinates in all cases, we will always assume that the mass and the stiffness (and eventually also the damping) matrices are symmetric, and develop solution strategies accordingly.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>When discussing linear and angular momenta, we could of course have directly used the particular results pertaining to rigid bodies but instead we choose to start from fundamental principles in this introductory example in an effort to emphasize their importance. Experienced readers may skip the details and choose to focus on the familiar conclusions.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Subtle details regarding Lagrange’s equations are too many to discuss in detail in this text. For a thorough introduction and much more, see e.g. D.T. Greenwood, <em>Classical Dynamics,</em> Dover Publications, 1997.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The spring forces have already been accounted for in the potential energy and so they are not included in the work calculation regarding external forces.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="stiffness-and-inertia-influence-coefficients" class="level2" data-number="6.3">
+<h2 data-number="6.3" data-anchor-id="stiffness-and-inertia-influence-coefficients"><span class="header-section-number">6.3</span> Stiffness and Inertia Influence Coefficients</h2>
+<section id="sec-mkequib" class="level3" data-number="6.3.1">
+<h3 data-number="6.3.1" data-anchor-id="sec-mkequib"><span class="header-section-number">6.3.1</span> Force Equilibrium</h3>
+<p>A more direct way to derive the coefficient matrices is often employed in structural dynamics due to its algorithmic nature. This approach addresses the matrix form of equations, given by <span class="math display">\[
+\mmat \ddgcvec + \kmat \gcvec = \ldvec
+\]</span> as the force summation equation that it is, in the form <span class="math display">\[
+\intf + \stff = \ldvec
+\]</span> where the components of <span class="math display">\[
+\intf = \mmat \ddgcvec
+\]</span> are called the <em>inertia forces</em> and the components of <span class="math display">\[
+\stff = \kmat \gcvec
+\]</span> are called the <em>elastic forces</em>. Note that both the inertia and the elastic forces are generated by motion. Since for small amplitude motion the coefficients in the mass and stiffness matrices do not explicitly depend on generalized coordinates, these terms may be thought of as independent quantities in that it may be possible to discuss them separately.</p>
+<p>Let us start with the elastic forces term. As the force equilibrium equation has to be valid whenever the accelerations are zero too, the stiffness related term may be determined by the well-known methods of structural analysis, e.g.&nbsp;the direct displacement method. In this case the force equilibrium equation would read <span class="math display">\[
+\stff = \kmat \gcvec = \begin{bmatrix} k_{11} &amp; k_{12} &amp; \cdots &amp; k_{1n} \\ k_{21} &amp; k_{22} &amp; \cdots &amp; k_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ k_{n1} &amp; k_{n2} &amp; \cdots &amp; k_{nn} \end{bmatrix} \colmat{\gc_1 \\ \gc_2 \\ \vdots \\ \gc_n}= \ldvec = \colmat{\extforce_1 \\ \extforce_2 \\ \vdots \\ \extforce_n}
+\]</span> where <span class="math inline">\(k_{ij}\)</span> are called the <em>stiffness influence coefficients</em>. Now consider a particular case with a small displacement <span class="math inline">\(\gc_1 &gt; 0\)</span> while all other displacements are kept at zero (remember that accelerations were already assumed zero). In this particular case, the external forces and moments (depending on whether the DOF is translational of rotational) that have to be applied along the generalized coordinates <em>for equilibrium of the system</em> have to be equal to <span class="math display">\[
+\colmat{k_{11} \gc_1 \\ k_{21} \gc_1 \\ \vdots \\ k_{n1} \gc_1} = \colmat{\extforce_1 \\ \extforce_2 \\ \vdots \\ \extforce_n}
+\]</span> which means we must apply a force equal to <span class="math inline">\(k_{11} \gc_1\)</span> along generalized coordinate 1, <span class="math inline">\(k_{21} \gc_1\)</span> along generalized coordinate 2, etc. If the displacement imposed on generalized coordinate 1 is assumed to be equal to unity, then the forces are numerically given simply by the stiffness influence coefficients. This whole discussion may be extended to any coordinate in that we could assume <span class="math inline">\(\gc_j =1\)</span> while all other generalized coordinates take on a value of zero; the forces that must be applied are then given by <span class="math inline">\(k_{1j} \gc_j = k_{1j}\)</span>, <span class="math inline">\(k_{2j} \gc_j = k_{2j}\)</span> etc. Based on this pattern, the following phrasing is often used in defining the stiffness influence coefficients: ``The stiffness coefficient <span class="math inline">\(k_{ij}\)</span> is numerically equal to the force/moment that must be applied along generalized coordinate <span class="math inline">\(i\)</span> while the system is in static equilibrium when the imposed displacements are such that <span class="math inline">\(\gc_j = 1\)</span> and all other displacements (and accelerations and velocities) are zero.’’ Note that this is somewhat reverse thinking: we are not trying to find the displacements that would be observed under a specific set of external effects and so the actual set of external forces acting on the system are irrelevant for this particular analysis; on the contrary, we are trying to figure out what external forces/moments should be applied to impose a certain displacement pattern. Even though this may seem somewhat peculiar, it actually provides a systematic way to evaluate the stiffness influence coefficients, one column at a time. Consider the rigid bar example of <a href="#fig-dof2rigidbar">Figure&nbsp;<span>6.2</span></a>, with the generalized coordinates shown in <a href="#fig-dof2rigidbardof2">Figure&nbsp;<span>6.4</span></a> selected to model our problem. By imposing the displacement patterns <span class="math display">\[
+\left\{\gc_1 &gt; 0, \gc_2 = 0\right\} \quad \text{and} \quad \left\{\gc_1 = 0, \gc_2 &gt; 0\right\}
+\]</span> one at a time in a successive fashion, we obtain the free body diagrams shown in <a href="#fig-dof2rigidbarsi">Figure&nbsp;<span>6.6</span></a>.</p>
+<div id="fig-dof2rigidbarsi" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarsi.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.6: Free body diagrams of the rigid bar for displacement patterns <span class="math inline">\(\left\{\gc_1 &gt; 0, \gc_2 = 0\right\}\)</span> and <span class="math inline">\(\left\{\gc_1 = 0, \gc_2 &gt; 0\right\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>Static equilibrium demands that the forces shown in these free body diagrams be given by <span class="math display">\[
+k_{11} \gc_1 = k \gc_1, \quad k_{21} \gc_1 = 0, \quad k_{22} \gc_2 = 2k \gc_2, \quad k_{12} \gc_2 = 0
+\]</span> from which it could be deduced that: <span class="math display">\[
+k_{11} = k, \quad k_{22} = 2k, \quad k_{12}=k_{21} = 0
+\]</span></p>
+<p>A similar analysis could be employed in discussing the coefficients in the mass matrix. To this end we need to include d’Alembert forces in our free body diagrams to discuss ‘static’ equilibrium, and consider what happens when some acceleration is present at a generalized coordinate while all other generalized coordinates have zero accelerations. At the same time we assume that the displacements at the generalized coordinates are zero (as well as velocities, which will be important when discussing damping). When the generalized coordinates take on values of zero, the force equilibrium equation yields <span class="math display">\[
+\intf = \mmat \ddgcvec = \begin{bmatrix} m_{11} &amp; m_{12} &amp; \cdots &amp; m_{1n} \\ m_{21} &amp; m_{22} &amp; \cdots &amp; m_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ m_{n1} &amp; m_{n2} &amp; \cdots &amp; m_{nn} \end{bmatrix} \colmat{\ddgc_1 \\ \ddgc_2 \\ \vdots \\ \ddgc_n}= \ldvec = \colmat{\extforce_1 \\ \extforce_2 \\ \vdots \\ \extforce_n}
+\]</span> and furthermore, if <span class="math inline">\(\ddgc_j &gt; 0\)</span> while all other <span class="math inline">\(\ddgc_i = 0\)</span> for <span class="math inline">\(i \neq j\)</span>, the force equilibrium demands <span id="eq-intinfload"><span class="math display">\[
+\colmat{m_{1j} \ddgc_j \\ m_{2j} \ddgc_j \\ \vdots \\ m_{nj} \ddgc_j} = \colmat{\extforce_1 \\ \extforce_2 \\ \vdots \\ \extforce_n}
+\qquad(6.16)\]</span></span> which means that if static equilibrium is to be satisfied under these conditions, then forces equal to <span class="math inline">\(m_{ij} \ddgc_j\)</span> must be applied externally along generalized coordinates <span class="math inline">\(\gc_i\)</span>. Similar to the stiffness case, we can apply such distributions successively and one at a time to all the generalized coordinates, sketch free body diagrams including d’Alembert forces and those forces that must be applied externally as per <a href="#eq-intinfload">Equation&nbsp;<span>6.16</span></a>, and use ‘static’ equilibrium requirements to determine the unknown coefficients.</p>
+<p>Going back to our rigid bar, the free body diagrams including d’Alembert forces for cases <span class="math display">\[
+\left\{\ddgc_1 &gt; 0, \ddgc_2 = 0\right\} \quad \text{and} \quad \left\{\ddgc_1 = 0, \ddgc_2 &gt; 0\right\}
+\]</span> when all other displacements (and velocities) are zero are shown in <a href="#fig-dof2rigidbarii">Figure&nbsp;<span>6.7</span></a>.</p>
+<div id="fig-dof2rigidbarii" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarii.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.7: Free body diagrams of the rigid bar for acceleration patterns <span class="math inline">\(\left\{\ddgc_1 &gt; 0, \ddgc_2 = 0\right\}\)</span> and <span class="math inline">\(\left\{\ddgc_1 = 0, \ddgc_2 &gt; 0\right\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>Equilibrium demands balance of forces and balance of moments so that <span class="math display">\[
+\begin{array}{c}
+m_{11} \ddgc_1 + m_{21} \ddgc_1 - \ratio{1}{2}\ratio{m}{\ell}\ddgc_1 \ell = 0, \quad
+\ell m_{11} \ddgc_1 - \ratio{2 \ell}{3} \ratio{1}{2}\ratio{m}{\ell}\ddgc_1 \ell = 0 \\
+m_{12} \ddgc_2 + m_{22} \ddgc_2 - \ratio{1}{2}\ratio{m}{\ell}\ddgc_2 \ell = 0, \quad
+\ell m_{22} \ddgc_2 - \ratio{2 \ell}{3} \ratio{1}{2}\ratio{m}{\ell}\ddgc_2 \ell = 0
+\end{array}
+\]</span> from which we deduce <span class="math display">\[
+m_{11} = m_{22} = \ratio{m}{3}, \quad m_{12}=m_{21} = \ratio{m}{6}
+\]</span></p>
+</section>
+<section id="equivalent-forces-and-virtual-work" class="level3" data-number="6.3.2">
+<h3 data-number="6.3.2" data-anchor-id="equivalent-forces-and-virtual-work"><span class="header-section-number">6.3.2</span> Equivalent Forces and Virtual Work</h3>
+<p>The approach discussed above could very well be cast into a question of <em>equivalence</em> as opposed to <em>equilibrium</em>, and its implicit connection to the principle of virtual work would be more directly evident. The underlying point is replacing d’Alembert forces, elastic forces and external forces, which may in general be distributed over the whole system, with equivalent sets of force systems applied along the generalized coordinates. This is an approach which structural engineers are familiar with as it is the framework within which displacement methods operate in structural analysis. While discussing equivalence, d’Alembert forces and elastic forces (and eventually damping related forces) should be explicitly accounted for as <em>resisting forces</em> in that they occur in opposing directions to the directions of accelerations and displacements (and velocities), respectively. This sense of direction must be taken into consideration while setting up the equivalent systems of forces. Consider again the rigid bar, and assume that we are trying to calculate the coefficients in the mass matrix. The d’Alembert forces acting on the bar and an equivalent set of forces acting along the generalized coordinates are shown in <a href="#fig-dof2rigidbarequivm">Figure&nbsp;<span>6.8</span></a>. Note that we have already determined the directions of the equivalent set of forces as opposing the motion, i.e.&nbsp;as their direction being opposite to those of the accelerations when <span class="math inline">\(\ddgc_1 &gt; 0\)</span> and <span class="math inline">\(\ddgc_2 &gt; 0\)</span>.</p>
+<div id="fig-dof2rigidbarequivm" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarequivm.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.8: Free body diagrams of the rigid bar for displacement patterns <span class="math inline">\(\left\{\gc_1 &gt; 0, \gc_2 = 0\right\}\)</span> and <span class="math inline">\(\left\{\gc_1 = 0, \gc_2 &gt; 0\right\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>If two sets of forces are equivalent, then the work done by those two sets as the system goes through any arbitrary virtual or real displacements should be equal.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> Considering two arbitrary virtual displacements <span class="math inline">\(\virt \gc_1\)</span> and <span class="math inline">\(\virt \gc_2\)</span>, equating the virtual work done by the two sets of forces leads to <span class="math display">\[\begin{align*}
+- \ratio{1}{2}\ratio{m}{\ell}\ddgc_1 {\ell} \left(\ratio{2}{3}\virt \gc_1\right) &amp; - \ratio{1}{2}\ratio{m}{\ell}\ddgc_2 {\ell} \left(\ratio{1}{3}\virt \gc_1\right) \\
+&amp; - \ratio{1}{2}\ratio{m}{\ell}\ddgc_1{\ell} \left(\ratio{1}{3}\virt \gc_2\right) - \ratio{1}{2}\ratio{m}{\ell}\ddgc_2 {\ell} \left(\ratio{2}{3}\virt \gc_2\right) \\
+&amp; \phantom{XX} = - \left[m_{11} \ddgc_1 + m_{12} \ddgc_2 \right] \virt \gc_1 - \left[m_{21} \ddgc_1 + m_{22} \ddgc_2 \right] \virt \gc_2
+\end{align*}\]</span> Since this work expression has to be valid for all virtual displacements (for example <span class="math inline">\(\left\{\virt \gc_1 &gt; 0, \virt\gc_2 = 0\right\}\)</span> or <span class="math inline">\(\left\{\virt \gc_1 = 0, \virt\gc_2 &gt; 0\right\}\)</span>) and at any instant (for example when <span class="math inline">\(\left\{\ddgc_1 &gt; 0, \ddgc_2 = 0\right\}\)</span> or <span class="math inline">\(\left\{\ddgc_1 = 0, \ddgc_2 &gt; 0\right\}\)</span>), this equation will be satisfied for any arbitrary setup if <span class="math display">\[
+\begin{array}{c}
+\ratio{1}{2}\ratio{m}{\ell}\ddgc_1 {\ell} \ratio{2}{3} = m_{11}, \quad
+\ratio{1}{2}\ratio{m}{\ell}\ddgc_2 {\ell} \ratio{1}{3} = m_{12} \\
+\ratio{1}{2}\ratio{m}{\ell}\ddgc_2 {\ell} \ratio{1}{3} = m_{21}, \quad
+\ratio{1}{2}\ratio{m}{\ell}\ddgc_1 {\ell} \ratio{2}{3} = m_{22}
+\end{array}
+\]</span> from which we deduce: <span class="math display">\[
+m_{11} = m_{22} = \ratio{m}{3}, \quad m_{12}=m_{21} = \ratio{m}{6}
+\]</span> As equilibrium conditions and the principle of virtual work are completely equivalent procedures, it is no surprise that the coefficients obtained via both methods are identical. The virtual work approach, if executed for elastic forces and their equivalent system of nodal forces, may be shown easily to yield <span class="math display">\[
+k_{11} = k, \quad k_{22} = 2k, \quad k_{12}=k_{21} = 0
+\]</span></p>
+<p>There is yet the issue of the load vector. Whether one uses the equilibrium or the virtual work methods, the most commonly employed approach in determining the load vector is that of virtual work with which the external forces are to be accounted for with an equivalent set of loads applied along the generalized coordinates. This is also the approach that we used in Lagrange’s equations. Consider, for example, our rigid bar for which the external forces and the equivalent loads are shown in <a href="#fig-dof2rigidbarload">Figure&nbsp;<span>6.9</span></a>. Under any arbitrary set of virtual displacements <span class="math inline">\(\left\{\virt \gc_1, \virt \gc_2\right\}\)</span>, the virtual work done by the load vector is <!-- $$ 
+\colmat{\virt\gc_1 & \virt\gc_2}\colmat{\extforce_1 \\ \extforce_2} = \virt \gcvec^T \ldvec
+$$ --> <span class="math display">\[
+\left\{ \virt\gc_1 \;\;\; \virt\gc_2 \right\} \colmat{\extforce_1 \\ \extforce_2} = \virt \gcvec^T \ldvec
+\]</span> where <span class="math inline">\((\cdot)^T\)</span> denotes transpose of the matrix <span class="math inline">\((\cdot)\)</span>, with <span class="math display">\[
+\virt \gcvec \equiv \colmat{\virt\gc_1 \\ \virt\gc_2}
+\]</span></p>
+<div id="fig-dof2rigidbarload" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarload.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.9: External forces and equivalent loads.</figcaption><p></p>
+</figure>
+</div>
+<p>This work has to be equal to the virtual work done by all the external loads as the system goes through the same virtual displacements so that for our bar, <span class="math display">\[
+\ratio{\virt \gc_1}{2} F_2 - \ratio{\virt \gc_1}{4} F_1 + \ratio{\virt \gc_1 - \virt \gc_2}{\ell} \smoment - \ratio{3 \virt \gc_2}{4} F_1 + \ratio{\virt \gc_2}{2} F_2 = \extforce_1 \virt \gc_1 + \extforce_2 \virt \gc_2  
+\]</span> and for this equality to hold for arbitrary virtual displacements the equivalent forces should be <span class="math display">\[
+\extforce_1 = \ratio{1}{2} F_2 - \ratio{1}{4} F_1 + \ratio{1}{\ell} \smoment, \qquad  \extforce_2 = \ratio{1}{2} F_2 - \ratio{3}{4} F_1 - \ratio{1}{\ell} \smoment
+\]</span> which are of course identical to the generalized forces that were derived before.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="4">
+<li id="fn4"><p>Two sets of forces are statically equivalent if they have the same resultants at any given point. As such the virtual work approach is not a necessity and equilibrium conditions could also be employed. We choose to proceed with the virtual work method in our discussions simply to present one of the ways it could be employed in analyses of multi degree of freedom systems.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</section>
+<section id="coordinate-transformations" class="level2" data-number="6.4">
+<h2 data-number="6.4" data-anchor-id="coordinate-transformations"><span class="header-section-number">6.4</span> Coordinate Transformations</h2>
+<p>Choosing a set of generalized coordinates to work with is not a problem that has a unique answer; there may be many viable choices that one may work with in any particular problem. We have already glimpsed into this issue while discussing possible choices of generalized coordinates for a 2-D rigid bar with some candidates shown in <a href="#fig-dof2rigidbardof">Figure&nbsp;<span>6.3</span></a>. An important question therefore arises: if the equations of motion for a system is derived using a particular choice of generalized coordinates, does one have to start from scratch to derive the equations for some other set of coordinates or is there a way to directly transform the equations from one coordinate set to the other.</p>
+<p>We must first note that if there are multiple sets of generalized coordinates that may completely describe the motion of a particular system, then there necessarily must be some transformation equations that relate these coordinates to each other. Consider as an example the 2-D rigid bar and two sets of generalized coordinates shown in <a href="#fig-dof2rigidbarcoordtrans">Figure&nbsp;<span>6.10</span></a> that we may use to model its dynamics. For distinction we have denoted the two sets of coordinates as <span class="math display">\[
+\gcvec = \colmat{\gc_1 \\ \gc_2} \quad \text{and} \quad \bargcvec = \colmat{\gc_1' \\ \gc_2'}
+\]</span></p>
+<div id="fig-dof2rigidbarcoordtrans" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof2rigidbarcoordtrans.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.10: Two different sets of generalized coordinates that may be used to model the same 2-D rigid bar.</figcaption><p></p>
+</figure>
+</div>
+<p>These two sets of coordinates are obviously geometrically related. With small rotations, we have <span class="math display">\[
+\gc_1 = \gc_1' - \ell \gc_2', \; \gc_2 = \gc_1' + \ell \gc_2'
+\]</span> or in matrix notation <span class="math display">\[
+\colmat{\gc_1 \\ \gc_2} = \begin{bmatrix} 1 &amp; -\ell \\ 1 &amp; \ell \end{bmatrix} \colmat{\gc_1' \\ \gc_2'} \quad \rightarrow \quad \gcvec = \mtrx{T} \bargcvec
+\]</span> where <span class="math inline">\(\mtrx{T}\)</span> is called the transformation matrix. Such a transformation matrix will exist between any two sets of admissible generalized coordinates that may be used to model a particular linear system.</p>
+<p>Now assume that if we write the equations of motion in the <span class="math inline">\(\gcvec\)</span> coordinates they are given by <span class="math display">\[
+\mmat \ddgcvec (t) + \kmat \gcvec (t) = \ldvec (t)
+\]</span> whereas if we were to write the governing equations in the <span class="math inline">\(\bargcvec\)</span> coordinates they would by given by <span class="math display">\[
+\barmmat \barddgcvec (t) + \barkmat \bargcvec (t) = \barldvec (t)
+\]</span> Given <span class="math inline">\(\mmat\)</span>, <span class="math inline">\(\kmat\)</span> and <span class="math inline">\(\ldvec\)</span>, can we determine what <span class="math inline">\(\barmmat\)</span>, <span class="math inline">\(\barkmat\)</span> and <span class="math inline">\(\barldvec\)</span> should be? If both sets of coordinates may be used to represent the complete dynamics of the system, then any invariant quantity should have the same value in both coordinate systems. Kinetic and potential energies are such invariant quantities since they are scalars and their values are independent of the particular choice of coordinates used to mathematically express the relevant physical displacements and velocities. The kinetic and potential energies are given by <a href="#eq-lagrangiankemat">Equation&nbsp;<span>6.9</span></a> and <a href="#eq-lagrangianpemat">Equation&nbsp;<span>6.11</span></a>, i.e.&nbsp;by <span class="math display">\[
+\ke = \ratio{1}{2} \dgcvec^T \mmat \dgcvec = \ratio{1}{2} \bardgcvec^T \barmmat \bardgcvec \quad \text{and} \quad \pe = \ratio{1}{2} \gcvec^T \kmat \gcvec = \ratio{1}{2} \bargcvec^T \barkmat \bargcvec
+\]</span> but since <span class="math inline">\(\gcvec = \mtrx{T} \bargcvec\)</span>, we also have <span class="math display">\[
+\ke = \ratio{1}{2} \dgcvec^T \mmat \dgcvec = \ratio{1}{2} \bardgcvec^T \mtrx{T}^T \mmat \mtrx{T} \bardgcvec \quad \text{and} \quad \pe = \ratio{1}{2} \gcvec^T \kmat \gcvec = \ratio{1}{2} \bargcvec^T \mtrx{T}^T \kmat \mtrx{T} \bargcvec
+\]</span> and so it must be true that <span class="math display">\[
+\barmmat = \mtrx{T}^T \mmat \mtrx{T}, \quad \barkmat = \mtrx{T}^T \kmat \mtrx{T}
+\]</span> As for external excitations, we may proceed by the fact that as the system goes through any arbitrary displacement pattern, the work done by both sets of load vectors should be the same. This should be so because both sets are by definition equivalent to the general distribution of external excitations applied on the system, and therefore they are equivalent to each other as well. Consider a virtual displacement pattern given by <span class="math inline">\(\virt \gcvec = \mtrx{T} \virt \bargcvec\)</span>. The work done by the two sets of load vectors are <span class="math display">\[
+\vwork = \virt \gcvec^T \ldvec = \virt \bargcvec^T \barldvec
+\]</span> and since <span class="math inline">\(\virt \gcvec = \mtrx{T} \virt \bargcvec\)</span>, it must be true that <span class="math display">\[
+\virt \gcvec^T \ldvec = \virt \bargcvec^T \mtrx{T}^T \ldvec \quad \rightarrow \quad \mtrx{T}^T \ldvec = \barldvec
+\]</span> So this is how we should proceed when transforming the governing equations of motion from one set of coordinates to the other: Given the equations of motion in say <span class="math inline">\(\gcvec\)</span> coordinates as <span id="eq-coordtrans1"><span class="math display">\[
+\mmat \ddgcvec (t) + \kmat \gcvec (t) = \ldvec (t)
+\qquad(6.17)\]</span></span> and the relation between <span class="math inline">\(\gcvec\)</span> and <span class="math inline">\(\bargcvec\)</span> given by <span id="eq-coordtrans2"><span class="math display">\[
+\gcvec = \mtrx{T} \bargcvec
+\qquad(6.18)\]</span></span> the first step is to substitute <a href="#eq-coordtrans2">Equation&nbsp;<span>6.18</span></a> into <a href="#eq-coordtrans1">Equation&nbsp;<span>6.17</span></a> to obtain <span id="eq-coordtrans3"><span class="math display">\[
+\mmat \mtrx{T} \barddgcvec (t) + \kmat \mtrx{T} \bargcvec (t) = \ldvec (t)
+\qquad(6.19)\]</span></span> after which we complete the transformation by premultiplying <a href="#eq-coordtrans3">Equation&nbsp;<span>6.19</span></a> with <span class="math inline">\(\mtrx{T}^T\)</span> to obtain <span id="eq-coordtrans4"><span class="math display">\[
+\mtrx{T}^T \mmat \mtrx{T} \barddgcvec (t) + \mtrx{T}^T \kmat \mtrx{T} \bargcvec (t) = \mtrx{T}^T \ldvec (t) \quad \rightarrow \quad \barmmat \barddgcvec (t) + \barkmat \bargcvec (t) = \barldvec (t)
+\qquad(6.20)\]</span></span> This final step that takes us from <a href="#eq-coordtrans3">Equation&nbsp;<span>6.19</span></a> to <a href="#eq-coordtrans4">Equation&nbsp;<span>6.20</span></a> is crucial and it can not be left out.</p>
+<section id="sec-mdof" class="level4 unnumbered">
+<h4 class="unnumbered" data-anchor-id="sec-mdof">EXAMPLE 6 .1</h4>
+<p>Consider the 2-DOF rigid bar we previously worked on. The sketches of the bar with two sets of possible generalized coordinates are shown in <a href="#fig-xdof2rb">Figure&nbsp;<span>6.11</span></a>. Coordinates <span class="math inline">\(\gc_1\)</span> and <span class="math inline">\(\gc_2\)</span> denote the vertical displacements of the two ends of the bar and the mass and stiffness matrices and the load vector in these coordinates were shown to be: <span class="math display">\[
+\mmat = \begin{bmatrix} \ratio{m}{3} &amp; \ratio{m}{6} \\ \ratio{m}{6} &amp; \ratio{m}{3} \end{bmatrix}, \; \kmat = \begin{bmatrix} k &amp; 0 \\ 0 &amp; 2k \end{bmatrix}, \; \ldvec  = \colmat{\ratio{\sforce_2}{2} - \ratio{\sforce_1}{4} + \ratio{\smoment}{\ell} \\ \ratio{\sforce_2}{2} - \ratio{3\sforce_1}{4} - \ratio{\smoment}{\ell}}
+\]</span></p>
+<div id="fig-xdof2rb" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/xdof2rb.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.11: Rigid bar with two possible sets of generalized coordinates.</figcaption><p></p>
+</figure>
+</div>
+<p>Assume we want to figure out the equations of motion for the same system written using the generalized coordinates <span class="math inline">\(\gc_{1}'\)</span> and <span class="math inline">\(\gc_{2}'\)</span>, which respectively denote the vertical translation of the bar’s center of mass and the bar’s rotation about the same point. Since the bar is homogeneous and uniform its center of mass is located at its midpoint; therefore <span class="math inline">\(\gcvec\)</span> and <span class="math inline">\(\bargcvec\)</span> are related through <span class="math display">\[
+\gc_1 = \gc_1' - \frac{\ell}{2}\gc_2, \quad \gc_2 = \gc_1' + \frac{\ell}{2}\gc_2 \quad \rightarrow \quad
+\gcvec = \begin{bmatrix} 1 &amp; -\ratio{\ell}{2} \\ 1 &amp; \ratio{\ell}{2} \end{bmatrix} \bargcvec = \mtrx{T} \bargcvec
+\]</span> Using the transformation given by <a href="#eq-coordtrans4">Equation&nbsp;<span>6.20</span></a>, the matrices we are seeking are calculated as: <span class="math display">\[
+\barmmat = \mtrx{T}^T \mmat \mtrx{T} = \begin{bmatrix} 1 &amp; 1 \\
+-\frac{\ell}{2}  &amp; \frac{\ell}{2} \end{bmatrix}\begin{bmatrix} \frac{m}{3} &amp; \frac{m}{6} \\ \frac{m}{6} &amp; \frac{m}{3} \end{bmatrix}\begin{bmatrix} 1 &amp; -\frac{\ell}{2} \\ 1 &amp; \frac{\ell}{2} \end{bmatrix} = \begin{bmatrix} m &amp; 0 \\ 0 &amp; \frac{m\ell^2}{12} \end{bmatrix}
+\]</span> <span class="math display">\[
+\barkmat = \mtrx{T}^T \mmat \mtrx{T} = \begin{bmatrix} 1 &amp; 1 \\
+-\frac{\ell}{2}  &amp; \frac{\ell}{2} \end{bmatrix}\begin{bmatrix} k &amp; 0 \\ 0 &amp; 2k \end{bmatrix}\begin{bmatrix} 1 &amp; -\frac{\ell}{2} \\ 1 &amp; \frac{\ell}{2} \end{bmatrix} = \begin{bmatrix} 3k &amp; \frac{k\ell}{2} \\ \frac{k\ell}{2} &amp; \frac{3k\ell^2}{4} \end{bmatrix}
+\]</span> <span class="math display">\[
+\barldvec = \mtrx{T}^T \ldvec = \begin{bmatrix} 1 &amp; 1 \\
+-\frac{\ell}{2}  &amp; \frac{\ell}{2} \end{bmatrix} \colmat{\frac{\sforce_2}{2} - \frac{\sforce_1}{4} + \frac{\smoment}{\ell} \\ \frac{\sforce_2}{2} - \frac{3\sforce_1}{4} - \frac{\smoment}{\ell}} = \colmat{{\sforce_2} - {\sforce_1} \\ - \frac{\sforce_1 \ell}{4} - {\smoment}}
+\]</span> That these indeed are the matrices we desired to find may be easily verified via any of the direct methods discussed in previous sections.</p>
+<hr>
+</section>
+</section>
+<section id="rigid-floor-plate-model" class="level2" data-number="6.5">
+<h2 data-number="6.5" data-anchor-id="rigid-floor-plate-model"><span class="header-section-number">6.5</span> Rigid Floor Plate Model</h2>
+<p>A model that is frequently used in structural dynamics and that has a higher level of complexity compared with the 2-DOF bar is that of a rigid flat plate (the floor) supported by massless columns. Such a system is shown in <a href="#fig-dof3floorplate">Figure&nbsp;<span>6.12</span></a>. The axial rigidity of columns is significantly greater than their flexural rigidity so that neglecting the out-of-plane displacements of the floor plate is often quite acceptable. The movements of the floor plate then comprise two translations in its plane and a rotation about the axis perpendicular to the plane. The mass of the columns is generally quite small compared to that of the plate and here we choose to neglect that mass in our model. In this simple model we also neglect the torsional resistance of the columns so that the columns become analogous to massless translational springs.</p>
+<div id="fig-dof3floorplate" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplate.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.12: Rigid plate (floor) supported by columns, plan view with generalized coordinates and equivalent springs.</figcaption><p></p>
+</figure>
+</div>
+<p>This problem has one more dimension than the rigid bar discussed in the previous sections and this dimensional increase imposes additional complexities. We first need to understand the geometry of deformation and how it relates to the degrees of freedom. To set up our problem we will choose the two displacements of the centroid of the floor plate, the directions of which are parallel to the two sides of the plate, and the rotation of the plate in its own plane about its centroid, as our generalized coordinates. Consider small amplitude motion so that arcs may still be approximated by tangent lines and angles by their tangents so that the two translations <span class="math inline">\(\gc_1\)</span> and <span class="math inline">\(\gc_2\)</span> are always assumed in the directions <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> shown in <a href="#fig-dof3floorplate">Figure&nbsp;<span>6.12</span></a>, independent of rotation <span class="math inline">\(\gc_3\)</span>. The centroid of the plate is designated by <span class="math inline">\(\com\)</span> because for this particular case of homogeneous plate with constant thickness, this point actually coincides with the center of mass.</p>
+<p>Given this set of generalized coordinates, the next order of business is to determine how the deformations in the columns are related to the generalized coordinates. We will assume that the floor plate is rigid enough, so that both ends of the columns may be considered fixed and that end rotations of the columns are constrained. The deformation of each column is then determined by the relative translation of its two ends. We know from structural analysis that when two ends of a linear elastic and homogeneous bar are fixed, and the bar is subjected to bending <em>about a principal centroidal axis of its cross section</em> as a result of which one end of the bar translates by an amount of <span class="math inline">\(\Delta\)</span> relative to its other end, then the shear forces that develop at both ends of the bar are given by<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> <span class="math display">\[
+\sforce = \ratio{12 E I}{h^3} \Delta = k \Delta
+\]</span> where <span class="math inline">\(E\)</span> is modulus of elasticity, <span class="math inline">\(I\)</span> is the second moment of the cross sectional area about the axis of bending, and <span class="math inline">\(h\)</span> is the span of the bar (in our case, height of the column). Essentially the interaction of the column with the plate is equivalent (since we ignore the bending moments at the bar ends because they do not contribute to force or moment summations along our generalized coordinates) to a translational spring with stiffness <span class="math inline">\(k = 12 EI / h^3\)</span>. Remember from structural analysis that a cross section will have two principal centroidal axes that are orthogonal to each other. Let’s say that the <em>i</em>th column’s centroid <span class="math inline">\(c_i\)</span> is located at some coordinates <span class="math inline">\((X_i,Y_i)\)</span> measured from the centroid of the plate (see <a href="#fig-dof3floorplate">Figure&nbsp;<span>6.12</span></a>). We will denote the cross section’s principal centroidal axes as <span class="math inline">\(\zeta_i\)</span> and <span class="math inline">\(\eta_i\)</span>. These <em>local axes</em>, defined separately for each column, may in general not coincide with the <em>global axes</em> <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, defined once for the whole system. We will assume that the angle between local axis <span class="math inline">\(\zeta_i\)</span> and global axis <span class="math inline">\(X\)</span> is given by <span class="math inline">\(\beta_i\)</span>; since the axes come in orthogonal pairs, knowing <span class="math inline">\(\beta_i\)</span> is sufficient to define the complete relative orientation of the axes. Given this setup, we need two springs, one for each principal direction, to represent the cumulative resistance of a column to bending deformations, with stiffnesses given by <span class="math display">\[
+k^{\zeta}_{i} = \ratio{12 E_{i} I_{\eta_i}}{h_i^3}, \quad k^{\eta}_{i} = \ratio{12 E_{i} I_{\zeta_i}}{h_i^3}
+\]</span> where it should be noted that a translation along <span class="math inline">\(\zeta_i\)</span> requires bending of the bar about axis <span class="math inline">\(\eta_i\)</span> and vice versa (hence the subscripts for the second moments of area). All quantities tagged with the index <span class="math inline">\(i\)</span> are supposed to signify their values specific to the <em>i</em>th column.</p>
+<div id="fig-dof3floorplatedef" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplatedef.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.13: Relations between the generalized coordinates for the floor plate and the displacements they impose at the center of a column.</figcaption><p></p>
+</figure>
+</div>
+<p>So how does a variation in a generalized coordinate affect the deformation in a column? To inspect the geometry, consider the sketch given in <a href="#fig-dof3floorplatedef">Figure&nbsp;<span>6.13</span></a>. The sketch considers an arbitrary column with centroid <span class="math inline">\(c_i\)</span> located at <span class="math inline">\((X_i,Y_i)\)</span> measured relative to the center of mass of the plate on which the generalized coordinates are defined. It is possible to analyze the system sequentially by imposing a nonzero value for one generalized coordinate at a time while keeping the others locked at zero. For example, when there is only <span class="math inline">\(\gc_1 &gt; 0\)</span> with <span class="math inline">\(\gc_2 = 0\)</span> and <span class="math inline">\(\gc_3 = 0\)</span>, the two translations of <span class="math inline">\(c_i\)</span> along the columns principal centroidal axes <span class="math inline">\(\zeta_i\)</span> and <span class="math inline">\(\eta_i\)</span> are given by <span class="math display">\[
+\gc_1 \cos \beta_i \quad \text{and} \quad - \gc_1 \sin \beta_i
+\]</span> respectively, while for <span class="math inline">\(\gc_2 &gt; 0\)</span> with <span class="math inline">\(\gc_1 = 0, \gc_3 = 0\)</span> one has <span class="math display">\[
+\gc_2 \sin \beta_i \quad \text{and} \quad \gc_2 \cos \beta_i
+\]</span> The translations <span class="math inline">\(c_i\)</span> goes through along <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> due to a rotation <span class="math inline">\(\gc_3 &gt; 0\)</span> of the plate about <span class="math inline">\(\com\)</span> with <span class="math inline">\(\gc_1 = 0, \gc_2 = 0\)</span> are given by <span class="math display">\[
+- \gc_3 Y_i \quad \text{and} \quad  \gc_3 X_i  
+\]</span> so that when these are projected along <span class="math inline">\(\zeta_i\)</span> and <span class="math inline">\(\eta_i\)</span> as in the previous two cases, the translations of <span class="math inline">\(c_i\)</span> along <span class="math inline">\(\zeta_i\)</span> and <span class="math inline">\(\eta_i\)</span> are found to be <span class="math display">\[
+-\gc_3 Y_i \cos \beta_i  + \gc_3 X_i \sin \beta_i \quad \text{and} \quad \gc_3 Y_i \sin \beta_i + \gc_3 X_i \cos \beta_i   
+\]</span> When all three generalized coordinates are active, the two displacements of <span class="math inline">\(c_i\)</span> along local axes <span class="math inline">\(\zeta_i\)</span> and <span class="math inline">\(\eta_i\)</span> will be given by a superposition of the contributions detailed above so that <span class="math inline">\(c_i\)</span> will move along <span class="math inline">\(\zeta_i\)</span> by an amount <span class="math inline">\(\Delta^{\zeta}_{i}\)</span> given by <span class="math display">\[
+\Delta^{\zeta}_{i} = \gc_1 \cos \beta_i  + \gc_2 \sin \beta_i + \gc_3 (-Y_i \cos \beta_i + X_i \sin \beta_i)
+\]</span> while the movement along <span class="math inline">\(\eta_i\)</span> will be of the amount <span class="math inline">\(\Delta^{\eta}_{i}\)</span> given by <span class="math display">\[
+\Delta^{\eta}_{i} = - \gc_1 \sin \beta_i + \gc_2 \cos \beta_i + \gc_3 (Y_i \sin \beta_i + X_i \cos \beta_i)
+\]</span> Having figured out the displacements and knowing the column stiffness, we are ready to calculate the resisting forces. Again consider a single column. If the equivalent spring stiffnesses along the column’s local (principal centroidal) axes are given by <span class="math inline">\(k^{\zeta}_{i}\)</span> and <span class="math inline">\(k^{\eta}_{i}\)</span>, the resisting forces along the local axes are <span class="math display">\[
+F^{\zeta}_{i}=k^{\zeta}_{i}\Delta^{\zeta}_{i} = \gc_1 k^{\zeta}_{i} \cos \beta_i + \gc_2 k^{\zeta}_{i} \sin \beta_i + \gc_3 k^{\zeta}_{i} (-Y_i \cos \beta_i + X_i \sin \beta_i)
+\]</span> and <span class="math display">\[
+F^{\eta}_{i}=k^{\eta}_{i}\Delta^{\eta}_{i} = - \gc_1 k^{\eta}_{i} \sin \beta_i + \gc_2 k^{\eta}_{i}\cos \beta_i + \gc_3 k^{\eta}_{i} (Y_i \sin \beta_i + X_i \cos \beta_i)
+\]</span> as shown for a single column in Figure <a href="#fig-dof3floorplaterf">Figure&nbsp;<span>6.14</span></a>. The forces along local coordinates are equivalent to the forces <span class="math inline">\(F^{X}_{i}\)</span> and <span class="math inline">\(F^{Y}_{i}\)</span> along global coordinates and given by <span class="math display">\[
+F^{X}_{i} = F^{\zeta}_{i} \cos \beta_i - F^{\eta}_{i} \sin \beta_i
+\]</span> and <span class="math display">\[
+F^{Y}_{i} = F^{\zeta}_{i} \sin \beta_i + F^{\eta}_{i} \cos \beta_i
+\]</span></p>
+<div id="fig-dof3floorplaterf" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplaterf.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.14: Elastic restoring forces along local axes and global axes.</figcaption><p></p>
+</figure>
+</div>
+<p>The recurrent terms in transformations between forces and coordinates are indeed interconnected as you might have suspected. It might be more revealing to write these relations in matrix form. The differentials <span class="math inline">\(\diff X\)</span> and <span class="math inline">\(\diff Y\)</span> are related to <span class="math inline">\(\diff \zeta_i\)</span> and <span class="math inline">\(\diff \eta_i\)</span> through a simple rotation and their relation may be written in matrix form as <span class="math display">\[
+\colmat{\diff \zeta_i \\ \diff \eta_i} = \begin{bmatrix} \cos \beta_i &amp; \sin \beta_i \\ - \sin \beta_i &amp; \cos \beta_i \end{bmatrix} \colmat{\diff X \\ \diff Y}
+\]</span> as one may show starting with the infinitesimal displacement vector written in both coordinate systems. A concise and more general way to write this expression would be the form <span class="math display">\[
+\nvec{\diff \zeta_i} = \mtrx{T_i} \nvec{\diff X}
+\]</span> where <span class="math inline">\(\nvec{\diff X}\)</span> is the column matrix comprising the differential increments along the global axes, <span class="math inline">\(\nvec{\diff \zeta_i}\)</span> is the column matrix comprising the differential increments along the local axes of the <em>i</em>th column, and <span class="math inline">\(\mtrx{T_i}\)</span> is the transformation matrix that relates the two. This is the well-known transformation for vector components under orthogonal rotations. The inverse transformation is given by <span class="math display">\[
+\nvec{\diff X} = \mtrx{T_i}^{-1} \nvec{\diff \zeta_i}  \quad \rightarrow \quad \colmat{\diff X \\ \diff Y}  = \begin{bmatrix} \cos \beta_i &amp; - \sin \beta_i \\ \sin \beta_i &amp; \cos \beta_i \end{bmatrix} \colmat{\diff \zeta_i \\ \diff \eta_i}  
+\]</span> where <span class="math inline">\((\cdot)^{-1}\)</span> denotes inverse of the matrix <span class="math inline">\((\cdot)\)</span>. It is important to note that <span class="math inline">\(\mtrx{T_i}\)</span> is an orthogonal matrix, i.e. <span class="math display">\[
+\mtrx{T_i}^{-1} = \mtrx{T_i}^{T}
+\]</span> so that <span class="math display">\[
+\mtrx{T_i} \nvec{\diff X} = \nvec{\diff \zeta_i}, \quad \nvec{\diff X} = \mtrx{T_i}^{T} \nvec{\diff \zeta_i}
+\]</span> These transformations hold for all vector components. The displacement of the <em>i</em>th column’s centroid may be expressed in local coordinates with components <span class="math inline">\(\Delta^{\zeta}_{i}\)</span> and <span class="math inline">\(\Delta^{\eta}_{i}\)</span>, or in global coordinates with components <span class="math inline">\(\Delta^{X}_{i}\)</span> and <span class="math inline">\(\Delta^{Y}_{i}\)</span>. The two sets of components related through <span class="math display">\[
+\colmat{\Delta^{\zeta}_{i} \\ \Delta^{\eta}_{i}} = \begin{bmatrix} \cos \beta_i &amp; \sin \beta_i \\ - \sin \beta_i &amp; \cos \beta_i \end{bmatrix}  \colmat{\Delta^{X}_{i} \\ \Delta^{Y}_{i}}  \quad \rightarrow \quad {\snvec{\Delta}}^{L}_{i} = \mtrx{T_i} {\snvec{\Delta}}^{G}_{i}
+\]</span> where <span class="math inline">\({\snvec{\Delta}}^{L}_{i}\)</span> and <span class="math inline">\({\snvec{\Delta}}^{G}_{i}\)</span> denote displacement components along the local (L) and global (G) coordinates. Similarly, elastic forces in local and global coordinates are related through <span class="math display">\[
+\colmat{F^{\zeta}_{i} \\ F^{\eta}_{i}} = \begin{bmatrix} \cos \beta_i &amp;  \sin \beta_i \\ - \sin \beta_i &amp; \cos \beta_i \end{bmatrix}  \colmat{F^{X}_{i} \\ F^{Y}_{i}} \quad \rightarrow \quad {\nvec{F}^{L}_{i}} = \mtrx{T_i} {\nvec{F}^{G}_{i}}
+\]</span> with local and global components implied again by the subscripts. Note that our choice of generalized coordinates are such that <span class="math display">\[
+\Delta^{X}_{i} = \gc_1 - Y_i \gc_3, \quad \Delta^{Y}_{i} = \gc_2 + X_i, \gc_3
+\]</span> for all columns, i.e.&nbsp;for all <em>i</em>, which yields <span class="math display">\[
+\colmat{\Delta^{X}_{i} \\ \Delta^{Y}_{i}} = \colmat{\gc_1 \\ \gc_2} + \colmat{-Y_i \\ X_i} \gc_3
+\]</span> so that the displacements at the centroid of the <em>i</em>th column in local coordinates are given by <span class="math display">\[
+\colmat{\Delta^{\zeta}_{i} \\ \Delta^{\eta}_{i}} = \begin{bmatrix} \cos \beta_i &amp; \sin \beta_i \\ - \sin \beta_i &amp; \cos \beta_i \end{bmatrix}  \colmat{\Delta^{X}_{i} \\ \Delta^{Y}_{i}} = \mtrx{T_i} \colmat{\gc_1 \\ \gc_2} + \mtrx{T_i} \colmat{-Y_i \\ X_i} \gc_3
+\]</span> Recall that the resisting elastic forces in local coordinates were given by <span class="math display">\[
+F^{\zeta}_{i}=k^{\zeta}_{i}\Delta^{\zeta}_{i}, \quad F^{\eta}_{i}=k^{\eta}_{i}\Delta^{\eta}_{i}
+\]</span> which in matrix form may be written as <span class="math display">\[
+\colmat{F^{\zeta}_{i} \\ F^{\eta}_{i}} = \begin{bmatrix} k^{\zeta}_{i} &amp;  0 \\ 0 &amp; k^{\eta}_{i} \end{bmatrix}  \colmat{\Delta^{\zeta}_{i} \\ \Delta^{\eta}_{i}} \quad \rightarrow \quad {\nvec{F}^{L}_{i}} = \mtrx{K^{L}_{i}} {\snvec{\Delta}}^{L}_{i}
+\]</span> where <span class="math inline">\(\mtrx{K^{L}_{i}}\)</span> is called the <em>member stiffness matrix in local coordinates</em>. If we think in terms of the global coordinates or, as in our case, the generalized coordinates for the whole system, we have <span class="math display">\[
+{\nvec{F}^{L}_{i}} = \mtrx{T_i} {\nvec{F}^{G}_{i}} = \mtrx{K^{L}_{i}} {\snvec{\Delta}}^{L}_{i} = \mtrx{K^{L}_{i}} \mtrx{T_i} \colmat{\gc_1 \\ \gc_2} + \mtrx{K^{L}_{i}} \mtrx{T_i} \colmat{-Y_i \\ X_i} \gc_3
+\]</span> so that,<br>
+<span class="math display">\[
+{\nvec{F}^{G}_{i}} = \mtrx{T_i}^{T} \mtrx{K^{L}_{i}} \mtrx{T_i} \colmat{\gc_1 \\ \gc_2} + \mtrx{T_i}^{T} \mtrx{K^{L}_{i}} \mtrx{T_i} \colmat{-Y_i \\ X_i} \gc_3 %= \mtrx{K^{G}_{i}} \colmat{\gc_1 \\ \gc_2} + \mtrx{K^{G}_{i}} \colmat{-Y_i \\ X_i} \gc_3
+\]</span> which, after the components of <span class="math inline">\(\mtrx{T}\)</span> and <span class="math inline">\(\mtrx{K^{L}_{i}}\)</span> are explicitly accounted for, leads to <span class="math display">\[\begin{align*}
+F^{X}_{i} &amp; = (k^{\zeta}_{i} \cos^2 \beta_i + k^{\eta}_{i} \sin^2 \beta_i) \gc_1 + \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) \gc_2 \\
+&amp; \qquad + \left[- Y_i (k^{\zeta}_{i} \cos^2 \beta_i + k^{\eta}_{i} \sin^2 \beta_i) + X_i  \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) \right] \gc_3
+\end{align*}\]</span> <span class="math display">\[\begin{align*}
+F^{Y}_{i} &amp; = \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) \gc_1 + (k^{\zeta}_{i} \sin^2 \beta_i + k^{\eta}_{i} \cos^2 \beta_i) \gc_2 \\
+&amp; \qquad + \left[- Y_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i})  + X_i (k^{\zeta}_{i} \sin^2 \beta_i + k^{\eta}_{i} \cos^2 \beta_i) \right] \gc_3
+\end{align*}\]</span> <!-- 
+$$
+\mtrx{K^{G}_{i}} = \mtrx{T_i}^{T} \mtrx{K^{L}_{i}} \mtrx{T_i}
+$$
+is a stiffness matrix pertaining to end translations of the column expressed in global coordinates. It is tempting to call it the member stiffness matrix in global coordinates but perhaps it would be a hasty decision since there are three generalized coordinates describing the global degrees of freedom but only two translational degrees of freedom per column. As such, the $2 \times 2$ matrix $\mtrx{K^{G}_{i}}$ is not sufficient by itself to describe the mapping between all the generalized coordinates and resisting elastic forces. Note in passing that this transformation preserves symmetry because if the member stiffness matrix in local coordinates is symmetric, than the corresponding $\mtrx{K^{G}_{i}}$ is also symmetric. (From linear algebra, we know that $(\mtrx{A}\mtrx{B}\mtrx{C})^{T}=\mtrx{C}^{T}\mtrx{B}^{T}\mtrx{A}^{T}$.)
+We are not done yet since we still have to derive the stiffness matrix of the whole system, and what we have done until now pertains only to a single column. 
+ --> To derive the system stiffness matrix, let us try to use the equilibrium approach that we discussed in <a href="#sec-mkequib"><span>Section&nbsp;6.3.1</span></a>. Considering first the case with <span class="math inline">\(\left\{ \gc_1 = 1, \gc_2 =0, \gc_3 = 0 \right\}\)</span>, the forces shown in <a href="#fig-dof3floorplateq1">Figure&nbsp;<span>6.15</span></a> will be in equilibrium when <span class="math display">\[
+k_{11} \times 1 = \sum_i F^{X}_{i}\bigr|_{\gc_1=1,\gc_2=0,\gc_3=0} = \sum_i k^{\zeta}_{i} \cos^2 \beta_i + k^{\eta}_{i} \sin^2 \beta_i
+\]</span> <span class="math display">\[
+k_{21} \times 1 = \sum_i F^{Y}_{i}\bigr|_{\gc_1=1,\gc_2=0,\gc_3=0} = \sum_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i})
+\]</span> and <span class="math display">\[\begin{align*}
+k_{31} \times 1  &amp; = \sum_i (X_i F^{Y}_{i} - Y_i F^{X}_{i})\bigr|_{\gc_1=1,\gc_2=0,\gc_3=0} \\
+&amp; = \sum_i  \left[X_i  \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) - Y_i (k^{\zeta}_{i} \cos^2 \beta_i + k^{\eta}_{i} \sin^2 \beta_i) \right]
+\end{align*}\]</span> <!-- 
+$$
+k_{11} \times 1 = \sum_i F^{X}_{i} = \sum_i \left( \colmat{1 & 0}{\nvec{F}^{G}_{i}} \right) = \sum_i \left(\colmat{1 & 0}\mtrx{K^{G}_{i}}\colmat{1 \\ 0}\right)= \colmat{1 & 0} \left(\sum_i \mtrx{K^{G}_{i}}\right)\colmat{1 \\ 0}
+$$
+$$
+k_{21} \times 1 = \sum_i F^{Y}_{i} = \sum_i \left(\colmat{0 & 1}{\nvec{F}^{G}_{i}}\right) = \sum_i \left(\colmat{0 & 1}\mtrx{K^{G}_{i}}\colmat{1 \\ 0} \right)= \colmat{0 & 1} \left( \sum_i \mtrx{K^{G}_{i}}\right) \colmat{1 \\ 0} 
+$$
+and
+$$
+k_{31} \times 1 = \sum_i (X_i F^{Y}_{i} - Y_i F^{X}_{i}) = \sum_i (\colmat{-Y_i & X_i}{\nvec{F}^{G}_{i}}) = \left( \sum_i \colmat{-Y_i & X_i}\mtrx{K^{G}_{i}} \right)\colmat{1 \\ 0}
+$$
+ --></p>
+<div id="fig-dof3floorplateq1" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplateq1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.15: Elastic restoring forces and balancing external forces for the case <span class="math inline">\(\{\gc_1=1,\gc_2=0,\gc_3=0\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>We can proceed similarly to investigate the cases of <span class="math inline">\(\{\gc_1=0, \gc_2 = 1, \gc_3=0\}\)</span> and <span class="math inline">\(\{\gc_1=0, \gc_2 = 0, \gc_3=1\}\)</span>, depicted in <a href="#fig-dof3floorplateq2q3">Figure&nbsp;<span>6.16</span></a>. To simplify the visuals in these figures, only the generic <em>i</em>th column is identified. For the first case of <span class="math inline">\(\{\gc_1=0, \gc_2 = 1, \gc_3=0\}\)</span>, equilibrium considerations lead to <span class="math display">\[
+k_{12} \times 1 = \sum_i F^{X}_{i}\bigr|_{\gc_1=0,\gc_2=1,\gc_3=0} = \sum_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i})
+\]</span> <span class="math display">\[
+k_{22} \times 1 = \sum_i F^{Y}_{i}\bigr|_{\gc_1=0,\gc_2=1,\gc_3=0} = \sum_i k^{\zeta}_{i} \sin^2 \beta_i + k^{\eta}_{i} \cos^2 \beta_i  
+\]</span> and <span class="math display">\[\begin{align*}
+k_{32} \times 1 &amp; = \sum_i (X_i F^{Y}_{i} - Y_i F^{X}_{i})\bigr|_{\gc_1=0,\gc_2=1,\gc_3=0} \\
+&amp; = \sum_i  \left[X_i (k^{\zeta}_{i} \sin^2 \beta_i + k^{\eta}_{i} \cos^2 \beta_i) - Y_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) \right]
+\end{align*}\]</span></p>
+<div id="fig-dof3floorplateq2q3" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplateq2q3.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.16: Elastic restoring forces and balancing external forces for the cases <span class="math inline">\(\{\gc_1=0,\gc_2=1,\gc_3=0\}\)</span> and <span class="math inline">\(\{\gc_1=0,\gc_2=0,\gc_3=1\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>Finally, for the case of <span class="math inline">\(\{\gc_1=0, \gc_2 = 0, \gc_3=1\}\)</span> we have: <span class="math display">\[\begin{align*}
+k_{13} \times 1  &amp; = \sum_i F^{X}_{i}\bigr|_{\gc_1=0,\gc_2=0,\gc_3=1} \\
+&amp; = \sum_i \left[- Y_i (k^{\zeta}_{i} \cos^2 \beta_i + k^{\eta}_{i} \sin^2 \beta_i) + X_i  \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i})\right]
+\end{align*}\]</span> <span class="math display">\[\begin{align*}
+k_{23} \times 1  &amp; = \sum_i F^{Y}_{i}\bigr|_{\gc_1=0,\gc_2=0,\gc_3=1} \\
+&amp; = \sum_i \left[- Y_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i})  + X_i (k^{\zeta}_{i} \sin^2 \beta_i + k^{\eta}_{i} \cos^2 \beta_i) \right]
+\end{align*}\]</span> and <span class="math display">\[\begin{align*}
+k_{33} \times 1 &amp; = \sum_i (X_i F^{Y}_{i} - Y_i F^{X}_{i})\bigr|_{\gc_1=0,\gc_2=0,\gc_3=1} \\
+&lt;!--
+&amp; = \sum_i  \left[(X_i^2 \sin^2 \beta_i + Y_i^2\cos^2 \beta_i) k^{\zeta}_{i}  + (X_i^2 \cos^2 \beta_i + Y_i^2\sin^2 \beta_i) k^{\eta}_{i}  - 2 X_i Y_i \cos \beta_i \sin \beta_i (k^{\zeta}_{i} - k^{\eta}_{i}) \right] \\
+--&gt;
+&amp; = \sum_i  \left[(X_i \sin \beta_i - Y_i \cos \beta_i)^2 k^{\zeta}_{i}  + (X_i \cos \beta_i + Y_i \sin \beta_i)^2 k^{\eta}_{i}\right]
+\end{align*}\]</span> We now have the complete stiffness matrix of the system with <span class="math display">\[
+\kmat = \begin{bmatrix} k_{11} &amp; k_{12} &amp; k_{13} \\ k_{21} &amp; k_{22} &amp; k_{23}  \\ k_{31} &amp; k_{32} &amp; k_{33} \end{bmatrix}
+\]</span> where the coefficients <span class="math inline">\(k_{ij}\)</span> are to be calculated using the equations derived above. The stiffness matrix is symmetric so that <span class="math inline">\(k_{ij}=k_{ji}\)</span>.</p>
+<p>There are two types of coupling that occur through the stiffness matrix. One is the coupling between the translational degrees of freedom, and the other between the translational and rotational degrees of freedom. It is worthwhile to see under which circumstances these coupling terms would disappear. Let us first consider the case when the principal directions of column sections are aligned with the translational degrees of freedom. In the formulations above, this overlap could be taken to mean <span class="math inline">\(\beta_i = 0\)</span> without loss of generality for all columns. When such is the case, the cross terms between the translational terms <span class="math inline">\(\gc_1\)</span> and <span class="math inline">\(\gc_2\)</span> are zero: <span class="math display">\[
+k_{12}=k_{21} = \sum_i \cos 0 \sin 0 (k^{\zeta}_{i} - k^{\eta}_{i}) = 0
+\]</span> Let us continue with this setup to make the point. Note that even though the translational degrees are uncoupled, it is not necessarily true that the coupling between the translational and rotational degrees of freedom is also removed, i.e.&nbsp;<span class="math inline">\(k_{13}=k_{31}\)</span> and <span class="math inline">\(k_{23}=k_{32}\)</span> are not necessarily zero. When <span class="math inline">\(\beta_i = 0\)</span>, however, these terms are given by <span class="math display">\[
+k_{13}=k_{31}=\sum_i \left[- Y_i (k^{\zeta}_{i} \cos^2 0 + k^{\eta}_{i} \sin^2 0) + X_i  \cos 0 \sin 0 (k^{\zeta}_{i} - k^{\eta}_{i})\right] = - \sum_i Y_i k^{\zeta}_{i}
+\]</span> and <span class="math display">\[
+k_{23} = k_{32} = \sum_i \left[- Y_i \cos 0 \sin 0 (k^{\zeta}_{i} - k^{\eta}_{i})  + X_i (k^{\zeta}_{i} \sin^2 0 + k^{\eta}_{i} \cos^2 0) \right] = \sum_i X_i k^{\eta}_{i}
+\]</span> Recall that <span class="math inline">\(X_{i}\)</span> and <span class="math inline">\(Y_{i}\)</span> are the coordinates for the center of the <em>i</em>th column. It is therefore not guaranteed by any means that we should be so lucky and the point of origin we have defined is such that the summations on the right hand side turn out to be zero. On the other hand, there will always be some point such that when <span class="math inline">\(X_i\)</span> and <span class="math inline">\(Y_i\)</span> are measured from that point, we will have <span class="math display">\[
+k_{13}=k_{31}= - \sum_i Y_i k^{\zeta}_{i} = 0, k_{23} = k_{32} = \sum_i X_i k^{\eta}_{i} = 0
+\]</span> The special point for which this condition holds is called the <em>center of stiffness</em>: more particularly, the center of stiffness <span class="math inline">\(ck\)</span> is that point for which the translational and rotational degrees of freedom are uncoupled when the translational and rotational coordinates are defined with respect to that point. The identification of this point becomes more tedious when the principal directions of the column stiffnesses are not aligned with the directions of the translational coordinates, i.e.&nbsp;when not all <span class="math inline">\(\beta_i\)</span> are equal to zero, but it is still possible and the definition is in fact applicable to all cases. We’ll include this case in an example to provide the details.</p>
+<p>We had previously defined the center of mass in the introductory sections. The important point to add in the current context is the distribution of the d’Alembert forces. When the rigid body is planar, as is our floor plate, the d’Alembert forces may be shown to be equivalent to a single force, coplanar with the plane of the body, and a moment perpendicular to that plane such that each force and moment component is a function of only one acceleration component. With the generalized coordinates we have chosen to work with, the resultants of the d’Alembert forces at the center of mass would be those shown in <a href="#fig-dof3floorplatedalembert">Figure&nbsp;<span>6.17</span></a>, where <span class="math inline">\(m\)</span> is the total mass of the plate and <span class="math inline">\(\inrt\)</span> is its mass moment of inertia about the axis perpendicular to its plane at the center of mass.</p>
+<div id="fig-dof3floorplatedalembert" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplatedalembert.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.17: Resultants of d’Alembert forces at the center of mass of the plate.</figcaption><p></p>
+</figure>
+</div>
+<p>To derive the mass matrix, we may proceed with the equilibrium approach as we did in the case of the stiffness matrix. To find the coefficients in the three columns of the mass matrix, we sequentially investigate the following cases shown in <a href="#fig-dof3floorplatemassmtrx">Figure&nbsp;<span>6.18</span></a>: <span class="math inline">\(\{\ddgc_1=1,\ddgc_2=0,\ddgc_3=0\}\)</span>, <span class="math inline">\(\{\ddgc_1=0,\ddgc_2=1,\ddgc_3=0\}\)</span> and <span class="math inline">\(\{\ddgc_1=0,\ddgc_2=0,\ddgc_3=1\}\)</span>.</p>
+<div id="fig-dof3floorplatemassmtrx" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplatemassmtrx.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.18: d’Alembert forces and balancing external forces for the cases <span class="math inline">\(\{\ddgc_1=1,\ddgc_2=0,\ddgc_3=0\}\)</span>, <span class="math inline">\(\{\ddgc_1=0,\ddgc_2=1,\ddgc_3=0\}\)</span> and <span class="math inline">\(\{\ddgc_1=0,\ddgc_2=0,\ddgc_3=1\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>For each individual case, force equilibrium requires: <span class="math display">\[
+\begin{array}{c}
+m_{11} = m, \quad m_{21} = 0, \quad m_{31} = 0 \\
+m_{12} = 0, \quad m_{22} = m, \quad m_{32} = 0 \\
+m_{13} = 0, \quad m_{23} = 0, \quad m_{33} = \inrt
+\end{array}
+\]</span> The mass matrix is therefore given by <span class="math display">\[
+\mmat = \begin{bmatrix} m &amp; 0 &amp; 0\\0 &amp; m &amp; 0\\ 0 &amp; 0 &amp; \inrt\end{bmatrix}
+\]</span> which is diagonal, with translational and rotational motions uncoupled. This will be true whenever the center of mass is employed, as was the case for the stiffness matrix if the center of stiffness were to be used.</p>
+<p>Now a trivial but necessary note: consider the simple system shown in <a href="#fig-dof3floorplateindep">Figure&nbsp;<span>6.19</span></a>. The floor plate is supported by two identical columns located symmetrically about the <span class="math inline">\(Y\)</span> axis, with stiffnesses <span class="math inline">\(k^{\zeta}_{1}=k^{\zeta}_{2}=k_{\zeta}\)</span>, <span class="math inline">\(k^{\eta}_{1}=k^{\eta}_{2}=k_{\eta}\)</span>. The principal directions of the column sections are along the generalized coordinates. With <span class="math inline">\(\beta_i = 0\)</span> for both columns and the two columns located symmetrically so that <span class="math inline">\(X_2=X = -X_1\)</span>, the general formulas we derived for <span class="math inline">\(k_{ij}\)</span> yield <span class="math display">\[
+k_{11} = 2 k_{\zeta}, \quad k_{22} = 2 k_{\eta}, \quad k_{33} = 2 X^2 k_{\eta}
+\]</span> and <span class="math display">\[
+k_{12} = k_{21} = 0, \quad k_{13} = k_{31} = 0, \quad k_{23} = k_{32} = 0
+\]</span> so that the mass and the stiffness matrices become <span class="math display">\[
+\mmat = \begin{bmatrix} m &amp; 0 &amp; 0\\0 &amp; m &amp; 0\\ 0 &amp; 0 &amp; \inrt\end{bmatrix}, \kmat = \begin{bmatrix} 2 k_{\zeta} &amp; 0 &amp; 0\\0 &amp; 2 k_{\eta} &amp; 0\\ 0 &amp; 0 &amp; 2 X^2 k_{\eta}\end{bmatrix}
+\]</span></p>
+<div id="fig-dof3floorplateindep" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplateindep.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.19: Three independent single degree of freedom systems.</figcaption><p></p>
+</figure>
+</div>
+<p>What we have here is a system that has three degrees of freedom but the motion along those degrees of freedom are uncoupled so that if the system were to be set in motion along one, it would continue along that direction alone, with no motion incurred along other degrees of freedom. This is actually not a three degree of freedom system in the context of structural dynamics but rather three independent single degree of freedom systems. This complete uncoupling is the basis for the model we will consider in the next section.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="5">
+<li id="fn5"><p>Different boundary conditions will of course yield different stiffnesses; we use the case of a fixed-fixed bar simply to exemplify the process.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="shear-building" class="level2" data-number="6.6">
+<h2 data-number="6.6" data-anchor-id="shear-building"><span class="header-section-number">6.6</span> Shear Building</h2>
+<p>When inertial and deformational coupling are negligible, as was the case for the perfectly symmetrical plan of the previous section or for cases when such coupling is small so as to be of no significant consequence if ignored, a simple chain-like model could be used for dynamic analyses of multi-story structures. Such a model, represented in the sketch of <a href="#fig-shearbldg">Figure&nbsp;<span>6.20</span></a>, comprises rigid floors at which all the relevant masses are collected, and columns that represent the lateral story stiffnesses, stacked on top of each other.</p>
+<div id="fig-shearbldg" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldg.png" class="img-fluid figure-img" style="width:40.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.20: Shear building model.</figcaption><p></p>
+</figure>
+</div>
+<p>To set the terminology straight: the <em>i</em>th floor has mass <span class="math inline">\(m_i\)</span>, it covers the <em>i</em>th story which has a cumulative lateral story stiffness <span class="math inline">\(k_i\)</span>, the <em>i</em>th floor’s displacement relative to the ground is <span class="math inline">\(\gc_i (t)\)</span>, and that floor is acted upon by an external lateral force <span class="math inline">\(\extforce_i (t)\)</span>. There are a total of <span class="math inline">\(n\)</span> floors. Vertical deformations are assumed negligible so that only lateral motion is pertinent. As there is no inertial or deformational coupling present, the lateral motion of the floors along one direction does not lead to motion in the orthogonal direction or in-plane rotations. This of course is a highly idealized simple model and various objections quickly make themselves available: The mass distribution is most probably not concentrated at the floor levels as there are columns and walls along the vertical height of each story, external forces that are assumed to act at floor levels are most likely distributed over certain areas such as wind induced loads, complete uncoupling is highly improbable and there are certain actions induced in other directions, so on and so forth. Even as such, this simple chain model has proven itself time and again capable of providing great insight into how multi story structures behave dynamically and their use is allowed even in structural codes, subject to certain limitations.</p>
+<p>The equations of motion for the shear building model may easily be derived by investigating the lateral forces that act on each floor at any given instant. A free body diagram, including d’Alembert forces, of some typical <em>i</em>th floor is shown in <a href="#fig-shearbldgfbd">Figure&nbsp;<span>6.21</span></a>. Static equilibrium requires <span class="math display">\[
+\extforce_i (t) + k_{i+1} (\gc_{i+1} (t) - \gc_{i} (t) ) - k_{i} (\gc_{i} (t) - \gc_{i-1} (t) ) -m_i \ddgc_i (t) = 0
+\]</span> which may be rearranged to obtain <span class="math display">\[
+m_i \ddgc_i (t) - k_{i} \gc_{i-1} (t) + (k_{i} + k_{i+1}) \gc_{i} (t) - k_{i+1} \gc_{i+1} (t) = \extforce_i (t)
+\]</span> This equation is valid for all floors, i.e.&nbsp;for <span class="math inline">\(i=1,2,\ldots,n\)</span>, with <span class="math inline">\(\gc_{i-1} := 0\)</span> when <span class="math inline">\(i=1\)</span> and <span class="math inline">\(\gc_{i+1} := 0\)</span> for <span class="math inline">\(i=n\)</span>.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+<div id="fig-shearbldgfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgfbd.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.21: Free body diagram of the <em>i</em>th floor in the shear building model.</figcaption><p></p>
+</figure>
+</div>
+<p>The whole set of equations for all <span class="math inline">\(n\)</span> floors may be written in matrix form as <span class="math display">\[\begin{align*}
+&amp; \begin{bmatrix}
+m_1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0\\
+0 &amp; m_2 &amp; 0 &amp; \cdots &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; m_3 &amp; \cdots &amp; 0 &amp; 0\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; m_{n-1} &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; m_n
+\end{bmatrix}
+\colmat{\ddgc_1 \\ \ddgc_2 \\ \ddgc_3 \\ \vdots \\ \ddgc_{n-1} \\ \ddgc_{n}} + \\
+&amp; \phantom{XX} \begin{bmatrix}
+k_1+k_2 &amp; -k_2 &amp; 0 &amp; 0 &amp; \cdots &amp; 0\\
+-k_2 &amp; k_2 + k_3 &amp; -k_3 &amp; 0 &amp; \cdots &amp; 0\\
+0 &amp; -k_3 &amp; k_3 + k_4 &amp; -k_4 &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; -k_{n-1} &amp; k_{n-1} + k_n &amp; -k_n\\
+0 &amp; 0 &amp; \cdots &amp; 0 &amp; -k_n &amp; k_n
+\end{bmatrix}
+\colmat{\gc_1 \\ \gc_2 \\ \gc_3 \\ \vdots \\ \gc_{n-1} \\ \gc_{n}}
+=
+\colmat{\extforce_1 \\ \extforce_2 \\ \extforce_3 \\ \vdots \\ \extforce_{n-1} \\ \extforce_{n}}
+\end{align*}\]</span> which, you may realize, has the same form as the chain model of <a href="#sec-matrixform"><span>Section&nbsp;6.1</span></a>. The mass matrix in a shear building model will always be diagonal and the stiffness matrix will always be tridiagonal. These constructive properties of the system matrices provide significant computational efficiency, which may be of great significance as the number of degrees of freedom increases to large values.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="6">
+<li id="fn6"><p>Brief reminder: the symbol <span class="math inline">\(:=\)</span> is to be understood as <em>defined to be equal to</em>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-mdofbase" class="level2" data-number="6.7">
+<h2 data-number="6.7" data-anchor-id="sec-mdofbase"><span class="header-section-number">6.7</span> Models for Base Excited Systems</h2>
+<p>Accounting for base excitation in MDOF systems is similar to its treatment in SDOF systems. In essence, when some or all of the supports/foundations of an MDOF system move, the references for rigid body motion and deformational motion have to be properly accounted for, and relevant forces must be consistently developed. To demonstrate some possible models, let us start with the simple shear building model that we discussed just above, subjected to unidirectional ground translation as shown in <a href="#fig-shearbldgbase">Figure&nbsp;<span>6.22</span></a>.</p>
+<div id="fig-shearbldgbase" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgbase.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.22: Shear building model subjected to unidirectional ground translation.</figcaption><p></p>
+</figure>
+</div>
+<p>There are two components that contribute to the total displacement <span class="math inline">\(\adis_i (t)\)</span> of the <em>i</em>th floor: the part due to rigid body translation of the structure with the induced ground motion, indicated here by <span class="math inline">\(\gdist\)</span>, and the part due the movement of the floor relative to the rigid body configuration, symbolized by <span class="math inline">\(\gc_i (t)\)</span>. As in the single degree of freedom model, the deformations in the stories are governed by the relative displacements <span class="math inline">\(\gc_i (t)\)</span> whereas d’Alembert forces are governed by the absolute (total) accelerations <span class="math inline">\(\aacc_i (t)\)</span>. The free body diagram of the <em>i</em>th floor, including d’Alembert forces, would be like the one shown in <a href="#fig-shearbldgbasefbd">Figure&nbsp;<span>6.23</span></a>. Equilibrium requires <span class="math display">\[
+k_{i+1} (\gc_{i+1} (t) - \gc_{i} (t) ) - k_{i} (\gc_{i} (t) - \gc_{i-1} (t) ) -m_i \aacc_i (t) = 0
+\]</span> and, noting that <span class="math display">\[
+\adis_i (t) = \gdist + \gc_i (t)
+\]</span> the whole set of equations for all <span class="math inline">\(n\)</span> floors may be written in matrix form as <span class="math display">\[\begin{align*}
+&amp; \begin{bmatrix}
+m_1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0\\
+0 &amp; m_2 &amp; 0 &amp; \cdots &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; m_3 &amp; \cdots &amp; 0 &amp; 0\\
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; m_{n-1} &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; m_n
+\end{bmatrix}
+\colmat{\ddgc_1 + \gacc \\ \ddgc_2 + \gacc \\ \ddgc_3 + \gacc \\ \vdots \\ \ddgc_{n-1} + \gacc \\ \ddgc_{n} + \gacc} + \\
+&amp; \phantom{XX} \begin{bmatrix}
+k_1+k_2 &amp; -k_2 &amp; 0 &amp; 0 &amp; \cdots &amp; 0\\
+-k_2 &amp; k_2 + k_3 &amp; -k_3 &amp; 0 &amp; \cdots &amp; 0\\
+0 &amp; -k_3 &amp; k_3 + k_4 &amp; -k_4 &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \ddots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; -k_{n-1} &amp; k_{n-1} + k_n &amp; -k_n\\
+0 &amp; 0 &amp; \cdots &amp; 0 &amp; -k_n &amp; k_n
+\end{bmatrix}
+\colmat{\gc_1 \\ \gc_2 \\ \gc_3 \\ \vdots \\ \gc_{n-1} \\ \gc_{n}}
+=
+\colmat{0 \\ 0 \\ 0 \\ \vdots \\ 0 \\ 0}
+\end{align*}\]</span></p>
+<div id="fig-shearbldgbasefbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgbasefbd.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.23: Free body diagram of the <em>i</em>th floor in the shear building model subjected to unidirectional ground translation.</figcaption><p></p>
+</figure>
+</div>
+<p>The task almost always is to evaluate the response of a structure subjected to a particular base motion so that the equations are often expressed with the ground motion term on the right hand side as <span id="eq-shearbldgeomrel"><span class="math display">\[
+\mmat \ddgcvec (t) + \kmat \gcvec (t) = - \mmat \colmat{\gacc (t) \\ \gacc (t) \\ \vdots \\ \gacc (t)} = - \mmat \colmat{1 \\ 1 \\ \vdots \\ 1} \gacc (t) = - \mmat \onecol \gacc (t)
+\qquad(6.21)\]</span></span> where <span class="math inline">\(\onecol\)</span> is a column matrix of dimension <span class="math inline">\(n\)</span> with all its elements equal to one. The similarity of this equation with that of the single degree of freedom model is quite evident, with scalar system parameters in the SDOF model becoming matrices in the MDOF model.</p>
+<p>There is a trivial alternative to how the equation of motion may be stated if we were to choose to work with the absolute motion variables. Starting with <span class="math display">\[
+\mmat \aaccvec(t) + \kmat \gctvec = \zerocol
+\]</span> and substituting <span class="math inline">\(\gctvec=\adisvec (t) - \onecol \gdis (t)\)</span>, one gets, after reordering, <span class="math display">\[
+\mmat \aaccvec (t) + \kmat \adisvec (t) = \kmat \onecol \gdis (t)
+\]</span> and due to the structure of the stiffness matrix in the shear building model, the right hand side of the equation may be shown to yield: <span id="eq-shearbldgeomabs"><span class="math display">\[
+\mmat \aaccvec (t) + \kmat \adisvec (t) = \colmat{k_1 \\ 0 \\ 0 \\ \vdots \\ 0} \gdis (t)
+\qquad(6.22)\]</span></span> As with the SDOF model, the choice of equations to use depends on the particular application, but often the form of <a href="#eq-shearbldgeomrel">Equation&nbsp;<span>6.21</span></a> is preferred since calculating deformations directly is generally the most pressing concern for analysts. On the other hand, especially when dealing with multi-support excitations under which it mat not be trivial to define the moving reference frame, it may be preferable to cast the formulations in terms of absolute motion parameters.</p>
+<p>Next let us consider a different scenario, albeit one that is not very common, to present a slightly different formulation. Assume that the ground motion is not translational but rotational, with rotations relatively small so that arcs may be approximated by tangents. The rigid body displacements that would occur in the system due to the ground motion would then be as shown in <a href="#fig-shearbldgbaserot">Figure&nbsp;<span>6.24</span></a>: if the <em>i</em>th floor is located at a height of <span class="math inline">\(h_i\)</span> from the ground, then it would translate laterally by an amount of <span class="math inline">\(h_i \gdis (t)\)</span> due to rigid body motion that would occur under a ground rotation of amount <span class="math inline">\(\gdis (t)\)</span>. Such a motion that would occur at each floor would cause no deformation in the system. On top of this we include the possibility of relative motion, relative to this rigid body state, at each floor given by <span class="math inline">\(\gc_i (t)\)</span>, so that the total displacement of the <em>i</em>th floor is given by <span class="math display">\[
+\adis_i (t) = \gc_i (t) + h_i \gdis (t)
+\]</span></p>
+<div id="fig-shearbldgbaserot" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgbaserot.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.24: Shear building model subjected to uniaxial ground rotation.</figcaption><p></p>
+</figure>
+</div>
+<p>Note that the stiffness matrix is all about deformations so that there is no change in it with regards to the previous model. The mass matrix similarly remains unaltered. What changes is how the input affects the system. The equations of motion again are <span class="math display">\[
+\mmat \aaccvec(t) + \kmat \gctvec = \zerocol
+\]</span> but now we have <span class="math display">\[
+\aaccvec (t) = \ddgctvec + \colmat{h_1 \\ h_2 \\ \vdots \\ h_n} \gacc (t) = \ddgctvec + \nvec{h} \gacc (t)
+\]</span> <!-- where $\nvec{h}=\colmat{h_1 & h_2 & \cdots & h_n}^{T}$ is a column matrix that has floor levels (measured from the ground) as its elements (compare with the column matrix of ones in the translation case). The equation of motion of a shear building model subjected to uniaxial ground rotation may therefore be written as: --> where height vector <span class="math inline">\(\nvec{h}=\left\{h_1 \;\;\; h_2 \;\;\; \cdots \;\;\; h_n\right\}^{T}\)</span> is a column matrix that has floor levels (measured from the ground) as its elements (compare with the column matrix of ones in the translation case). The equation of motion of a shear building model subjected to uniaxial ground rotation may therefore be written as: <span class="math display">\[
+\mmat \ddgctvec + \kmat \gctvec = - \mmat \nvec{h} \gacc (t)
+\]</span> It is of course relatively straightforward to extend this model to include both a unidirectional ground translation and a uniaxial ground rotation. Assume that the ground translation is given by <span class="math inline">\(\gdis_1 (t)\)</span> and rotation by <span class="math inline">\(\gdis_2 (t)\)</span>, as shown in <a href="#fig-shearbldgbaseboth">Figure&nbsp;<span>6.25</span></a>.</p>
+<div id="fig-shearbldgbaseboth" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/shearbldgbaseboth.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.25: Shear building model subjected simultaneously to unidirectional ground translation and uniaxial ground rotation.</figcaption><p></p>
+</figure>
+</div>
+<p>When both ground motions are present, the absolute and relative displacements are related through <span class="math display">\[
+\adisvec (t) = \gctvec + \onecol \gdis_1 (t) + \nvec{h} \gdis_2 (t) = \gctvec +\begin{bmatrix} \onecol &amp; \nvec{h} \end{bmatrix} \colmat{\gdis_1 (t) \\ \gdis_2 (t)} = \gctvec + \ininfmat \gdisvec (t)
+\]</span> where <span class="math inline">\(\ininfmat\)</span> is a matrix that maps the relationship between inputs and generalized coordinates. We will call it the <em>input influence matrix</em> when it maps more than one input, and <em>input influence vector</em> (to be denoted <span class="math inline">\(\ininfvec\)</span>) if it is a single column mapping only one input. The determination of the input influence matrix for the support excitation/ground motion problem is, as we have seen, a geometric problem in which one tries to determine the rigid body displacements that would occur at the locations and along the directions of the generalized coordinates. With this inauguration, the equation of motion for base excited structures may be more generally expressed as<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> <span class="math display">\[
+\mmat \ddgctvec + \kmat \gctvec = - \mmat \ininfmat \gaccvec (t)
+\]</span> Would this formulation hold for, say, the three dimensional rigid plate model? Consider the motion of the previously investigated rigid floor plate moving in its plane under translational and rotational base motion as shown in <a href="#fig-dof3floorplatebase">Figure&nbsp;<span>6.26</span></a>.</p>
+<div id="fig-dof3floorplatebase" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof3floorplatebase.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6.26: In-plane rigid body motion of the floor plate due to ground motion.</figcaption><p></p>
+</figure>
+</div>
+<p>We assume that the ground moves like a rigid block so that there are three components to ground motion: translational motion given by <span class="math inline">\(\gdis_1 (t)\)</span> and <span class="math inline">\(\gdis_2 (t)\)</span>, and rotational motion <span class="math inline">\(\gdis_3 (t)\)</span>. (Although we should note that such rotational motion is generally negligible, and its inclusion here is more for demonstration purposes.) The floor plate may itself move relative to the ground, with this relative motion defined by <span class="math inline">\(\gc_1 (t)\)</span>, <span class="math inline">\(\gc_2 (t)\)</span> and <span class="math inline">\(\gc_3 (t)\)</span> as before (once again we use the center of mass as our reference point, and remind that the mass matrix is diagonal in that case). This relative motion is what may cause deformation in the system so that the restoring forces are given by <span class="math inline">\(\kmat \gcvec\)</span>. The accelerations and the related d’Alembert forces, on the other hand, are proportional to the absolute accelerations so that the equations of motion will be given by <span class="math display">\[
+\mmat \colmat{\ddgc_1 + \gacc_1 \\ \ddgc_2 + \gacc_2 \\\ddgc_3 + \gacc_3} + \kmat  \gcvec = \zerocol
+\]</span> which may be written as <span class="math display">\[
+\mmat \ddgcvec (t) + \kmat \gcvec (t) = - \mmat \begin{bmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{bmatrix} \colmat{\gacc_1 (t) \\ \gacc_2 (t) \\ \gacc_3 (t)} = - \mmat \ininfmat \nvec{\gacc} (t)
+\]</span> with <span class="math inline">\(\ininfmat = \idmat\)</span>.</p>
+<p>Before closing this section, a disclaimer may be in order. When deriving the equations of motion one does feel a sense of unease when rotations are present. If the motion amplitudes are large, rotational motion does indeed bring about increasing levels of complexities. The sketches that we use to demonstrate how systems move are, for ease of visual identifiability, almost always extreme in that the marked displacements and deformations are inadmissibly large. So these sketches should be taken with a grain of salt. The motion amplitudes which we aim to investigate herein are limited to the immediate vicinity of initial equilibrium such that in all cases arcs may be approximated by tangent lines unless otherwise explicitly stated. Direct superposition of the rigid body motion and the deformational motion in the case of the floor plate is justified only with this constraint in mind.</p>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="7">
+<li id="fn7"><p>Implicit assumption here being that the input influence matrix is time invariant, i.e.&nbsp;it remains unaltered as the system moves, so that taking time derivatives to obtain accelerations is trivial.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./eqsdof.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./multidoffreevib.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

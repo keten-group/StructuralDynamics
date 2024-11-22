@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.294">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Structural Dynamics - 2&nbsp; Free Vibrations of Single Degree of Freedom Systems</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./singledofforced.html" rel="next">
+<link href="./fundamentals.html" rel="prev">
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head><body class="nav-sidebar floating">$$
+
+% 05/16 change, define new env to convert multlined to multline* in HTML
+\newenvironment{multlined}{\begin{multline*}}{\end{multline*}}
+
+% define the command for indenting the first line of paragraphs after the first
+\newcommand{\newpara}{ }
+
+%\DeclareMathOperator{\expo}{e}
+\def\expo{\mathrm{e}}
+\def\expon#1{\expo^{#1}}
+
+% \renewcommand\pi{\uppi} % date: 03/29 change: comment out this line since \uppi cannot be understood by qmd
+
+\def\abs#1{\left| #1 \right|}
+\def\matabs#1{\Bigl| #1 \Bigr|} % determinant
+
+\def\RB#1{\mathcal{#1}}
+
+% \def\rem#1{{\bfseries{#1}}} % regular emphasis
+% \def\mem#1{{\bfseries{#1}}} % much emphasis
+% date: 03/30 change \bfseries to \textbf
+\def\rem#1{{\textit{#1}}} % regular emphasis
+\def\mem#1{{\textit{#1}}} % much emphasis
+% date: 03/30 change \emph to ** in qmd
+% \def\lem#1{\emph{#1}} % less emphasis
+
+\def\unit#1{\mathrm{\, #1}}
+\def\punit#1{\mathrm{#1}}
+
+\DeclareMathOperator{\dif}{d}
+\def\diff{\dif \!}
+\def\dt{\diff t} % dt
+
+%%%%%%%%%%% VECTORS
+\def\vctr#1{\underline{\mathrm{#1}}} % vectors with roman letters
+\def\svctr#1{\underline{#1}} % vectors with symbols
+\def\pvctr#1{\, \underline{\mathrm{#1}}} % vectors with roman letters and prior spacing
+\def\vmag#1{\left| #1 \right|} % magnitude of a vector
+\def\subvec#1#2{\vctr{#1}_{#2}} % vector (roman letter) with subscript
+%%%%%%%%%%%
+
+%%%%%%%%%%% MATRICES
+\def\mtrx#1{[\mathrm{#1}]} % matrices with roman letters
+\def\smtrx#1{[\mathnormal{#1}]} % matrices with symbols
+\def\mmat{\mtrx{M}} % mass matrix
+\def\cmat{\mtrx{C}} % damping matrix
+\def\kmat{\mtrx{K}} % stiffness matrix
+\def\nvec#1{\underline{{#1}}} % column matrix (vector) for symbols
+\def\snvec#1{\underline{{#1}}} %  column matrix (vector) for symbols
+% \def\nvec#1{\underset{\sim}{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\underset{\sim}{\mathnormal{#1}}} %  column matrix (vector) for symbols
+\def\colmat#1{\left\{ \begin{array}{c} #1 \end{array} \right\}} % column matrix array
+% \def\nvec#1{\undertilde{\mathrm{#1}}} % column matrix (vector) for symbols
+% \def\snvec#1{\undertilde{#1}} %  column matrix (vector) for symbols
+% 03/31 \undertilde not found 
+\def\onecol{\nvec{1}}
+\def\idmat{\mtrx{I}}
+\def\zerocol{\nvec{0}}
+\def\zeromat{\mtrx{0}}
+\def\barmmat{\mtrx{{M'}}} % mass matrix in barred coordinates
+\def\barcmat{\mtrx{{C'}}} % damping matrix in barred coordinates
+\def\barkmat{\mtrx{{K'}}} % stiffness matrix in barred coordinates
+%%%%%%%%%%%
+
+\def\sint{\int \!}
+\def\lsint#1#2{\int_{#1}^{#2} \hspace{-1ex}}
+
+\def\divp#1#2{\frac{\diff #1}{\diff #2}}
+\def\divt#1{\frac{\diff \, #1}{\diff t}}
+\def\ddivt#1{\frac{\diff^2 #1}{\diff t^2}}
+\def\pardiv#1#2{\frac{\partial #1}{\partial #2}}
+
+\def\pdivt#1{\dot{#1}}
+\def\pddivt#1{\ddot{#1}}
+
+%\def{\ssum}{\mathsmaller{\sum}}
+\DeclareMathOperator{\ssum}{\scaleobj{0.8}{\sum}}
+\def\lowsum#1{\displaystyle{\ssum\limits_{#1}^{}}}
+\def\allsum#1#2{\ssum\limits_{#1}^{#2}}
+
+\def\volume{V}
+\def\area{A}
+\def\dV{\diff \volume} % differential volume
+\def\dA{\diff \area} % differential area
+\def\dm{\diff m} % differential mass
+\def\totm{{m}} % total mass of a system of particles
+
+\def\mden{\varrho} % mass density
+\def\mlen{\widehat{m}} % mass per unit length
+
+\def\gravity{\mathrm{g}}
+
+\def\com{\mathrm{cm}} % center of mass
+\def\cok{\mathrm{ck}} % center of stiffness
+
+
+%%%%%%%%%%% GENERALIZED COORDINATE
+\def\gc{q} % generalized coordinate
+\def\dgc{\dot{q}} % dot-time derivative of gen. coord.
+\def\ddgc{\ddot{q}} % second dot-time derivative of gen. coord.
+\def\gct{\gc (t)} 
+\def\dgct{\dgc (t)}
+\def\ddgct{\ddgc (t)}
+\def\gcic{\gc_o} % \initial condition for gen. coord.
+\def\dgcic{\dgc_o} % \initial condition for gen. vel.
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED SDOF SYSTEM
+\def\gengc{q^{*}} % generalized coordinate in generalized SDOF sys
+\def\dgengc{\dot{q}^{*}} % dot-time derivative of gen. coord. in generalized SDOF sys
+\def\ddgengc{\ddot{q}^{*}} % second dot-time derivative of gen. coord. in generalized SDOF sys
+\def\gengct{\gengc(t)}
+\def\dgengct{\dgengc(t)}
+\def\ddgengct{\ddgengc(t)}
+\def\gengcic{\gc_o} % initial condition for gen. coord. in generalized SDOF sys
+\def\gendgcic{\dgc_o} % initial condition for gen. vel. in generalized SDOF sys
+\def\genm{m^{\ast}} % generalized mass
+\def\genc{c^{\ast}} % generalized damping
+\def\genk{k^{\ast}} % generalized stiffness
+\def\genf{f^{\ast}} % generalized force
+\def\gendamp{\damp^{\ast}} % generalized damping ratio
+\def\shpf{\psi} % continuous shape function in generalized SDOF approach
+% \def\vshpf{\snvec{\uppsi}} % shape function column matrix in generalized SDOF approach
+%% \uppsi cannot be understood by qmd for html, replace \uppsi with \Psi
+\def\vshpf{\snvec{\psi}} % shape function column matrix in generalized SDOF approach
+\def\pvshpf#1{\psi_{#1}} % component of shape function column matrix in generalized SDOF approach
+\def\genfreq{\freq^{\ast}} % undamped natural frequency in generalized SDOF sys.
+%%%%%%%%%%%
+
+% \def\u{u}
+% \def\uvec{\nvec{\u}}
+% \def\uvect{\nvec{\u}(t)}
+% \def\du{\dot{\u}}
+% \def\ddu{\ddot{\u}}
+% \def\duvec{\dot{\nvec{\u}}}
+% \def\duvect{\dot{\nvec{\u}}(t)}
+% \def\dduvec{\ddot{\nvec{\u}}}
+% \def\dduvect{\ddot{\nvec{{\u}}}(t)}
+% \def\dmprat{\zeta}
+% \def\ut{{\u}(t)}
+% \def\dut{\dot{\u}(t)}
+% \def\ddut{\ddot{\u}(t)}
+
+% \def\gdis{\u_{g}}
+% \def\gvel{\du_{g}}
+% \def\gacc{\ddu_{g}}
+% \def\gdist{\u_{g}(t)}
+% \def\gvelt{\du_{g}(t)}
+% \def\gacct{\ddu_{g}(t)}
+% \def\maxgdis{D_{g}}
+% \def\maxgvel{{V}_{g}}
+% \def\maxgacc{{A}_{g}}
+%\def\maxgdis{\u_{g,\mathrm{max}}}
+%\def\maxgvel{\du_{g,\mathrm{max}}}
+%\def\maxgacc{\ddu_{g,\mathrm{max}}}
+
+%%%%%%%%%%% GROUND MOTION
+\def\gdis{g} % ground displacement
+\def\gvel{\dot{\gdis}} % ground velocity
+\def\gacc{\ddot{\gdis}} % ground acceleration
+\def\gdist{\gdis(t)} % ground displacement with time
+\def\gvelt{\gvel(t)} % ground velocity with time
+\def\gacct{\gacc(t)} % ground acceleration with time
+\def\maxgdis{\mathsf{D}_{\! \gdis}} % absolute maximum ground displacement
+\def\maxgvel{\mathsf{V}_{\!\gdis}} % absolute maximum ground velocity
+\def\maxgacc{\mathsf{A}_{\!\gdis}} % absolute maximum ground acceleration
+\def\adis{\alpha} % absolute displacement (earthquake analysis)
+\def\avel{\dot{\adis}} % absolute velocity
+\def\aacc{\ddot{\adis}} % absolute acceleration
+\def\adisvec{\snvec{{\adis}}} % absolute acceleration
+\def\aaccvec{\snvec{\ddot{\adis}}} % absolute acceleration
+\def\gdisvec{\nvec{\gdis}} % multiple support motion displacement column 
+\def\gaccvec{\nvec{\gacc}} % multiple support motion acceleration column
+\def\ininfmat{\mtrx{b}} % input influence matrix
+\def\ininfvec{\nvec{b}} % input influence vector
+%%%%%%%%%%%
+
+%%%%%%%%%%% EARTHQUAKE RESPONSE
+\def\baseshear{V_{b}} % base shear
+\def\overturn{M_{b}} % overturning moment
+\def\estat{f_{es}} % equivalent static force
+\def\estati#1{f_{es,#1}} % equivalent static force
+\def\estatvec{\nvec{f_{es}}} % equivalent static force
+\def\modbaseshear#1{V_{b}^{(#1)}} % modal base shear
+\def\modoverturn#1{M_{b}^{(#1)}} % modal overturning moment
+\def\modestatvec#1{\nvec{f_{es}^{(#1)}}} % modal equivalent static force
+\def\ccor#1{\varrho_{#1}}
+\def\excifact{L} % earthquake excitation factor
+\def\modpart{\Gamma} % modal participation factor
+%%%%%%%%%%% SPECTRA
+\def\dspec{\mathsf{D}} % disp spectral resp
+\def\vspec{\mathsf{V}} % vel spectral resp
+\def\aspec{\mathsf{A}} % acc  spectral resp
+\def\maxstifforce{\extforce_{el}} % max spring force (SDOF)
+\def\maxlindisp{\gc_{el}} % maximum linear disp
+\def\maxtotdisp{\gc_{max}} % maximum total disp
+\def\yielddisp{\gc_{yl}} % yield displacement 
+\def\redfac{R} % Yield strength reduction factor
+\def\duct{\mu} % ductility factor
+\def\ydspec{\dspec_{yl}}
+\def\yvspec{\vspec_{yl}}
+\def\yaspec{\aspec_{yl}}
+%%%%%%%%%%%
+
+%%%%%%%%%%% FORCE
+\def\extforce{f} % external force 
+\def\extforcet{f (t)} % external force with time (t)
+\def\extf{\nvec{\extforce}} % external force vector
+\def\extft{\extf (t)} % external force vector with time (t)
+\def\fvec{\vctr{f}} % resultant force vector
+\def\compf{f} % scalar components of the resultant force
+\def\sforce{F} % scalar single external force, amplitude of external force
+\def\force{\vctr{\mathrm{\sforce}}} % single external force vector
+\def\stifforce{\extforce_{S}}
+\def\intf{\nvec{\extforce_{I}}} % inertia force vector
+\def\stff{\nvec{\extforce_{S}}} % stiffness force vector
+\def\dmpf{\nvec{\extforce_{D}}} % damping force vector
+\def\ldvec{\nvec{\extforce}} % load (force) vector in MDOF systems
+\def\ldtvec{\ldvec (t)} % load (force) vector with time in MDOF systems
+\def\barldvec{\nvec{\extforce'}} % load (force) vector in MDOF systems barred coord
+\def\resistforce{\extforce_{R}} % resisting force (stiffness or stiffness+damping)
+%%%%%%%%%%%
+
+%%%%%%%%%%% GENERALIZED COORDINATE VECTORS
+\def\gcvec{\nvec{\gc}} % generalized coordinate vector
+\def\dgcvec{\dot{\gcvec}} % generalized velocity vector
+\def\ddgcvec{\ddot{\gcvec}} % generalized acceleration vector
+\def\gctvec{\gcvec (t)} % generalized coordinate vector with time
+\def\dgctvec{\dgcvec (t)} % generalized velocity vector with time
+\def\ddgctvec{\ddgcvec (t)} % generalized acceleration vector with time
+\def\adisvec{\snvec{\alpha}} % absolute displacement column (earthquake analysis)
+\def\avelvec{\dot{\adisvec}} % absolute velocity column
+\def\aaccvec{\ddot{\adisvec}} % absolute acceleration column
+\def\gcvecic{\nvec{\gc_o}} % initial displacement column
+\def\dgcvecic{\nvec{\dot{\gc}_o}} % initial displacement column
+\def\bargcvec{\nvec{{\gc}}'} % barred generalized coordinates
+\def\bardgcvec{\nvec{{\dot{\gc}}}'} % barred generalized velocities
+\def\barddgcvec{\nvec{{\ddot{\gc}}}'} % barred generalized accelerations
+%%%%%%%%%%%
+
+%%%%%%%%%%% MODAL COORDINATES
+\def\modcor{z} % modal coordinates
+\def\modcort{\modcor(t)} % modal coordinate with time
+\def\dmodcor{\dot{\modcor}} % modal velocity
+\def\ddmodcor{\ddot{\modcor}} % modal acceleration
+\def\modcorvec{\nvec{\modcor}} % modal coordinate vector
+\def\modcortvec{\nvec{\modcor}(t)} % modal coordinate vector with time
+\def\dmodcorvec{\dot{\modcorvec}} % modal velocity vector
+\def\ddmodcorvec{\ddot{\modcorvec}} % modal acceleration vector
+\def\modm{\widehat{M}} % modal mass
+\def\modc{\widehat{C}} % modal damping matrix coefficient
+\def\modk{\widehat{K}} % modal stiffness
+\def\modmmat{\mtrx{\widehat{M}}} % modal mass matrix
+\def\modcmat{\mtrx{\widehat{C}}} % modal damping matrix
+\def\modcmatm{\mtrx{\widehat{C}^{\sharp}}} % modal damping matrix modified
+\def\modkmat{\mtrx{\widehat{K}}} % modal stiffness matrix
+\def\modcoric#1{{\modcor_{#1 o}}} % initial ith modal coordinate 
+\def\dmodcoric#1{{\dmodcor_{#1 o}}} % initial ith modal velocity 
+\def\modcorvecic{\nvec{\modcor_o}} % initial modal coordinate vector
+\def\dmodcorvecic{\nvec{\dot{\modcor}_{o}}} % initial modal velocity vector
+\def\modcoramp{Z} % amplitude of free vibration in modal coordinates
+\def\modextforce{\widehat{\extforce}} % load (force) component in modal coords
+\def\modldvec{\nvec{\modextforce}} % load (force) vector in modal coords
+\def\modgcvec#1{\nvec{\gc}^{(#1)}}
+%%%%%%%%%%%
+
+% absolute disp variable ua MDOF (currently same as gen coord.)
+% \def\ua{q}
+% \def\dua{\dot{\ua}}
+% \def\ddua{\ddot{\ua}}
+% \def\dmprat{\zeta}
+% \def\uat{\ua(t)}
+% \def\duat{\dot{\ua}(t)}
+% \def\dduat{\ddot{\ua}(t)}
+% \def\uavec#1{\nvec{\ua}_{#1}}
+% \def\xuavec{\nvec{\ua}} % modified on 06/20 because $\uavec{}_{N\times1}$ does not work in html
+% \def\duavec#1{\dot{\nvec{\ua}_{#1}}}
+% %\def\dduavec#1{\nvec{\ddua}_{#1}}
+% \def\xduavec{\dot{\nvec{\ua}}}
+% \def\xdduavec{\ddot{\nvec{\ua}}}
+% \def\uavect{\xuavec (t)}
+% \def\duavect{\xduavec (t)}
+% \def\dduavect{\xdduavec (t)}
+
+%%%%% EIGENVALUES; EIGENVECTORS; RAYLEIGH-RITZ
+\def\eigvecs{\phi} % mode shape symbol
+\def\eigvec{\snvec{\eigvecs}} % mode shape vector
+\def\eigveci#1{\snvec{\eigvecs_{#1}}} % mode shape vector for the ith mode
+\def\meigveci#1{\snvec{\overline{\eigvecs_{#1}}}} % mass normalized mode shape
+\def\teigveci#1{\snvec{\eigvecs_{#1}}^T} % mode shape vector transposed for the ith mode
+\def\rayvecs{\psi} % rayleigh vector symbol
+\def\rayvec{\snvec{\rayvecs}} % rayleigh vector
+\def\trayvec{\snvec{\rayvecs}^T} % rayleigh vector
+\def\ritzvec#1{\snvec{\rayvecs_{#1}}}
+\def\tritzvec#1{\snvec{\rayvecs_{#1}}^T}
+\def\ritzcandvec#1{\nvec{u_{#1}}}
+\def\tritzcandvec#1{\snvec{u_{#1}}^T}
+\def\ritzmat{\mtrx{U}}
+\def\rayfreq{\freq^{\ast}} % Rayleigh's quotient
+\def\ritzfreq#1{\freq^{\ast}_{#1}} % Ritz frequencies
+\def\ritzmmat{\mtrx{M^{\ast}}}
+\def\ritzkmat{\mtrx{K^{\ast}}}
+\def\deigvec{\snvec{\widehat{\eigvecs}}}
+\def\deigveci{\snvec{\widehat{\eigvecs_{i}}}}
+\def\eigval{\lambda}
+% \def\modmat{\smtrx{\Phiup}}
+\def\modmat{\mtrx{\Phi}} % date: 05/01 change
+\def\spectmat{\mtrx{\omega^2}} % date: 05/01 change
+\def\dmodmat{\mtrx{\widehat{\Phi}}}
+%%%%%%%%%%
+
+%%%%%%%%%%% TIME STEPPING &amp; NONLINEARITY
+% \def\dsct#1#2{#1_{#2}}
+% \def\edsct#1#2#3{#1^{(#3)}_{#2}}
+\def\dsct#1#2{#1_{[#2]}}
+\def\edsct#1#2#3{#1^{(#3)}_{[#2]}}
+\def\yieldforce{\extforce_{yl}}
+% \def\residual{\Delta \stifforce}
+\def\residual{\Delta \resistforce}
+%%%%%%%%%%%%
+
+\def\puvec#1{\, \vctr{u}_{#1}}
+
+% Cartesian rectangular unit vectors
+\def\xuvec{\, \vctr{i}}
+\def\yuvec{\, \vctr{j}}
+\def\zuvec{\, \vctr{k}}
+
+
+\def\pos{r} % position variable
+\def\vel{v} % velocity
+\def\acc{a} % acceleration
+\def\posrelcom{R} % position relative to the center of mass
+
+\def\pvec{\vctr{\pos}} % position vector
+\def\vvec{\vctr{\vel}} % velocity vector
+\def\avec{\vctr{\acc}} % acceleration vector
+\def\zerovec{\vctr{0}} % zero vector
+
+%\def\pdpvec{\vctr{\pdivt{\pos}}} % time (dot) derivative of the position vector
+%\def\pdvvec{\vctr{\pdivt{\vel}}} % time (dot) derivative of the velocity vector
+
+\def\pdpvec{\pdivt{\pvec}} % time (dot) derivative of the position vector
+\def\pdvvec{\pdivt{\vvec}} % time (dot) derivative of the velocity vector
+
+\def\prelcom{\vctr{\posrelcom}} % position vector relative to the center of mass
+\def\vrelcom{\pdivt{\prelcom}} % velocity vector relative to the center of mass
+\def\arelcom{\pddivt{\prelcom}} % velocity vector relative to the center of mass
+
+
+\def\dpvec{\diff \pvec} % differential of position vector
+\def\dvvec{\diff \vvec} % differential of velocity vector
+
+\def\angvel{\omega} % scalar angular velocity
+\def\dtangvel{\pdivt{\angvel}} % dot-time derivative of scalar angular velocity
+%\def\vecangvel{\svctr{\angvel}} % angular velocity vector
+\def\angvelvec{\svctr{\omega}} % angular velocity vector
+\def\dtangvelvec{\pdivt{\svctr{\angvel}}} % dot-time derivative of angular velocity vector
+
+\def\angacc{\alpha} % scalar angular acceleration
+\def\angaccvec{\vctr{\angacc}} % angular acceleration vector
+
+%\def\om{\Omega}
+%\def\omvec{\vctr{\om}}
+
+\def\vprod{\times} % vector product
+\def\sprod{\cdot} % scalar product
+\def\spvprod{\!\! \times} % vector product with spacing adjusted
+\def\spsprod{\!\! \cdot} % scalar product with spacing adjusted
+
+\def\linmom{\vctr{\mathrm{L}}} % linear momentum vector
+\def\angmom#1{\vctr{\mathrm{H}}_{#1}} % angular momentum vector with respect to point #1
+
+\def\dlinmom{\pdivt{\vctr{\mathrm{L}}}} % dot-time derivative of the linear momentum vector
+\def\dangmom#1{\pdivt{\vctr{\mathrm{H}}}_{#1}} % dot-time derivative of the angular momentum vector with respect to point #1
+
+
+
+\def\smoment{{M}}
+\def\moment#1{\vctr{\mathrm{\smoment}}_{#1}}
+\def\pmoment#1#2{\vctr{\mathrm{\smoment}}_{#1}^{(#2)}}
+
+%%%%%%%%%%%%%%% FREQUENCIES etc.
+\def\freq{\omega} % undamped natural frequency
+\def\cfreq{f} % undamped cyclic frequency
+\def\period{T} % period
+\def\dfreq{\overline{\freq}} % damped frequency
+\def\dperiod{\overline{\period}} % damped period
+\def\phs{\theta} % phase angle
+\def\damp{\zeta} % damping ratio
+\def\extfreq{\Omega} % frequency of external harmonic excitation
+\def\extphs{\varphi} % phase of external harmonic excitation
+\def\ratfreq{\rho}
+\def\ratdur{\beta}
+
+%%%%%%%%%%%%% INERTIA
+%\DeclareMathOperator{\inrt}{\mathds{I}}
+\def\inrt{{I}} % symbol for inertia
+\def\inertia#1{\mkern1mu \inrt_{#1}} % inertia with subscript
+\def\dtinertia#1{\mkern1mu \pdivt{\inrt}_{#1}} % dot-time derivative of inertia with subscript
+
+
+\def\ke{\mathscr{T}} % kinetic energy
+\def\pe{\mathscr{V}} % potential energy
+\def\te{\mathscr{E}} % total energy
+\def\work{\mathscr{W}} % work
+
+\def\virt{\delta} % virtual (variation, work, etc.)
+% \def\virt{\updelta} % virtual (variation, work, etc.) date: 03/29 change: comment out this line
+\def\vgc{\virt q} % (virtual) variation in gen. coord.
+\def\vgengc{\virt \gengc} % (virtual) variation in gen. coord. in generalized SDOF sys
+\def\vwork{\virt \mathscr{W}} % virtual work
+
+\def\lagrangian{\mathscr{L}}
+\def\vforce{\mathscr{F}} % Lagrangian force; coefficient of the virtual disp. in virtual work.
+
+
+\def\wnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+\def\vwnc{{\mathscr{W}}^{nc}} % work of non-conservative forces
+
+\def\pwork#1{\mathscr{W}_{#1}} % work on some particle called #1
+\def\pwnc#1{{\mathscr{W}}^{nc}_{#1}} % work of non-conservative forces on some particle called #1
+
+\def\dbar{{\mathchar'26\mkern-12mu \mathrm{d}}} % not total derivative
+\def\grad{\vctr{\nabla}} % gradient operator
+
+\def\imag{\mathrm{j}}
+
+\def\curv{\kappa} % curvature (as in moment-curvature)
+
+\def\ratio#1#2{\displaystyle{\frac{#1}{#2}}}
+
+\def\dfrm{\Delta} % deformation
+\def\maxdfrm{\Delta_{\mathrm{max}}} % deformation
+
+% \def\impresp{\mathscr{h}} %impulse response function
+% \def\frf{\mathscr{H}} %frequency response function
+\def\impresp{\mathsf{h}} %impulse response function
+\def\frf{\mathsf{H}} %frequency response function
+
+\def\tshift{t_{\star}}
+
+\def\cosp#1{\cos \left( #1 \right)}
+\def\sinp#1{\sin \left( #1 \right)}
+
+\def\dynamp{\mathbb{D}}
+\def\dynampr{\dynamp (\ratfreq,\damp)}
+
+\def\tstep{t_{\Delta}}
+\def\ststep{{t^2_{\Delta}}}
+
+%%% State Space Models
+% \def\dscs#1{\nvec{{x}_{#1}}}
+%\def\dscs#1{\nvec{x}_{#1}}
+%\def\dscf#1{\nvec{{f}}_{#1}}
+\def\dscs#1{\nvec{x}_{[#1]}}
+\def\dscf#1{\nvec{{f}}_{[#1]}}
+\def\dscA{\mtrx{A}}
+\def\dscB{\mtrx{B}}
+
+\def\eigval{\lambda}
+\def\eigvecmat{\mtrx{V}}
+% \def\eigvalmat{\mtrx{\uplambda}}
+\def\eigvalmat{\mtrx{\lambda}} %05/01 change
+$$
+<script>
+window.MathJax = {
+tex: {
+    tags: 'ams'
+}
+};
+</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" type="text/javascript"></script>
+
+
+
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./singledof.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Structural Dynamics</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledof.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./singledofforced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericalsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Numerical Solutions of the SDOF Equation of Motion</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./eqsdof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Seismic Analysis of Single Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidof.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Models for Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidoffreevib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Free Vibrations of Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./multidofforcedvib.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Forced Vibrations of Linear Multi Degree of Freedom Systems</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-Motivation" id="toc-sec-Motivation" class="nav-link active" data-scroll-target="#sec-Motivation"><span class="header-section-number">2.1</span> Motivation and Preliminary Discussions</a></li>
+  <li><a href="#sec-ThePrototype" id="toc-sec-ThePrototype" class="nav-link" data-scroll-target="#sec-ThePrototype"><span class="header-section-number">2.2</span> The Prototype</a></li>
+  <li><a href="#sec-Undamped" id="toc-sec-Undamped" class="nav-link" data-scroll-target="#sec-Undamped"><span class="header-section-number">2.3</span> Undamped Free Vibrations</a></li>
+  <li><a href="#sec-Damping" id="toc-sec-Damping" class="nav-link" data-scroll-target="#sec-Damping"><span class="header-section-number">2.4</span> Damping</a>
+  <ul class="collapse">
+  <li><a href="#sec-ViscousDampingModel" id="toc-sec-ViscousDampingModel" class="nav-link" data-scroll-target="#sec-ViscousDampingModel"><span class="header-section-number">2.4.1</span> Viscous Damping Model</a></li>
+  <li><a href="#sec-Estimating" id="toc-sec-Estimating" class="nav-link" data-scroll-target="#sec-Estimating"><span class="header-section-number">2.4.2</span> Estimating Viscous Damping from Free Vibration Data</a></li>
+  <li><a href="#sec-EnergyDissipated" id="toc-sec-EnergyDissipated" class="nav-link" data-scroll-target="#sec-EnergyDissipated"><span class="header-section-number">2.4.3</span> Energy Dissipated by Viscous Damping</a></li>
+  <li><a href="#sec-Nonviscous" id="toc-sec-Nonviscous" class="nav-link" data-scroll-target="#sec-Nonviscous"><span class="header-section-number">2.4.4</span> Non-viscous Damping Models</a></li>
+  </ul></li>
+  <li><a href="#sec-GeneralizedSDOF" id="toc-sec-GeneralizedSDOF" class="nav-link" data-scroll-target="#sec-GeneralizedSDOF"><span class="header-section-number">2.5</span> Generalized SDOF Systems</a>
+  <ul class="collapse">
+  <li><a href="#continuous-systems" id="toc-continuous-systems" class="nav-link" data-scroll-target="#continuous-systems"><span class="header-section-number">2.5.1</span> Continuous Systems</a></li>
+  <li><a href="#discrete-systems" id="toc-discrete-systems" class="nav-link" data-scroll-target="#discrete-systems"><span class="header-section-number">2.5.2</span> Discrete Systems</a></li>
+  <li><a href="#damping-and-external-forces" id="toc-damping-and-external-forces" class="nav-link" data-scroll-target="#damping-and-external-forces"><span class="header-section-number">2.5.3</span> Damping and External Forces</a></li>
+  <li><a href="#epilogue" id="toc-epilogue" class="nav-link" data-scroll-target="#epilogue"><span class="header-section-number">2.5.4</span> Epilogue</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-sdoffreevib" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Free Vibrations of Single Degree of Freedom Systems</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- 
+
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import gridspec
+
+plt.rcParams["animation.html"] = "jshtml"
+plt.rcParams['figure.dpi'] = 150  
+plt.ioff()
+
+fig = plt.figure(figsize=(8, 4))
+gs = gridspec.GridSpec(1, 2, width_ratios=[1 ,4]) 
+
+X = np.linspace(0, 2*np.pi, 100)
+Y = np.sin(X)
+Xc = np.cos(X)
+Yc = np.sin(X)
+
+ax0 = plt.subplot(gs[0], aspect=1.0)
+ax0.set_xlim([-1.1, 1.1])
+ax0.set_ylim([-1.1, 1.1])
+ax0.set_ylabel('$y$')
+ax0.set_xlabel('$x$')
+ax0.hlines(0, -1.1, 1.1, linewidth=0.5, color='k')
+ax0.vlines(0, -1.1, 1.1, linewidth=0.5, color='k')
+cirgraph, = ax0.plot([], [])
+cirdot, = ax0.plot([], [], 'o', color='red')
+
+ax1 = plt.subplot(gs[1])
+ax1.set_xlim([0, 2*np.pi])
+ax1.set_ylim([-1.1, 1.1])
+ax1.set_ylabel('$y$=sin($t$)', ha='left', y=1, rotation=0, labelpad=0)
+ax1.set_xlabel('$t$')
+ax1.hlines(0, 0, 2*np.pi, linewidth=0.5, color='k')
+sinegraph, = ax1.plot([], [])
+dot, = ax1.plot([], [], 'o', color='red')
+
+def sine(i):
+    sinegraph.set_data(X[:i],Y[:i])
+    dot.set_data(X[i],Y[i])
+    cirgraph.set_data(Xc[:i],Yc[:i])
+    cirdot.set_data(Xc[i],Yc[i])
+    return sinegraph, dot, cirgraph, cirdot,
+
+animation.FuncAnimation(fig, sine, frames=len(X), interval=50, blit=True)
+``` -->
+<section id="sec-Motivation" class="level2" data-number="2.1">
+<h2 data-number="2.1" data-anchor-id="sec-Motivation"><span class="header-section-number">2.1</span> Motivation and Preliminary Discussions</h2>
+<p>The fundamental step in the analysis of any system is idealization and conceptual modeling. In engineering analysis, the idealized model should be simple enough so as to allow extraction of predictive results, but it should still have sufficient complexity to reflect all the salient features of the particular problem studied. The claim to validity may only be tested against experiments which are neither feasible nor even possible for many structural systems. Some simple models have however provided acceptable predictive accuracy in numerous previous trials so that structural engineers take many such models for granted while thinking about real, complex structures.</p>
+<p>The static analysis of structures makes ample use of simple behavioural models; trusses, beams, plates or shells, elastic or inelastic, with or without time dependent properties have been used in the design and analysis of many structures still standing. The degree of freedom of a structural element in static analysis is associated with deformation patterns that are included in the model. A truss element is assumed, based on connection details and loading patterns, to deform only axially so that the final form of the bar is completely determined by translations of its two end points. A beam element, on the other hand, has rotational deformations so that its deformed shape is determined by end translations, end rotations, and the deformational patterns imposed by the loads applied inbetween its two ends.</p>
+<p>Since the concept of degree of freedom in dynamics is intimately connected to mass distribution and forces associated with accelerations, it may be the case that static and dynamic degrees of freedom of a system do not map one-to-one. In dynamics, inertia-related degrees of freedom govern and the static degrees of freedom will often need to be condensed since, in developing simple models of deformable structures, we will often assume that the mass is concentrated at certain locations.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> To discuss how such a simplification may proceed, let us consider the portal frame shown in <a href="#fig-portalframe">Figure&nbsp;<span>2.1</span></a>.</p>
+<div id="fig-portalframe" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/portalframe.png" class="quarto-discovered-preview-image img-fluid figure-img" style="width:95.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.1: (a) Degrees of freedom in static analysis, (b) masses lumped at the nodes, (c) dynamic degree of freedom, (d) free body diagram of the mass.</figcaption><p></p>
+</figure>
+</div>
+<p>Under the action of a general static loading, one needs to keep track of the three degrees of freedom shown in <a href="#fig-portalframe">Figure&nbsp;<span>2.1</span></a>(a) to be able to specify the deformations that take place: The lateral translation <span class="math inline">\(u_1\)</span> of the joints, and the joint rotations <span class="math inline">\(u_2\)</span> and <span class="math inline">\(u_3\)</span>.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> The dominant issue in modeling a system for dynamic analysis, however, is the distribution of the mass or, relatedly, the inertial effects produced by the distribution of the mass and their accelerations in the system (think of d’Alembert forces). It is common to consider that in such structural frames most of the mass will be concentrated in the level of the floor plate and the beams attached to it; furthermore, the accelerations at this level will also be relatively more significant than say the accelerations near the supports. Should one wish to incorporate the contribution of the columns to the mass, it may be argued that some , but not all, of the column mass will have an significant effect on the dynamics. With this line of thought, a model in which masses are lumped to the two joints may be developed. An important question that must be raised is whether or not rotational accelerations will have a significant affect. This is a question without an obvious a priori answer but past experiences indicate that under the action of common load effects, rotational accelerations at the joints and the inertial effects thereby generated remain inconsequential compared to those related to lateral translation; in a sense these rotations are predominantly secondary effects caused by lateral translation and compatibility. If rotational accelerations are thus neglected, angular momentum equations for the joints will be in essence static equilibrium equations, and no mass need to be assigned to the rotational degrees of freedom. This model, commonly employed in finite element analysis of frame structures, is referred to as the <em>lumped mass model</em>.</p>
+<p>Since the lateral translation is assumed to be common to both joints, we could consider a single mass <span class="math inline">\(m=m_1 + m_2\)</span> which would be dynamically equivalent, and the motion of this mass may be completely defined by the single generalized coordinate <span class="math inline">\(\gc \equiv u_1\)</span> as in <a href="#fig-portalframe">Figure&nbsp;<span>2.1</span></a>(c). What is left to determine for the formulation of the equation governing the motion of this mass is the lateral stiffness of the frame, i.e.&nbsp;the resistance with which it tries to pull the mass back to the initial equilibrium position.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> This cumulative resistance will stem from the deformations of columns and beams, and from static analysis we know that under the action of the lateral load <span class="math inline">\(\extforce\)</span>, static equilibrium equations for the joints may be expressed as</p>
+<p><span id="eq-statcond1"><span class="math display">\[
+\begin{bmatrix} k_{11} &amp; k_{12} &amp; k_{13} \\ k_{21} &amp; k_{22} &amp; k_{23} \\k_{31} &amp; k_{32} &amp; k_{33} \end{bmatrix} \begin{Bmatrix} u_1 \\ u_2 \\ u_3 \end{Bmatrix} = \begin{Bmatrix} \extforce \\ 0 \\ 0 \end{Bmatrix}
+\qquad(2.1)\]</span></span> where <span class="math inline">\(k_{ij}\)</span> are stiffness coefficients. Since rotational accelerations and the associated d’Alembert moments are to be neglected, the right hand sides of the second and third equations that represent moment equilibrium of the joints will remain zero in dynamic equilibrium analysis. Consequently, <span class="math inline">\(\{u_2,u_3\}\)</span> are not independent: noting that <span class="math inline">\(\gc \equiv u_1\)</span>, the relation between <span class="math inline">\(\gc\)</span> and <span class="math inline">\(\{u_2,u_3\}\)</span> at any instant will be given by <span id="eq-statcond2"><span class="math display">\[
+- \begin{bmatrix} k_{22} &amp; k_{23} \\k_{32} &amp; k_{33} \end{bmatrix}^{-1}\begin{bmatrix}  k_{21}  \\k_{31} \end{bmatrix} \gc = \begin{Bmatrix}  u_2 \\ u_3 \end{Bmatrix}
+\qquad(2.2)\]</span></span> so that eliminating the rotational degrees of freedom from <a href="#eq-statcond1">Equation&nbsp;<span>2.1</span></a> with the help of <a href="#eq-statcond2">Equation&nbsp;<span>2.2</span></a> leads to a single expression relating the lateral displacement directly to the lateral force, <span id="eq-statcondfin"><span class="math display">\[
+\left( k_{11}- \begin{bmatrix}  k_{12}  &amp; k_{13} \end{bmatrix} \begin{bmatrix} k_{22} &amp; k_{23} \\k_{32} &amp; k_{33} \end{bmatrix}^{-1}\begin{bmatrix}  k_{21}  \\k_{31} \end{bmatrix} \right) \gc = \extforce \rightarrow k \gc = \extforce
+\qquad(2.3)\]</span></span> where the coefficient <span class="math inline">\(k\)</span> is called the <em>lateral stiffness of the frame</em>. This procedure of eliminating the dynamically indirect degrees of freedom from the model is referred to as <em>static condensation</em> and it is widely used to simplify the structural models through elimination of those degrees of freedom onto which no mass or moment of inertia is assigned. It is important to note that even though inertial properties are alluded to, especially with respect to their existence or nonexistence, determination of the stiffness properties of a system is essentially a matter of static analysis.</p>
+<p>Now that the conceptual model is finalized, we may use any of the frameworks previously reviewed to derive the equation that will govern the motion of the mass, i.e.&nbsp;the time variation of <span class="math inline">\(\gc (t)\)</span>. For example, making use of d’Alembert’s principle and the free body diagram shown in <a href="#fig-portalframe">Figure&nbsp;<span>2.1</span></a>(d), the sum of forces in the horizontal direction would lead to <span class="math display">\[
+m \ddgc (t) + k \gc (t) = \extforce (t)
+\]</span> which, as we will so often see, is the canonical equation governing the dynamics of undamped linear single degree of freedom systems under the action of external load effects.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>There are of course models in which mass is distributed as well as flexibility. Such models will be discussed in latter sections and chapters.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Even this model has an abundance of implicit assumptions. As an example, the axial deformations are considered to be at least an order of magnitude smaller than flexural deformations, so that: i. the translations of the two joints along the longitudinal axes of the columns are neglected, and ii. the joints are assumed to translate laterally by the same amount since the beam’s axial deformations are neglected.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>There is another important component called <em>damping</em> which is used to model energy dissipation during motion; we leave aside for the moment the introduction of this component.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-ThePrototype" class="level2" data-number="2.2">
+<h2 data-number="2.2" data-anchor-id="sec-ThePrototype"><span class="header-section-number">2.2</span> The Prototype</h2>
+<p>As the equation of motion has the same form for all single degree of freedom (SDOF) systems, a single simple model suffices to conceptually represent all undamped SDOF systems. This model, sketched in <a href="#fig-sdofmk">Figure&nbsp;<span>2.2</span></a>, comprises a mass, representing the inertial features that contribute to the equation of motion through accelerations, and a spring, representing flexiblility features that contribute to the equation of motion through deformations. The mass is assumed to be travelling on a frictionless surface (the wheels are there to hint, admittedly erroneously, at motion unhindered by interaction with the ground) and there are no other dissipative sources either. Physical properties of the system are assumed to be invariant in time. Each component of the model may indeed correspond to a single entity of some system but most likely each will represent the contribution of multiple sources. It may therefore be more appropriate to think of the mass and stiffness coefficients as <em>equivalent mass</em> and <em>equivalent stiffness</em> of the system, but we refrain from emphasizing this distinction through symbols or scripts to in an effort to keep notational complexity at a minimum.</p>
+<div id="fig-sdofmk" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/sdofmk.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.2: Prototype for undamped single degree of freedom systems.</figcaption><p></p>
+</figure>
+</div>
+<p>To provide a few examples on how such a model could be so vastly representative, let us first derive the equation of motion for the system of <a href="#fig-sdofmk">Figure&nbsp;<span>2.2</span></a>. The free body diagram of the system including the d’Alembert force is provided in <a href="#fig-sdofmkfbd">Figure&nbsp;<span>2.3</span></a>. Sum of forces in the horizontal direction leads to the following equation of motion governing the time variation of the single coordinate <span class="math inline">\(\gc\)</span>: <span id="eq-eomsdof"><span class="math display">\[
+\extforce (t) - m \ddgc (t) - k \gc (t) = 0 \quad \rightarrow \quad m \ddgc (t) + k \gc (t) = \extforce (t)
+\qquad(2.4)\]</span></span></p>
+<div id="fig-sdofmkfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/sdofmkfbd.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.3: Free body diagram of the prototype single degree of freedom system including the d’Alembert force.</figcaption><p></p>
+</figure>
+</div>
+<p>Alternatively we could use the Lagrangian approach which would proceed as follows: The kinetic and potential energies of the system are given by <span class="math display">\[
+  \ke = \frac{1}{2}m \dgc^2, \quad \pe = \frac{1}{2} k \gc^2
+\]</span> while the virtual work done by the external forces through a virtual displacement is given by <span class="math display">\[
+\vwork_{e} = \extforce \vgc = \vforce \vgc
+\]</span> so that the generalized force is simply <span class="math inline">\(\vforce = \extforce\)</span>. Therefore Lagrange’s equations lead to <span class="math display">\[
+  \frac{\diff}{\diff t} \left(\frac{\partial \ke}{\partial \dgc}\right) - \frac{\partial \ke}{\partial \gc} + \frac{\partial \pe}{\partial \dgc}= \vforce \quad \rightarrow \quad m \ddgc (t) + k \gc (t) = \extforce (t)
+\]</span> which, of course, is identical to the equation of motion in <a href="#eq-eomsdof">Equation&nbsp;<span>2.4</span></a>.</p>
+<p>Let us now consider the systems shown in <a href="#fig-sdofmodels">Figure&nbsp;<span>2.4</span></a>. The simply supported beam in <a href="#fig-sdofmodels">Figure&nbsp;<span>2.4</span></a>(a), assumed to behave linear elastically, is supposed to be very light compared to the heavy mass <span class="math inline">\(m\)</span> so that it is to be modeled as massless. The system has a single degree of freedom since the mass may only translate vertically (assuming the deflections are small so that lateral motion due to beam deformations is negligible). The critical issue in modeling this system is the determination of its stiffness, which is due to the deformation resistance of the beam. By definition, a stiffness coefficient is numerically equal to the external force that should be imposed along the degree of freedom to induce a unit displacement.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> If the beam is undergoing uniaxial bending with bending rigidity <span class="math inline">\(EI\)</span> (i.e.&nbsp;the product of modulus of elasticity <span class="math inline">\(E\)</span> and the second moment of the cross sectional area about the bending axis <span class="math inline">\(I\)</span>) and length <span class="math inline">\(\ell\)</span>, from structural analysis we know that the relationship between a force <span class="math inline">\(\extforce\)</span> applied at the midspan of the beam and the deflection <span class="math inline">\(\Delta\)</span> under the force is given by</p>
+<p><span class="math display">\[
+\extforce = \frac{48 EI}{\ell^3} \Delta
+\]</span> so that if <span class="math inline">\(\Delta=1\)</span>, then the force that has to be applied is numerically equal to <span class="math inline">\({48 EI}/{\ell^3}\)</span>. While this interpretation is more direct for experimental determination of stiffness, in the analytical derivation the stiffness is simply identified as the coefficient that multiplies the displacement in the linear force-displacement relationship, i.e.&nbsp;<span class="math inline">\({48 EI}/{\ell^3}\)</span>. Whichever way it is interpreted the bottom line is that, as far the vertical motion of the mass is concerned, the massless beam is equivalent to a linear spring with equivalent spring coefficient <span class="math display">\[
+k = \frac{48 EI}{\ell^3}
+\]</span> and the equation of motion governing the time variation of <span class="math inline">\(\gc\)</span> may be shown to be <span class="math display">\[
+m \ddgc (t) + \frac{48 EI}{\ell^3} \gc (t) = 0
+\]</span> since there are no external forces acting on the mass. This statement may immediately trigger the question ‘what happened to gravity?’ In structural dynamics, it is generally assumed that the deformations due to gravity loads and the deformations due to dynamic loads may be analyzed separately and the results so obtained may be superposed afterwards. This of course is strictly possible only if the deformations resulting from either is relatively small so that the geometry is not significantly altered and the response remains linear. There are important exceptions to this approach, most notably for systems in which second order effects and/or nonlinearity is pronounced.</p>
+<div id="fig-sdofmodels" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/sdofmodels.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.4: (a) A beam carrying a heavy mass, (b) a heavy disc attached to a shaft, (c) truss and springs supporting a heavy mass.</figcaption><p></p>
+</figure>
+</div>
+<p>The shaft in <a href="#fig-sdofmodels">Figure&nbsp;<span>2.4</span></a>(b) is again assumed to be massless. It is supporting a disc with moment of inertia <span class="math inline">\(\inertia{\ell}\)</span> about the longitudinal axis of the shaft. When torsional vibrations are to be studied, the system has a single degree of freedom since the disc will only be rotating about the longitudinal axis. Consider now an instant at which the disc has rotated by an amount <span class="math inline">\(\gc\)</span>. If the shaft of length <span class="math inline">\(\ell\)</span> is assumed to behave linear elastically with torsional rigidity <span class="math inline">\(GJ\)</span> (i.e.&nbsp;the product of the shear modulus <span class="math inline">\(G\)</span> and the polar moment of the cross sectional area <span class="math inline">\(J\)</span>), then the resisting moment acted upon the disc by the shaft at that instant may be shown to be in opposite direction to <span class="math inline">\(\gc\)</span> and of magnitude <span class="math display">\[
+\smoment = \frac{GJ}{\ell} \gc
+\]</span> Sketching the free body diagram of the disc and applying the principle of angular momentum will then yield the equation of motion <span class="math display">\[
+\inertia{\ell} \ddgc (t) + \frac{GJ}{\ell} \gc (t) = 0
+\]</span> which once again has a form identical to that of <a href="#eq-eomsdof">Equation&nbsp;<span>2.4</span></a>: If one could build a physical model that looks like the system shown in <a href="#fig-sdofmk">Figure&nbsp;<span>2.2</span></a>, adjust its mass <span class="math inline">\(m\)</span> to be numerically equal to <span class="math inline">\(\inertia{\ell}\)</span>, and adjust its stiffness <span class="math inline">\(k\)</span> to be numerically equal to <span class="math inline">\(GJ/\ell\)</span>, then the response of that built model would perfectly match the response of the disc-shaft system under numerically similar load effects. Such similarities are generally referred to as <em>mechanical analogies</em> and with this terminology, the system of <a href="#fig-sdofmk">Figure&nbsp;<span>2.2</span></a> may be referred to as the mechanical analogue for all undamped linear single degree of freedom systems.</p>
+<div id="fig-equivsprings" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/equivsprings.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.5: Equivalent springs with parallel and series connections.</figcaption><p></p>
+</figure>
+</div>
+<p>Slightly more complicated is the system shown <a href="#fig-sdofmodels">Figure&nbsp;<span>2.4</span></a>(c), where a three member truss, supported by two identical springs, is carrying a heavy mass attached to its top node. To simplify the problem, it is assumed that the truss members have negligible mass, and that the supports are restrained to move vertically. Due to symmetry, the mass will translate in the vertical direction alone, assuming no external forces are present to explicitly force any other motion. The system therefore again has only one degree of freedom. If we were to consider an instant at which the mass has moved down an amount of <span class="math inline">\(\gc\)</span>, it is clear that some of that displacement will be due to the deformation of the truss bars and the rest will be due to the deformation of the springs. A detailed analysis may be undertaken to analyze the bar forces and associated displacements to find the equivalent stiffness of the system but the following analogy may help while thinking about this and similar problems. The combined system of <a href="#fig-equivsprings">Figure&nbsp;<span>2.5</span></a>(a), with the massless truss and springs, is mechanically analogous to the springs shown in <a href="#fig-equivsprings">Figure&nbsp;<span>2.5</span></a>(b) where the truss has been replaced by a spring with stiffness <span class="math inline">\(k_t\)</span>. This spring is representative of the force-displacement relationship of the truss alone, with displacement here referring to the relative vertical translation of node <span class="math inline">\(c\)</span> with respect to nodes <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> which, due to symmetry, will behave identically. It may be shown through structural analysis that the relative vertical displacement <span class="math inline">\(\Delta\)</span> of node <span class="math inline">\(c\)</span> under the action of a vertical force <span class="math inline">\(\extforce\)</span> applied at <span class="math inline">\(c\)</span> is given by <span class="math display">\[
+\Delta = \frac{2\ell}{3EA}\extforce
+\]</span> so that the equivalent spring coefficient <span class="math inline">\(k_t\)</span> may be defined as <span class="math display">\[
+k_t = \frac{3EA}{2\ell}
+\]</span> As for the two springs supporting the truss, they may be said to be connected in <em>parallel</em>; their displacement is the same but each will carry a portion of the total force in proportion to its stiffness. Consider any two linear springs, with coefficients <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span>, connected in parallel. Let the total force they transmit be <span class="math inline">\(\extforce\)</span>, and assume they both displace by the same amount <span class="math inline">\(\Delta\)</span>. The relation between force and displacement for such a system would be <span class="math display">\[
+\extforce = \underbrace{k_1 \Delta}_{{\text{force in $1$}}} + \underbrace{k_2 \Delta}_{{\text{force in $2$}}} = (k_1 + k_2) \Delta
+\]</span> so that the response of such a system would be equivalent to a system with a single spring of stiffness <span class="math inline">\(k_1 + k_2\)</span>.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> Therefore the system of <a href="#fig-equivsprings">Figure&nbsp;<span>2.5</span></a>(b) may be replaced by the system of <a href="#fig-equivsprings">Figure&nbsp;<span>2.5</span></a>(c).</p>
+<p>Now we have two springs in <em>series</em>, with stiffness coefficients <span class="math inline">\(k_t\)</span> and <span class="math inline">\(2k_s\)</span>. For any two linear springs, say with stiffness coefficients <span class="math inline">\(k_1\)</span> and <span class="math inline">\(k_2\)</span>, that are connected in series, the force transmitted through each will be the same, but each will contribute to the displacement in proportion to their stiffness. The relationship between the force <span class="math inline">\(\sforce\)</span> through such a system and the total displacement <span class="math inline">\(\Delta\)</span> is given by <span class="math display">\[
+\Delta = \underbrace{\frac{\extforce}{k_1}}_{{\text{deformation in $1$}}} + \underbrace{\frac{\extforce}{k_2}}_{{\text{deformation in $2$}}} = \left(\frac{1}{k_1} + \frac{1}{k_2}\right) \extforce
+\]</span> so that such a series system would be equivalent to a single spring with spring coefficient<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> <span class="math display">\[
+\frac{1}{\frac{1}{k_1} + \frac{1}{k_2}}
+\]</span> Applying this result to our system leads finally to the single equivalent spring shown in <a href="#fig-equivsprings">Figure&nbsp;<span>2.5</span></a>(d), with equivalent spring coefficient <span class="math inline">\(k\)</span> given by <span class="math display">\[
+k = \frac{1}{\frac{1}{k_t} + \frac{1}{2k_s}} = \frac{6EAk_s}{4\ell k_s + 3 EA}
+\]</span> and the equation of motion for the system of <a href="#fig-sdofmodels">Figure&nbsp;<span>2.4</span></a>(c) would finally be derived as <span class="math display">\[
+m \ddgc (t) + k \gc (t) = m \ddgc (t) + \frac{6EAk_s}{4\ell k_s + 3 EA} \gc (t) = 0
+\]</span></p>
+<p>We should recall that, although various details on a number of issues have been mentioned, the main point of this exercise was to motivate the use of the prototype single degree of freedom model. Whether or not a system may be effectively represented by a single degree of freedom model, however, is a question that does not have a straightforward answer, as hopefully illustrated by even the relatively simple systems discussed above. There is no shortcut or a single foolproof recipe that we know of which would be applicable in all situations; as such, this book will mainly focus on the methods of analysis that will be applicable to different models, assuming that those models are representative of whatever real life system they are aspiring to replicate the behavior of. The success or failure of the modeling approach will eventually boil down to how accurately the model will be able to predict the real response. The only way we know of to increase one’s model developing abilities is simply by <em>doing</em>: working on many textbook exercises and more realistic problems to get acquainted with a diverse set of cases, identifying the strengths and caveats of modeling assumptions and approximations, so as to be able to make rational choices based on reliable experience and information. We therefore highly recommend the reader to attempt all the solved and unsolved exercises that will be provided in the text in an effort to start on this arduous journey which will in all likelihood continue, as ours still do, indefinitely.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="4">
+<li id="fn4"><p>When more than one degree of freedom are present, one should consider forces at all degrees of freedom so that while a unit displacement occurs in one, there are no displacements at any other degrees of freedom. More on this in latter chapters.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Which may easily be generalized to any number of springs connected in parallel.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Which again generalizes easily to multiple springs connected in series.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Undamped" class="level2" data-number="2.3">
+<h2 data-number="2.3" data-anchor-id="sec-Undamped"><span class="header-section-number">2.3</span> Undamped Free Vibrations</h2>
+<p>If a system in natural (static) equilibrium is set to motion by imposing some initial displacement and/or velocity but then left to move around the initial equilibrium configuration on its own, without imposing any external load effects, then the system is said to be executing <em>free vibrations</em>.</p>
+<p>In order to introduce some basic concepts and definitions, let us first analyze a system in which there is no energy dissipation. Such a system would be governed by <a href="#eq-eomsdof">Equation&nbsp;<span>2.4</span></a> but with no external force so that <span class="math display">\[
+m \ddgc (t) + k \gc (t) = 0
+\]</span> but this equation alone is not sufficient to describe the problem completely. To be able to determine the time variation of <span class="math inline">\(\gc (t)\)</span>, one needs to know the <em>state of the system</em> at some time so as to be able to track the system thereafter. The state of a single degree of freedom system at some instant <span class="math inline">\(t=t_o\)</span> refers collectively to its displacement and velocity, i.e.&nbsp;<span class="math inline">\(\{\gc(t_o),\dgc(t_o)\}\)</span>, since these two variables are sufficient to determine all that happens to the system along with the governing equation of motion. This ‘instant’ <span class="math inline">\(t_o\)</span> is generally taken to be the start of the time interval considered corresponding to <span class="math inline">\(t=0\)</span>, and the values of displacement and velocity at this initial instant are called <em>initial conditions</em> for the system. These initial conditions are so often utilized that we shall denote them by special symbols: the initial displacement will be denoted by <span class="math inline">\(\gcic\)</span> and the initial velocity by <span class="math inline">\(\dgcic\)</span>. A more proper statement of the problem may now be expressed as: <span id="eq-eomsdofic"><span class="math display">\[
+m \ddgc (t) + k \gc (t) = 0 \, ; \quad  \left\{\gc(0)= \gcic,\dgc(0) = \dgcic\right\}
+\qquad(2.5)\]</span></span></p>
+<p><a href="#eq-eomsdofic">Equation&nbsp;<span>2.5</span></a> is a second order linear differential equation with constant coefficients. Its solution may be expressed in the form <span id="eq-eomsdofsol1"><span class="math display">\[
+\gc (t) = A \expon{st}
+\qquad(2.6)\]</span></span> where <span class="math inline">\(A\)</span> and <span class="math inline">\(s\)</span> are in general complex valued and as yet undetermined. Substituting this proposed solution to the equation of motion in <a href="#eq-eomsdofic">Equation&nbsp;<span>2.5</span></a> yields <span class="math display">\[
+(m s^2 + k) A \expon{st} = 0
+\]</span> If this equality is to be satisfied for all time <span class="math inline">\(t\)</span>, then there are two possibilities that should be considered. It could be that <span class="math inline">\(A = 0\)</span>, in which case equilibrium is automatically satisfied since the system is not moving; this is called the <em>trivial solution</em>. The second possibility, which is the non-trivial solution, requires <span class="math inline">\(s\)</span> to be such that <span class="math display">\[
+ms^2 + k = 0
+\]</span> which yields two solutions for <span class="math inline">\(s\)</span>: <span class="math display">\[
+s_1 = + \sqrt{-\frac{k}{m}} = + \imag \freq, \quad s_2 = - \sqrt{-\frac{k}{m}} = - \imag \freq
+\]</span> where <span class="math inline">\(\imag\)</span>, defined through <span class="math inline">\(\imag^2 \equiv -1\)</span>, is the unit imaginary number, and we have introduced <span class="math inline">\(\freq \equiv + \sqrt{k/m}\)</span>. This variable <span class="math inline">\(\freq\)</span> is of fundamental importance; it is called the <em>(undamped) natural frequency</em> of the system for reasons that will soon be clear. Since both of the solutions for <span class="math inline">\(s\)</span> will satisfy the equation of motion, the general solution will be the superposition of the two, so that <span id="eq-noshown"><span class="math display">\[
+\gc (t) = A_1 \expon{s_1 t} + A_2 \expon{s_2 t} = A_1 \expon{\imag \freq t} + A_2 \expon{-\imag \freq t}
+\qquad(2.7)\]</span></span> and finally, since <span class="math inline">\(\gc (t)\)</span> is real valued, it must be that <span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2\)</span> are complex conjugates, so that with <span class="math inline">\(A = A_1 = a+\imag b = A_2^* = (a-\imag b)^*\)</span>, we have the following general solution: <span id="eq-eomsdofsol2"><span class="math display">\[
+\gc (t) = A \expon{\imag \freq t} + A^* \expon{-\imag \freq t}
+\qquad(2.8)\]</span></span> <a href="#eq-eomsdofsol2">Equation&nbsp;<span>2.8</span></a> is referred to as the general solution since the response of all SDOF systems to initial conditions will be of this form. The two coefficients <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in <span class="math inline">\(A = a + \imag b\)</span> will have to be determined based on the specific initial conditions of the particular problem being studied. This form of the solution, however, is not very conducive to direct physical interpretation, and most often expressing the solution in terms of well known trigonometric functions is preferred. Euler’s formula says that <span id="eq-eulersform"><span class="math display">\[
+\expon{\pm \imag \theta} = \cos \theta \pm \imag \sin \theta
+\qquad(2.9)\]</span></span> and when this expansion is used in <a href="#eq-eomsdofsol2">Equation&nbsp;<span>2.8</span></a> with <span class="math inline">\(\theta = \freq t\)</span>, we arrive after some algebra to the following form for the general solution: <span id="eq-eomsdofsol3"><span class="math display">\[
+\gc (t) = C_1 \cos \freq t + C_2 \sin \freq t
+\qquad(2.10)\]</span></span> When expressed in this form, the nature of the time variation of <span class="math inline">\(\gc\)</span> is much more obvious. The displacements that will occur in a SDOF system after it is set to motion will be of sinusoidal nature, with frequency <span class="math inline">\(\freq\)</span> and an amplitude that depends on the particular initial conditions. In fact, for <span class="math inline">\(\gc(0) = \gcic\)</span> and <span class="math inline">\(\dgc (0) = \dgcic\)</span>, the coefficients <span class="math inline">\(C_1\)</span> and <span class="math inline">\(C_2\)</span> will be evaluated as <span class="math display">\[\begin{align*}
+\gc (0) = \gcic &amp; = C_1 \cos 0 + C_2 \sin 0 \quad \rightarrow \quad C_1 = \gcic \\
+\dgc (0) = \dgcic &amp; = - \freq C_1 \sin 0 + \freq C_2 \cos 0 \quad \rightarrow \quad C_1 = \frac{\dgcic}{\freq}
+\end{align*}\]</span> so that the general solution now takes the form <span id="eq-eomsdofsol4"><span class="math display">\[
+\gc (t) = \gcic \cos \freq t + \frac{\dgcic}{\freq} \sin \freq t
+\qquad(2.11)\]</span></span> That this solution corresponds in fact to a single sinusoidal wave may be shown mathematically through the use of the following expansion formula: <span id="eq-cosexp"><span class="math display">\[
+\cos (\theta \pm \varphi) = \cos \theta \cos \varphi \mp  \sin \theta \sin \varphi
+\qquad(2.12)\]</span></span> A function of the form <span class="math inline">\(Q \cos (\freq t - \phs)\)</span> is therefore equivalent to <span class="math display">\[
+Q \cos (\freq t - \phs) = (Q \cos \phs) \cos \freq t + (Q \sin \phs) \sin \freq t = C_1 \cos \freq t + C_2 \sin \freq t
+\]</span> so that with <span id="eq-eomsdofsol5a"><span class="math display">\[
+C_1 = Q \cos \phs , \qquad C_2 = Q \sin \phs
+\qquad(2.13)\]</span></span> the general solution may be expressed as <span id="eq-eomsdofsol5b"><span class="math display">\[
+\gc (t) = Q \cos (\freq t - \phs)
+\qquad(2.14)\]</span></span></p>
+<p>This form is arguably the one that is most easily visualized. The response to initial conditions is in the form of a single cosine wave with <em>amplitude</em> <span class="math inline">\(Q\)</span> and <em>phase angle</em><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> <span class="math inline">\(\phs\)</span>. The amplitude and phase are given, through <a href="#eq-eomsdofsol5a">Equation&nbsp;<span>2.13</span></a> and <a href="#eq-eomsdofsol4">Equation&nbsp;<span>2.11</span></a>, by <span id="eq-eomsdofsol6a"><span class="math display">\[
+Q = \sqrt{C_1^2 + C_2^2} = \sqrt{\gcic^2 + \left(\frac{\dgcic}{\freq}\right)^2}
+\qquad(2.15)\]</span></span> <span id="eq-eomsdofsol6"><span class="math display">\[
+\phs = \arctan \frac{\sin \phs}{\cos \phs} = \arctan \frac{C_2/Q}{C_1 / Q} = \arctan \frac{\dgcic / (\freq Q)}{\gcic / Q}
+\qquad(2.16)\]</span></span> The response of an undamped linear single degree of freedom system to some initial conditions <span class="math inline">\(\gcic &gt; 0\)</span> and <span class="math inline">\(\dgcic &gt; 0\)</span> is shown in <a href="#fig-dof1undampedic">Figure&nbsp;<span>2.6</span></a>. This sinusoidal response starts from the initial displacement <span class="math inline">\(\gcic\)</span> with slope <span class="math inline">\(\dgcic\)</span>. The first peak is reached at time <span class="math inline">\(t=\hat{t} = \phs / \freq\)</span>. The peak amplitude <span class="math inline">\(Q\)</span> is the same at all peaks, in other words the vibrations do not decay since there is no energy dissipation in the system and once it gets going with a certain total mechanical energy, given by <span class="math display">\[
+\te_o = \ke_o + \pe_o = \frac{1}{2} m \dgcic^2 + \frac{1}{2} k \gcic^2
+\]</span> its mechanical energy remains at this constant level. The maximum displacement and velocity (in an absolute sense) that occur during the motion, inferred from <a href="#eq-eomsdofsol5b">Equation&nbsp;<span>2.14</span></a> and its time derivative, are given by <span class="math display">\[
+\gc_{\max} = Q, \quad \dgc_{\max} = \freq Q
+\]</span></p>
+<div id="fig-dof1undampedic" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dof1undampedic.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.6: Initial condition response of an undamped single degree of freedom system.</figcaption><p></p>
+</figure>
+</div>
+<p>The maximum kinetic energy occurs whenever the displacement is zero and at a value of <span class="math display">\[
+\ke_{\max} = \frac{1}{2} m (\dgc_{\max})^2 = \frac{1}{2} m (\freq Q)^2 = \frac{1}{2} m \left(\freq^2 \gcic^2 + \dgcic^2\right)
+\]</span> whereas the maximum potential energy occurs whenever the velocity is zero and at a value of <span class="math display">\[
+\pe_{\max} = \frac{1}{2} k (\gc_{\max})^2 = \frac{1}{2} k Q^2 = \frac{1}{2} k \left(\gcic^2 + \frac{\dgcic^2}{\freq^2}\right)
+\]</span> The maximum force that occurs in the spring, possibly important for design considerations, is given by <span class="math display">\[
+\text{maximum spring force} = k \gc_{\max} = k Q = k \sqrt{\gcic^2 + \left(\frac{\dgcic}{\freq}\right)^2}
+\]</span></p>
+<p>The response is said to be <em>periodic with period <span class="math inline">\(\period\)</span></em> so that the motion of the mass repeats itself in patterns of duration <span class="math inline">\(\period\)</span>; periodicity is expressed mathematically by the condition <span class="math display">\[
+\gc(t) = \gc(t+\period) \quad \forall t
+\]</span> where <span class="math inline">\(\period\)</span> is said to be the period of the system, given by <span class="math display">\[
+\period = \frac{2\pi}{\freq}
+\]</span> as may be easily inferred from <a href="#eq-eomsdofsol5b">Equation&nbsp;<span>2.14</span></a>. The period, which may be defined as the time it takes for motion to complete one full cycle, is a fundamental quantity in structural dynamics and it is more often referred to than the frequency due to its more direct physical implication. It is often stated in units of seconds [<span class="math inline">\(\punit{sec}\)</span> or <span class="math inline">\(\punit{s}\)</span>] since the periods of most systems encountered in structural dynamics are of the order of seconds. What is called the <em>cyclic frequency</em> is defined as the number of cycles completed in a unit of time, i.e. <span class="math display">\[
+\text{cyclic frequency} = \frac{1}{\period} = \frac{\freq}{2 \pi}
+\]</span> If time is measured in seconds, than the unit of cyclic frequency is named <span class="math inline">\(\textrm{Hertz}\)</span>, denoted by <span class="math inline">\(\punit{Hz}\)</span>, so that <span class="math inline">\(1 \unit{Hz} = \punit{no. of cycles} / 1 \unit{sec}\)</span>. To distinguish between the two frequencies, <span class="math inline">\(\freq\)</span> (with units of <span class="math inline">\(\punit{rad/sec}\)</span>) is often referred to as <em>angular frequency</em> since it corresponds to the angle the cosine function in the response goes through in a unit of time. Here we will simply refer to <span class="math inline">\(\freq\)</span> as <em>frequency</em> to economize on adjectives, and use the term cyclic frequency whenever we need to explicitly refer to it.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="7">
+<li id="fn7"><p>A phase angle is also referred to as a lead or a lag. When written in this form, <span class="math inline">\(\phs\)</span> may be referred to as a lag in the sense that the time to first peak is determined by the value of <span class="math inline">\(\phs\)</span> and for any <span class="math inline">\(\phs &gt; 0\)</span>, the first peak occurs sometime after <span class="math inline">\(t=0\)</span>, as opposed to an unshifted cosine wave (<span class="math inline">\(\phs = 0\)</span>) for which the first peak occurs exactly at <span class="math inline">\(t=0\)</span>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="sec-Damping" class="level2" data-number="2.4">
+<h2 data-number="2.4" data-anchor-id="sec-Damping"><span class="header-section-number">2.4</span> Damping</h2>
+<p>Although indispensable for introducing basic concepts, one of the major drawbacks of the undamped model is that it does not reflect energy dissipation, which is a phenomenon observed in all real life systems. Energy dissipation may occur do to various mechanisms. Friction between the system and its surroundings, radiation, internal friction and heat generation, cracking and plastic deformations, to list some prominent causes, may all contribute at varying degrees to dissipation. The simple fact is that explicit identification and modeling of all such causes is not feasible if at all possible, unless some of them are dominating and the aim is to specifically address and study them.</p>
+<section id="sec-ViscousDampingModel" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" data-anchor-id="sec-ViscousDampingModel"><span class="header-section-number">2.4.1</span> Viscous Damping Model</h3>
+<p>A simple model for dissipation has proved both mathematically convenient and practically applicable, so as to provide acceptable representations of experimentally observed responses. The model is based phenomenologically on the response of a linear viscous dashpot in which the applied force is proportional to the velocity of deformation. Amalgamation of energy dissipation mechanisms to a single <em>equivalent linear viscous dashpot</em> provides a model that is capable of producing a certain type of amplitude decay often observed in free vibrations of real structures. This model is therefore generally accepted as a reasonable prototype to model energy dissipation in small amplitude vibrations, so much so that it is explicitly referred to in many structural codes and guidelines. With due caution we will simply refer to this model as <em>viscous damping</em> and represent it graphically with a dashpot as shown in <a href="#fig-sdofmckfbd">Figure&nbsp;<span>2.7</span></a>(a).</p>
+<div id="fig-sdofmckfbd" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/sdofmckfbd.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.7: (a) Viscously damped single degree of freedom system and (b) its free body diagram including the d’Alembert force.</figcaption><p></p>
+</figure>
+</div>
+<p>The force across the damper is given by <span class="math inline">\(c \dgc\)</span> where <span class="math inline">\(\dgc\)</span> is the rate of deformation and <span class="math inline">\(c\)</span> is called the (linear) viscous dashpot coefficient: it is this coefficient, or some other one derived form it, that must be adjusted properly if the model is to represent accurately the amplitude decrement of the real system. The force acted upon the mass by the damper is therefore equal in magnitude to <span class="math inline">\(c \dgc\)</span> and opposite in direction to the direction of the velocity. The free body diagram of the mass, including the damping force and the d’Alembert force, is shown in <a href="#fig-sdofmckfbd">Figure&nbsp;<span>2.7</span></a>(b). The sum of the horizontal forces leads to <span id="eq-eomdsdof"><span class="math display">\[
+m \ddgc (t) + c \dgc (t) + k \gc (t) = \extforce (t)
+\qquad(2.17)\]</span></span> which is the equation of motion that represents the dynamics of all viscously damped single degree of freedom systems. The unforced vibrations will hence be governed by <span id="eq-eomdsdofic"><span class="math display">\[
+m \ddgc (t) + c \dgc (t) + k \gc (t) = 0 \, ; \quad \left\{\gc(0) = \gcic, \; \dgc(0) = \dgcic\right\}
+\qquad(2.18)\]</span></span> which is once again a second order linear differential equation with constant coefficients.</p>
+<p>Since <a href="#eq-eomdsdofic">Equation&nbsp;<span>2.18</span></a> is of the same form as <a href="#eq-eomsdofic">Equation&nbsp;<span>2.5</span></a>, we may expect <a href="#eq-eomsdofsol1">Equation&nbsp;<span>2.6</span></a> to work in this case as well. Using the candidate solution in <a href="#eq-eomdsdofic">Equation&nbsp;<span>2.18</span></a> leads to <span class="math display">\[
+  (ms^2 + cs + k)A\expon{st} = 0
+\]</span> and the non-trivial solution requires <span class="math display">\[
+ms^2 + cs + k = 0
+\]</span> There are two solutions for <span class="math inline">\(s\)</span> that satisfy this quadratic equation, given by <span class="math display">\[
+s_1 = -\frac{c}{2m} + \frac{1}{2m}\sqrt{c^2 - 4mk}, \quad s_2 = -\frac{c}{2m} - \frac{1}{2m}\sqrt{c^2 - 4mk}
+\]</span> It is possible to rewrite these expressions in somewhat simpler, familiar terms. Remembering that <span class="math inline">\(\freq^2 = k/m\)</span>, and defining <span id="eq-defdamprat1"><span class="math display">\[
+2 \damp \freq \equiv \frac{c}{m}
+\qquad(2.19)\]</span></span> where <span class="math inline">\(\damp\)</span> is a new but dependent variable derived from the damping properties, the roots may also be expressed as <span id="eq-dampedroots"><span class="math display">\[
+s_1 = -\damp \freq + \freq \sqrt{\damp^2 - 1}, \quad s_2 = -\damp \freq - \freq \sqrt{\damp^2 - 1}
+\qquad(2.20)\]</span></span> It is somewhat easier to observe that the nature of the solution depends very much on the value of the coefficient <span class="math inline">\(\damp\)</span>. Although only one of the cases is mostly relevant, for completeness we note the following three possibilities:</p>
+<ol type="i">
+<li><em>Overdamped systems</em>: Consider that <span class="math inline">\(\damp &gt; 1\)</span>. In this case both roots are real valued and the exponentials lead to hyperbolic sines and cosines such that no oscillation is possible. In fact, one has <span class="math display">\[\begin{align*}
+\gc (t) &amp; = A_1\expon{\left(-\damp \freq + \freq \sqrt{\damp^2 - 1}\right)t} + A_2\expon{\left(-\damp \freq - \freq \sqrt{\damp^2 - 1}\right)t} \\
+&amp; = \expon{-\damp \freq t}\left[A_1\expon{\freq t \sqrt{\damp^2 - 1}} + A_2\expon{- \freq t \sqrt{\damp^2 - 1}}\right] \\
+&amp; = \expon{-\damp \freq t}\left[(A_1+A_2)\cosh \left(\freq t \sqrt{\damp^2 - 1}\right) + (A_1 - A_2)\sinh \left(\freq t \sqrt{\damp^2 - 1}\right) \right] \\
+\gc (t) &amp; = \expon{-\damp \freq t}\left[C_1 \cosh \left(\freq t \sqrt{\damp^2 - 1}\right) + C_2 \sinh \left(\freq t \sqrt{\damp^2 - 1}\right) \right]
+\end{align*}\]</span> To simplify the presentation, let us define <span class="math display">\[
+\vartheta \equiv \freq \sqrt{\damp^2 -1}
+\]</span> so that <span id="eq-overdampedic"><span class="math display">\[
+\gc (t) = \expon{-\damp \freq t}\left(C_1 \cosh \vartheta t  + C_2 \sinh \vartheta t \right)  %= \expon{-\damp \freq t} Q \cosh \left(\mu t - \phs \right)
+\qquad(2.21)\]</span></span> To satisfy initial conditions one must have <span class="math display">\[\begin{align*}
+\gc(0) &amp; = \gcic = C_1 \quad \rightarrow \quad C_1 = \gcic \\
+\dgc(0) &amp; = \dgcic = - \damp \freq C_1 + \vartheta C_2 \quad \rightarrow \quad C_2 = \frac{\dgcic + \damp \freq \gcic}{\vartheta}
+\end{align*}\]</span> and hence the general solution for initial condition response of overdamped SDOF systems may be expressed as <span class="math display">\[
+\gc (t) = \expon{-\damp \freq t}\left[\gcic \cosh \vartheta t  + \frac{\dgcic + \damp \freq \gcic}{\vartheta} \sinh \vartheta t \right]
+\]</span></li>
+</ol>
+<div id="fig-overdampedic" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/overdampedic.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.8: Response of overdamped systems subjected to initial conditions <span class="math inline">\(\{\gcic \neq 0, \dgcic=0\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>How the response varies for some values of <span class="math inline">\(\damp\)</span> may be seen in <a href="#fig-overdampedic">Figure&nbsp;<span>2.8</span></a>. Each curve in this figure shows the response of an overdamped SDOF system with a specific value of <span class="math inline">\(\damp\)</span> due to nonzero initial displacement <span class="math inline">\(\gcic \neq 0\)</span> and zero initial velocity <span class="math inline">\(\dgcic = 0\)</span>. The plots are non-dimensionalized, with the horizontal axis corresponding to time scaled with <span class="math inline">\(\period\)</span> (i.e.&nbsp;the period the system would have if it were undamped). Evidently all responses simply decay towards the static equilibrium position. What is slightly counter intuitive is that the higher the damping coefficient in an overdamped system, the longer it takes for the system to go back to the original configuration. Higher damping limits the velocities to smaller values so that recovery takes longer.</p>
+<ol start="2" type="i">
+<li><p><em>Critically damped systems</em>: The nature of the solution will eventually change as damping gets smaller and the transition occurs when <span class="math inline">\(c^2 - 4mk = 0\)</span> or, equivalently, when <span class="math inline">\(\damp = 1\)</span>. In this case the roots in <a href="#eq-dampedroots">Equation&nbsp;<span>2.20</span></a> yield <span class="math display">\[
+s_1 = s_2 = - \freq
+\]</span> and with repeated roots the solution takes the form <span class="math display">\[
+\gc (t) = A_1 \expon{- \freq t} + A_2 t \expon{- \freq t}
+\]</span> For initial displacement <span class="math inline">\(\gcic\)</span> and initial velocity <span class="math inline">\(\dgcic\)</span>, the coefficients are evaluated as <span class="math display">\[\begin{align*}
+\gc(0) &amp; = \gcic = A_1 \quad \rightarrow \quad A_1 = \gcic \\
+\dgc(0) &amp; = \dgcic = - \freq A_1 +  A_2 \quad \rightarrow \quad A_2 = \dgcic + \freq \gcic
+\end{align*}\]</span> so that the general solution for critically damped single degree of freedom systems may be expressed as <span class="math display">\[
+\gc (t) = \gcic \expon{- \freq t} + (\dgcic + \freq \gcic) t \expon{- \freq t}
+\]</span> The response is once again a simple decay with no oscillation around the static equilibrium configuration but the recovery will be faster than the curves shown in <a href="#fig-dof1undampedic">Figure&nbsp;<span>2.6</span></a>. This particular case allows us to define a <em>critical damping</em> for SDOF systems, given by <span class="math display">\[
+c_{cr} = 2\sqrt{km}
+\]</span> since for <span class="math inline">\(c &gt; c_{cr}\)</span> the system will be overdamped, and the for <span class="math inline">\(c &lt; c_{cr}\)</span> it will be underdamped. This critical value depends on the mass and stiffness properties of the system and thus it may be estimated for design purposes. Employing the critical damping concept, the coefficient <span class="math inline">\(\damp\)</span> initially defined via <a href="#eq-defdamprat1">Equation&nbsp;<span>2.19</span></a> may also be defined as the ratio of the available damping to the critical damping, i.e. <span class="math display">\[
+\damp = \frac{c}{c_{cr}}
+\]</span> and so <span class="math inline">\(\damp\)</span> is referred to as the <em>critical damping ratio</em> or simply as the <em>damping ratio</em>, which is the name we will use to address it.</p></li>
+<li><p><em>Underdamped systems</em>: When <span class="math inline">\(\damp &lt; 1\)</span>, the square roots in <a href="#eq-dampedroots">Equation&nbsp;<span>2.20</span></a> lead to complex numbers, and harmonic motion becomes possible. Let us express the two roots as <span class="math display">\[\begin{align*}
+s_1 &amp; = -\damp \freq + \freq \sqrt{-(1-\damp^2)} = -\damp \freq + \imag \dfreq , \\
+s_2 &amp; = -\damp \freq - \freq \sqrt{-(1-\damp^2)} = -\damp \freq - \imag \dfreq = s_1^*
+\end{align*}\]</span> where <span id="eq-dfreq"><span class="math display">\[
+\dfreq \equiv \freq\sqrt{1-\damp^2}
+\qquad(2.22)\]</span></span> is called the <em>damped frequency</em> of the system. Remembering the discussion about complex coefficients in undamped vibrations, the general solution may be written as <span class="math display">\[
+\gc (t) = \expon{-\damp \freq t}\left(A \expon{\imag \dfreq t}  + A^* \expon{-\imag \dfreq t} \right)
+\]</span> which, with the help of <a href="#eq-eulersform">Equation&nbsp;<span>2.9</span></a>, may be recast in the following form: <span class="math display">\[
+\gc (t) = \expon{-\damp \freq t}\left(C_1 \cos \dfreq t  + C_2 \sin \dfreq t \right)
+\]</span> Applying the initial conditions leads to <span class="math display">\[\begin{align*}
+\gc(0) &amp; = \gcic = C_1 \quad \rightarrow \quad C_1 = \gcic \\
+\dgc(0) &amp; = \dgcic = - \damp \freq C_1 +  \dfreq C_2 \quad \rightarrow \quad C_2 = \frac{\dgcic + \damp \freq \gcic}{\dfreq}
+\end{align*}\]</span> so that <span id="eq-underdampedic1"><span class="math display">\[
+\gc (t) = \expon{-\damp \freq t}\left(\gcic \cos \dfreq t  + \frac{\dgcic + \damp \freq \gcic}{\dfreq} \sin \dfreq t \right)
+\qquad(2.23)\]</span></span> Alternatively, via <a href="#eq-cosexp">Equation&nbsp;<span>2.12</span></a> and defining <span class="math display">\[
+Q \cos \phs = C_1, \quad Q \sin \phs = C_2
+\]</span> the solution may be expressed as <span id="eq-underdampedic2"><span class="math display">\[
+\gc (t) = Q \expon{-\damp \freq t} \cos (\dfreq t  - \phs)
+\qquad(2.24)\]</span></span> where <span id="eq-underdampedic3a"><span class="math display">\[
+Q = \sqrt{C_1^2 + C_2^2} = \frac{\sqrt{\gcic^2 + 2 \damp \gcic \left(\ratio{\dgcic}{\freq}\right)  + \left(\ratio{\dgcic}{\freq}\right)^2}}{\sqrt{1-\damp^2}}
+\qquad(2.25)\]</span></span> <span id="eq-underdampedic3b"><span class="math display">\[
+\phs = \arctan \frac{\sin \phs}{\cos \phs} = \arctan \frac{C_2/Q}{C_1 / Q} = \arctan \frac{(\dgcic+\damp\freq\gcic) / (\dfreq Q)}{\gcic / Q}
+\qquad(2.26)\]</span></span> Evidently the oscillations in underdamped systems will take place with an exponentially decaying amplitude defined by <span class="math inline">\(Q\expon{-\damp \freq t}\)</span>. The response is not strictly harmonic but we still talk of a period and frequency of the system: the oscillatory part, <span class="math inline">\(\cos (\dfreq t - \phs)\)</span>, is a harmonic wave with frequency equal to the damped frequency of the system, and the <em>damped period</em> of the system is defined as <span class="math display">\[
+\dperiod = \frac{2\pi}{\dfreq}
+\]</span> Since the damping ratio <span class="math inline">\(\damp &lt; 1\)</span>, <span class="math display">\[
+\dperiod = \frac{2\pi}{\freq \sqrt{1-\damp^2}}= \frac{\period}{\sqrt{1-\damp^2}} &gt; \period
+\]</span> so that the damped period is slightly longer than the undamped period. The difference, however, is generally small for common structures, in which damping ratios are generally on the order of <span class="math inline">\(1\%\)</span> to <span class="math inline">\(15\%\)</span>. Even for a relatively high damping ratio of <span class="math inline">\(10\%\)</span>, the difference between the two periods is about <span class="math inline">\(0.5 \%\)</span>; in most applications, this difference may be neglected and the undamped period may be referred to.</p></li>
+</ol>
+<div id="fig-underdampedic" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/underdampedic.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.9: Response of underdamped systems subjected to initial conditions: (a) Typical response of an underdamped system to initial conditions <span class="math inline">\(\{\gcic &gt; 0, \dgcic&gt;0\}\)</span>, (b) effects of damping ratio on the response to initial conditions <span class="math inline">\(\{\gcic \neq 0, \dgcic=0\}\)</span>.</figcaption><p></p>
+</figure>
+</div>
+<p>The responses of underdamped systems are visualized in <a href="#fig-underdampedic">Figure&nbsp;<span>2.9</span></a>. The typical response of an underdamped system, subject to initial conditions <span class="math inline">\(\gcic &gt; 0\)</span> and <span class="math inline">\(\dgcic &gt; 0\)</span> is shown in <a href="#fig-underdampedic">Figure&nbsp;<span>2.9</span></a>(a). The response at any instance is the product of the harmonic wave <span class="math inline">\(\cos (\dfreq t - \phs)\)</span> with the envelope <span class="math inline">\(Q\expon{-\damp\freq t}\)</span>, resulting in an oscillation about the natural equilibrium configuration with an exponentially decaying amplitude. The damped period is easily identified as the duration between any two consecutive down-crossings (or up-crossings), or any two consecutive peaks (or troughs). How fast the response decays in a single cycle depends on the value of <span class="math inline">\(\zeta\)</span>; this dependence is clearly seen in <a href="#fig-underdampedic">Figure&nbsp;<span>2.9</span></a>(b), which shows the responses of underdamped systems with three different values of <span class="math inline">\(\zeta\)</span>, all plotted in non-dimensionalized form to allow a direct comparison.</p>
+</section>
+<section id="sec-Estimating" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" data-anchor-id="sec-Estimating"><span class="header-section-number">2.4.2</span> Estimating Viscous Damping from Free Vibration Data</h3>
+<p>Increasing damping ratio in underdamped systems leads obviously to faster decay in the response, which may be quantified by the decrease in amplitudes of peaks. This relation is used directly in a well known method used to estimate the damping ratio of SDOF systems. Consider a local peak, say the <em>i</em>th local peak, that occurs at some time <span class="math inline">\(t=t_i\)</span>. The amplitude <span class="math inline">\(Q_i\)</span> of this peak will be given by <span class="math display">\[
+Q_i = \gc (t_i) = Q \expon{-\damp \freq t_i} \cos (\dfreq t_i - \phs)
+\]</span> as shown in <a href="#fig-logdec">Figure&nbsp;<span>2.10</span></a>.</p>
+<div id="fig-logdec" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/logdec.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.10: Peaks in free vibrations of a viscously underdamped system.</figcaption><p></p>
+</figure>
+</div>
+<p>This local peak does not occur exactly when the cosine term is equal to one. In fact, by taking the first time derivative of the displacement given by <a href="#eq-underdampedic2">Equation&nbsp;<span>2.24</span></a> and after combining the harmonic terms, the velocity may be expressed as <span id="eq-124"><span class="math display">\[
+\dgc (t) = - \freq Q \expon{- \damp \freq} \sin (\dfreq t - \phs + \alpha)
+\qquad(2.27)\]</span></span> where <span class="math inline">\(\alpha\)</span> is a phase shift that depends on the damping ratio as <span class="math inline">\(\tan \alpha = \damp/\sqrt{1-\damp^2}\)</span>, which yields <span class="math inline">\(\alpha \approx \damp\)</span> for <span class="math inline">\(\damp \ll 1\)</span>. If there is no damping then <span class="math inline">\(\alpha=0\)</span>, and for small values of damping it is very close to zero. In any case, an extremum in the displacement occurs whenever <span class="math inline">\(\sin (\dfreq t - \phs + \alpha) = 0\)</span>. If a local peak occurs at time <span class="math inline">\(t=t_i\)</span>, then the next local peak occurs at <span class="math inline">\(t=t_i + \dperiod\)</span> since <span class="math inline">\(\sin (\dfreq (t_i+\dperiod) - \phs + \alpha) = \sin (2\pi + \dfreq t_i - \phs + \alpha) = \sin (t_i - \phs + \alpha)\)</span>; it is obvious from this discussion that all consecutive local peaks are separated by duration <span class="math inline">\(\dperiod\)</span>. The amplitude <span class="math inline">\(Q_{i+1}= \gc (t_i+\dperiod)\)</span> of the <span class="math inline">\((i+1)\)</span>th local peak therefore is given by <span class="math display">\[
+Q_{i+1} = Q \expon{-\damp \freq (t_i+\dperiod)} \cos (\dfreq (t_i+\dperiod) - \phs) = Q \expon{-\damp \freq t_i} \expon{-2 \pi \damp / \sqrt{1-\damp^2}} \cos (\dfreq t_i - \phs)
+\]</span> since the angles in <span class="math inline">\(\cos (\dfreq (t_i+\dperiod) - \phs)\)</span> and <span class="math inline">\(\cos (\dfreq t_i - \phs)\)</span> differ by <span class="math inline">\(2 \pi\)</span>. The ratio of the amplitudes of two consecutive local peaks is therefore given by <span id="eq-logdecini"><span class="math display">\[
+\frac{Q_i}{Q_{i+1}} = \expon{2 \pi \damp / \sqrt{1-\damp^2}}
+\qquad(2.28)\]</span></span></p>
+<p><span class="math inline">\(\rem{Logarithmic decrement}\)</span> is the name given to the natural logarithm of the ratios of two successive local peaks. It may be measured and calculated directly from recorded free vibration data and it is a widely used indicator of energy dissipation; as the velocity is zero at the peaks, the energy of the system when the mass is at a peak displacement comprises only the potential energy, which is a direct function of the displacement. Based on <a href="#eq-logdecini">Equation&nbsp;<span>2.28</span></a>, the logarithmic decrement in a viscously damped system is therefore given by <span id="eq-logdec"><span class="math display">\[
+\ln \frac{Q_i}{Q_{i+1}} = 2 \pi \frac{\damp}{\sqrt{1-\damp^2}}
+\qquad(2.29)\]</span></span> so that, having measured the amplitudes, the damping ratio of the system may be calculated from <span id="eq-logdecdamp"><span class="math display">\[
+  \frac{\damp}{\sqrt{1-\damp^2}} = \frac{1}{2\pi} \ln \frac{Q_i}{Q_{i+1}}
+\qquad(2.30)\]</span></span> When the damping ratio is small, this expression may be approximated by <span id="eq-logdecdamp2"><span class="math display">\[
+  \damp \approx \frac{1}{2\pi} \ln \frac{Q_i}{Q_{i+1}}
+\qquad(2.31)\]</span></span> which is the form more commonly encountered. Applications have shown that the damping estimates improve if one uses the ratio of more widely separated peaks instead of two consecutive ones. If one uses two local peaks, <span class="math inline">\(Q_{i}\)</span> and <span class="math inline">\(Q_{i+n}\)</span>, separated by a duration of <span class="math inline">\(n\dperiod\)</span>, the damping may be estimated as <span id="eq-logdecdamp3"><span class="math display">\[
+  \frac{\damp}{\sqrt{1-\damp^2}} = \frac{1}{2\pi n} \ln \frac{Q_i}{Q_{i+n}} \approx \damp
+\qquad(2.32)\]</span></span> where the last approximation is acceptable only for small values of damping ratio; it might be mentioned that the error due to this approximation alone would be less than <span class="math inline">\(1\%\)</span> for damping ratios less than <span class="math inline">\(10\%\)</span>.</p>
+</section>
+<section id="sec-EnergyDissipated" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" data-anchor-id="sec-EnergyDissipated"><span class="header-section-number">2.4.3</span> Energy Dissipated by Viscous Damping</h3>
+<p>The amount of energy dissipated due to viscous damping may be calculated based on the principle of work and energy which states that the total mechanical energy of a system varies as it moves from state 1 at time <span class="math inline">\(t=t_1\)</span> to state 2 at time <span class="math inline">\(t=t_2\)</span> according to <span class="math display">\[
+\te_1 + \wnc_{1 \rightarrow 2} = \te_2
+\]</span> where <span class="math inline">\(\te_i=\ke_i + \pe_i\)</span> is the total energy of the system at state <span class="math inline">\(i\)</span>, and <span class="math inline">\(\ke_i\)</span> and <span class="math inline">\(\pe_i\)</span> are the system’s kinetic and potential energies, respectively, at state <span class="math inline">\(i\)</span>. When a single degree of freedom system is governed by <a href="#eq-eomdsdof">Equation&nbsp;<span>2.17</span></a>, its kinetic and potential energies at state <span class="math inline">\(i\)</span> at time <span class="math inline">\(t=t_i\)</span>, may be expressed as <span class="math display">\[
+\ke_i = \frac{1}{2} m [\dgc(t_i)]^2, \qquad \pe_i = \frac{1}{2} k [\gc(t_i)]^2
+\]</span> with the set <span class="math inline">\(\left\{ \gc (t_i), \dgc (t_i) \right\}\)</span> denoting the state of the system at time <span class="math inline">\(t_i\)</span>. The displacement (deformation) and the velocity are sufficient to define the state since the acceleration at time <span class="math inline">\(t=t_i\)</span> is dependent on these through the equation of motion. The third component <span class="math inline">\(\wnc_{1 \rightarrow 2}\)</span> is the work done by non-conservative forces as the system moves from state 1 to state 2. The only non-conservative force in the system of <a href="#fig-sdofmckfbd">Figure&nbsp;<span>2.7</span></a> is the damping force <span class="math inline">\(c\dgc\)</span>. Consider the free body diagram of the SDOF system at some time <span class="math inline">\(t\)</span> shown in <a href="#fig-dampingwork">Figure&nbsp;<span>2.11</span></a>. When the system moves by an amount <span class="math inline">\(\diff \gc\)</span>, the change in the system’s energy will equal to the work done by this force so that <span id="eq-divE1"><span class="math display">\[
+\diff{\te} = - c \dgc \diff \gc
+\qquad(2.33)\]</span></span> where the minus sign is due to the algebraicaly consistent directions employed. Note that the work done by the spring force is the change in potential energy and the work done by the d’Alembert force is the change in kinetic energy, and so they are accounted for as <span class="math inline">\(\diff{\te}\)</span>. The time rate of change of energy will be given by <span id="eq-divE2"><span class="math display">\[
+\divt{\te} = - c \dgc \divt{\gc} = - c \dgc^2
+\qquad(2.34)\]</span></span></p>
+<div id="fig-dampingwork" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dampingwork.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.11: Free body diagram of the freely vibrating damped SDOF system.</figcaption><p></p>
+</figure>
+</div>
+<p>In principle, this expression may be integrated, either over a path via <a href="#eq-divE1">Equation&nbsp;<span>2.33</span></a> or over a duration via <a href="#eq-divE2">Equation&nbsp;<span>2.34</span></a>, to calculate the energy dissipated over the path or time interval investigated, which is simply the negative of the work done by the non-conservative forces. A simple result, however, does not emerge in the case of free vibrations because the dissipated energy depends on the state or, equivalently, where in its cycles the system is. To give an idea as to possible results, the energy dissipated in <span class="math inline">\(t=[0,\dperiod)\)</span> may be shown to be equal to <span class="math display">\[\begin{align*}
+\int_{0}^{\dperiod} c \dgc^2 \diff t &amp; = c \int_{0}^{\dperiod} \left[-Q\expon{-\damp \freq t} \left(\damp \freq \cos (\dfreq t - \phs) + \dfreq \sin(\dfreq t - \phs) \right) \right]^2\diff t \\
+&amp; = \frac{cQ^2}{4}\left[ 1 - \expon{-4 \pi \damp / \sqrt{1-\damp^2}} \right] \left[\frac{\dfreq^2}{\damp\freq} + 2 \damp \freq \cos^2 \phs - \dfreq \sin 2\phs\right]
+\end{align*}\]</span></p>
+<p>One graphical tool frequently used to visualize the effects of energy dissipation is to plot the force-displacement relationship. The force in the context of free vibrations refers to the total <em>resisting force</em> that acts on the mass of the prototype model. When the system is undamped, this force is simply <span class="math inline">\(\extforce_{R}=k \gc\)</span>, and when the system is linearly viscously damped, it is <span class="math inline">\(\extforce_{R} = k \gc + c \dgc\)</span>. The force-displacement graphs of these two cases are presented in <a href="#fig-hysteresisIC">Figure&nbsp;<span>2.12</span></a>. These plots have been developed for durations of one period starting with time <span class="math inline">\(t=0\)</span> for systems subjected to the same initial velocity but no initial displacement, the only difference between the systems of the two plots being the addition of damping in the second one.</p>
+<p>The main difference between the behavior observed in <a href="#fig-hysteresisIC">Figure&nbsp;<span>2.12</span></a> is the area enclosed by each curve. When undamped, the system loads and unloads (with directions indicated by the arrowheads on the curves) along the same line as shown in <a href="#fig-hysteresisIC">Figure&nbsp;<span>2.12</span></a> (a). Force and displacement are in phase, and as a result the total work done by the force as the system moves through one full period is zero. In the viscously damped system, the path is curvilinear as shown in <a href="#fig-hysteresisIC">Figure&nbsp;<span>2.12</span></a> (b) because of the phase difference between the force and displacement; moreover, the total work done is not zero in this case but the system dissipates energy of amount equal to the shaded area “enclosed” within the curve. When the force-displacement curve encloses an area the system is said to exhibit <span class="math inline">\(\rem{hysteretic behavior}\)</span>, after such behavior observed in magnetic hysteresis.</p>
+<div id="fig-hysteresisIC" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/hysteresisIC.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.12: Force-displacement plots for (a) undamped and (b) linearly viscously damped SDOF systems.</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="sec-Nonviscous" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" data-anchor-id="sec-Nonviscous"><span class="header-section-number">2.4.4</span> Non-viscous Damping Models</h3>
+<p>The widespread acceptance of the viscous damping model has reinforced itself with its appearance in structural codes and more recent identification and health monitoring studies which have focused almost exclusively on fitting viscous damping models to vibration data obtained from large scale systems. The complexity of energy dissipation mechanisms in large scale systems somewhat justifies the use of this model due to its relative simplicity and success. When studying individual components, composite materials and high amplitude vibrations, however, other damping mechanisms have proved useful and sometimes provided better results. Although we will revisit some of these models when studying forced vibrations, here we will briefly mention them and comment on their major differences compared with the viscous damping model.</p>
+<p>The two governing characteristics of the viscous damping model are that: i. it predicts an exponentially decaying response; ii. the amount of energy dissipated in one cycle of steady state vibrations under a harmonic external excitation depends on the frequency. A physical shortcoming of the model is that the oscillations theoretically continue indefinitely albeit at completely negligible amplitudes; observationally the vibrations in real structures eventually cease so that the real dissipative mechanism should be at the very least a combination of viscous and friction mechanisms. Since this phenomenon becomes significant in very low amplitudes that possibly have no bearing at all on design constraints it is not generally dwelt upon, and the focus of investigations lie with the general characteristics that are pronounced in design sensitive amplitudes.</p>
+<p>One often cited alternative damping model is called <em>Coulomb damping</em>, with energy dissipated through sliding friction (in other words, external friction). In this case the dissipative force is not velocity dependent as in the case of viscous damping but rather it has a constant value, whereas the direction of this force varies as the direction of motion, i.e.&nbsp;direction of velocity, changes. The solution of this problem is not particularly difficult but now the problem is that of forced vibrations. Analysis of this problem shows that the decay predicted by Coulomb damping is linear, as opposed to the exponential decay of viscous damping; the mass does come to a stop in finite time, however, since the energy of the system eventually fails to overtake friction. The fact that exponential decay seems to match better with experimental evidence is one reason that Coulomb damping has not gained much precedence in structural dynamics.</p>
+<p>Another damping model which goes by different names including <em>structural damping</em> or <em>hysteretic damping</em> aims to model dissipation through internal friction. The motivation for this type of damping comes from observations regarding energy dissipation of systems oscillating harmonically, as a single degree of freedom system would when it reaches steady state under a harmonic forcing. A thorough understanding of this statement requires forced vibration analysis, but to provide a qualitative perspective we note that viscous damping leads to a closed, elliptic hysteresis loop whose size depends on the frequency of loading (which in steady state becomes the frequency with which the system moves). Hence, viscous damping or the energy it dissipates is sometimes referred to as <em>frequency dependent</em>. Experimental observations have shown however that hysteresis loops tend to be independent of frequency in a wide range of systems and frequencies. The structural damping model has been proposed to reflect this <em>frequency independent</em> property, which may be mathematically achieved by treating the stiffness as having a complex valued part. The analysis of this model is however more involved and particularly not so simple for free vibrations.</p>
+</section>
+</section>
+<section id="sec-GeneralizedSDOF" class="level2" data-number="2.5">
+<h2 data-number="2.5" data-anchor-id="sec-GeneralizedSDOF"><span class="header-section-number">2.5</span> Generalized SDOF Systems</h2>
+<section id="continuous-systems" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" data-anchor-id="continuous-systems"><span class="header-section-number">2.5.1</span> Continuous Systems</h3>
+<p>When the mass and flexibility of a system are distributed, it becomes necessary for a precise formulation to treat the system as <em>continuous</em>, and the state of the system is defined as functions of both space (comprising all the points included in the system’s domain) and time. Due to this continuity, such systems have infinite number of degrees of freedoms governed by partial differential equations, and their response shows considerable complexity compared with the simple SDOF model. In certain cases, however, single degree of freedom models may yield reasonable estimates of prominent dynamic characteristics of complex systems provided that the deformation patterns are estimated relatively accurately.</p>
+<p>Consider for example a cantilever beam as shown in <a href="#fig-gensdofchimney">Figure&nbsp;<span>2.13</span></a>; this could be a chimney with possibly variable cross section of bending rigidity<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> <span class="math inline">\(EI = EI(s)\)</span>, length <span class="math inline">\(\ell\)</span>, mass per unit length <span class="math inline">\(\mlen=\mlen(s) = \rho A(s)\)</span>. Analysis of the vibration problem for this system requires that the equations of motion be formulated in terms of the displacement field <span class="math inline">\(\gc=\gc(s,t)\)</span> and one will obtain a partial differential equation, which in the case of variable section will be nonlinear, that must be solved. We will eventually deal with vibrations of simple continuous systems but at this stage such an approach is simply not feasible. The experience gained through analyses of such systems have however shown us that they have many frequencies with which they may oscillate, and that they maintain some particular shapes when they oscillate harmonically with any of those frequencies. This behavior could be exploited and a great simplification would be achieved if the shape of vibration could somehow be foreseen. This of course is not practically possible, but it turns out that a reasonable estimate of how the structure would behave may lead to acceptable results.</p>
+<div id="fig-gensdofchimney" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/gensdofchimney.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.13: A tall chimney.</figcaption><p></p>
+</figure>
+</div>
+<p>We feel it is best to proceed by demonstration, so let us continue the simplified analysis of the chimney. We will assume that during free vibrations the chimney oscillates harmonically with a certain frequency and that during these oscillations it maintains a constant shape albeit with varying amplitude so that the at any instant <span class="math inline">\(t\)</span>, the lateral displacement of the section at location <span class="math inline">\(s\)</span> is given by <span id="eq-gsdofapp"><span class="math display">\[
+\gc (s,t)=\shpf (s) \gengct
+\qquad(2.35)\]</span></span> where <span class="math inline">\(\shpf=\shpf(s)\)</span> is called the <em>shape function</em> and <span class="math inline">\(\gengc = \gengc (t)\)</span> is a time dependent amplitude, generally corresponding to the actual displacement of a particular point. <a href="#eq-gsdofapp">Equation&nbsp;<span>2.35</span></a> is a variation of the method of separation of variables since instead of solving for possible candidates via the governing equation of motion, the shape function in this case is specified by the analyst. There are some guidelines as to how this choice may be improved. First the restraints: the shape function should satisfy the geometric boundary conditions because only by doing so it can be ensured that the solution will satisfy those conditions. Since in our example the chimney is fixed at <span class="math inline">\(s=0\)</span>, at any instant during motion we should have no translation or rotation at <span class="math inline">\(s=0\)</span>: <span class="math display">\[
+\gc (s,t)|_{s=0} = 0, \qquad \pardiv{\gc (s,t)}{s}\biggr|_{s=0} = 0
+\]</span> If we are to use the approximation of <a href="#eq-gsdofapp">Equation&nbsp;<span>2.35</span></a>, these conditions are satisfied at all times only if <span class="math display">\[
+\shpf (0) = 0, \qquad \divp{\shpf}{s}\biggr|_{s=0} = 0
+\]</span> To simplify the presentation, let us introduce the following notation to denote derivatives with respect to a spatial variable, such as <span class="math inline">\(s\)</span> in this example: <span class="math display">\[
+\shpf' = \shpf' (s) = \divp{\shpf (s)}{s}, \quad \shpf'' = \shpf''(s) = \frac{\diff^2 \shpf (s)}{\diff s^2}
+\]</span> With this notation, the geometric conditions may be written more simply as <span id="eq-shapeBC"><span class="math display">\[
+\shpf (0) = 0, \quad \shpf'(0) = 0
+\qquad(2.36)\]</span></span> and we note that, whatever shape function <span class="math inline">\(\shpf\)</span> we choose for the chimney, we should at a minimum ensure that the conditions in <a href="#eq-shapeBC">Equation&nbsp;<span>2.36</span></a> are satisfied. Satisfaction of these condition, however, is not sufficient to ensure acceptably accurate results since the approximation will improve only if the shape function truly resembles the actual shape taken on by the system. Various proposals have been discussed to ensure acceptable results, including choosing the shape function as the deflected shape of the structure under some static loading. As the possibilities are numerous, here we will focus on the procedure and we will try to provide some worked examples to investigate the performances of differing shape functions.</p>
+<p>For our chimney, we will choose the unknown amplitude <span class="math inline">\(\gengc\)</span> to be the displacement at the tip, i.e.&nbsp;we choose <span class="math inline">\(\gengc (t) \equiv \gc(\ell, t)\)</span>. The shape function now will have to be a function which will satisfy the geometric boundary conditions at the fixed end, i.e.&nbsp;<span class="math inline">\(\shpf (0) = 0, \shpf'(0) = 0\)</span>, but it will also have to satisfy <span class="math inline">\(\shpf (\ell) = 1\)</span> at the tip since by choice <span class="math inline">\(\gc (\ell, t) = \shpf (\ell) \gengc (t) = \gengc (t)\)</span>. Two simple candidates could for example be: <span class="math display">\[
+\shpf (s) = \frac{s^2}{2\ell} \quad \text{or} \quad \shpf(s) = \frac{1}{2}\left(1-\cos \frac{\pi s}{\ell}\right)
+\]</span></p>
+<p>Having specified a shape function, we are now ready to proceed with the analysis. The method of choice is virtual work, which requires that d’Alembert forces be included. At any point along the chimney the acceleration is given by the second time derivative of <span class="math inline">\(\gc (s,t)\)</span>, and our approximation leads to <span class="math display">\[
+\gc (t) = \shpf \gengc (t) \quad \rightarrow \quad \frac{\partial^2 \gc}{\partial t^2} = \shpf \ddgengc (t)
+\]</span> since the shape function is constant in time. For the segment of width <span class="math inline">\(\diff s\)</span> and located at position <span class="math inline">\(s\)</span>, the d’Alembert force to be acted on it at time <span class="math inline">\(t\)</span> is given by <span class="math display">\[
+\bigl[\mlen \diff s\bigr] \shpf \ddgengc (t)
+\]</span> acting in the direction opposite to that of the acceleration<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> so that <em>per unit length</em>, the d’Alembert force is given by <span class="math inline">\(\mlen\shpf \ddgengc (t)\)</span>. These forces are included in the free body diagram shown in <a href="#fig-gensdofchimney">Figure&nbsp;<span>2.13</span></a> (c), which also includes the reaction forces at the base (i.e.&nbsp;the fixed end). Since with the inclusion of the d’Alembert forces the system is instantaneously in a state of static equilibrium, the principle of virtual work dictates that in a virtual variation of displacements, the virtual internal work has to be equal to the virtual external work: <span class="math display">\[
+\vwork_{int} = \vwork_{ext}
+\]</span> The virtual displacements are generated by a variation in the single free parameter <span class="math inline">\(\gengc\)</span> because <span class="math inline">\(\shpf\)</span> is prescribed, and so the virtual displacement pattern is given by <span id="eq-gensdofvar"><span class="math display">\[
+  \vgc (s) = \shpf (s) \vgengc
+\qquad(2.37)\]</span></span> where it should be noted that while <span class="math inline">\(\gc = \gc (s,t)\)</span> and <span class="math inline">\(\gengc = \gengc (t)\)</span>, <span class="math inline">\(\vgc\)</span> is a function only of the spatial coordinate and neither <span class="math inline">\(\vgc\)</span> nor <span class="math inline">\(\vgengc\)</span> are functions of time.<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></p>
+<p>Since the shape function satisfies the geometric boundary conditions, there will be no translation of rotation induced at the fixed end during the virtual displacement, and the work done by the reaction forces at the base will be zero. The only external work done is that due to the d’Alembert forces, which may be calculated via <span class="math display">\[\begin{align*}
+\vwork_{ext} &amp; = \int_{0}^{\ell} - \bigl[\mlen \shpf \ddgengc \diff s\bigr] \bigl[\vgc \bigr] \\
+&amp; = - \left[\int_{0}^{\ell} \mlen \shpf^2  \diff s \right] \ddgengc \vgengc = -  \genm \ddgengc \vgengc
+\end{align*}\]</span> where <span class="math display">\[
+\genm = \int_{0}^{\ell} \mlen \shpf^2 \diff s
+\]</span> is called the <em>generalized mass</em>.</p>
+<p>The internal work is slightly more involved with various components that may be taken into consideration. To keep the derivation relatively simple, let us assume that bending deformations dominate and that bending is uniaxial during motion. Under the assumption of cross sections remaining plane and perpendicular to the neutral axis, which is the pillar of the well known Euler-Bernoulli beam theory, the geometry of deformation is completely described by the displacement <span class="math inline">\(\gc = \gc(s,t)\)</span> and its spatial derivatives. Let the rotation of the cross section at <span class="math inline">\(s\)</span> be denoted by <span class="math inline">\(\eta = \eta (s,t)\)</span>. This rotation is related in general to the displacements through <span class="math display">\[
+\eta = \frac{\partial u}{\partial s}
+\]</span> so that for the approximation considered, we have <span class="math display">\[
+\gc = \shpf \gengc \quad \rightarrow \quad \eta = \shpf' \gengc
+\]</span> and the virtual rotation imposed due to the variation <span class="math inline">\(\vgengc\)</span> is given by <span class="math display">\[
+\virt \eta = \shpf' \vgengc
+\]</span> Another key geometric quantity is the curvature, expressing the variation of the slope along the elastic curve<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>. <em>For small displacement gradients</em>, it is shown in all introductory strength of materials texts that the relationship between rotation and curvature <span class="math inline">\(\curv = \curv (s,t)\)</span> is given by <span class="math display">\[
+\diff \eta = \curv \diff s
+\]</span> so that curvature is related to the displacements through <span class="math display">\[
+\curv = \frac{\partial \eta}{\partial s} = \frac{\partial^2 \gc}{\partial s^2}
+\]</span> For the generalized SDOF approximation we therefore have <span class="math display">\[
+\eta = \shpf \gengc \quad \rightarrow \quad \curv = \shpf'' \gengc
+\]</span> and the relative virtual rotation <span class="math inline">\(\diff\, (\virt \eta)\)</span> of two infinitesimally close cross sections may be expressed in terms of the virtual curvature as <span class="math display">\[
+\diff\, (\virt \eta) = \left(\virt \curv\right) \diff s = (\shpf'' \vgengc) \diff s
+\]</span></p>
+<div id="fig-momentwork" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/momentwork.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.14: Bending moments and rotations in a beam. (a) Undeformed configuration, (b) real rotations of two infinitesimally close cross sections and the bending moments acting on them, (c) virtual rotations imposed.</figcaption><p></p>
+</figure>
+</div>
+<p>The work done by the internal bending moment <span class="math inline">\(\smoment(s,t)\)</span> acting on the cross sections at <span class="math inline">\(s\)</span> and <span class="math inline">\(s + \diff s\)</span> depends on the relative rotation of these two cross sections. As the rotations vary due to the virtual displacements as schematically shown in <a href="#fig-momentwork">Figure&nbsp;<span>2.14</span></a>, the net virtual work done by the bending moments is given by <span class="math inline">\(\smoment \diff\, (\virt \eta) = \smoment \shpf'' \vgengc \diff s\)</span> if we neglect the work done by <span class="math inline">\(\diff M\)</span> since the product of <span class="math inline">\(\diff M\)</span> with any other infinitesimal quantity is expected to be of second order. In uniaxial bending of a linear elastic bar, the bending moment <span class="math inline">\(\smoment = \smoment (s,t)\)</span> is related to the curvature through the well known expression <span class="math display">\[
+\smoment = E I \curv =  E I \frac{\partial^2 \gc}{\partial s^2} = E I \shpf'' \gengc
+\]</span> so that the virtual work done by <span class="math inline">\(\smoment\)</span> as it goes through the incremental difference of virtual rotation may be expressed as <span class="math display">\[
+\smoment \diff\, (\virt \eta) = \left(E I \shpf'' \gengc\right) \left(\shpf'' \vgengc \diff s\right) = EI (\shpf'')^2 \gengc \vgengc \diff s
+\]</span> and the total internal work done may be calculated by integrating over the whole length so that <span class="math display">\[
+\vwork_{int} = \int_{0}^{\ell} EI (\shpf'')^2 \gengc \vgengc \diff s = \left[ \int_{0}^{\ell} EI (\shpf'')^2  \diff s \right] \gengc \vgengc = \genk \gengc \vgengc
+\]</span> where <span class="math display">\[
+\genk = \int_{0}^{\ell} EI (\shpf'')^2  \diff s
+\]</span> is called the <em>generalized stiffness</em>.<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></p>
+<p>The principle of virtual work demands that the external virtual work must be equal to the internal virtual work so that we have <span class="math display">\[
+\vwork_{ext} =  -  \genm \ddgengc \vgengc = \genk \gengc \vgengc = \vwork_{int} \quad \rightarrow \quad \left[\genm \ddgengc + \genk \gengc \right] \vgengc = 0
+\]</span> and since this condition must be satisfied for all admissible virtual displacements, i.e.&nbsp;for any admissible <span class="math inline">\(\vgengc\)</span>, it must be that <span id="eq-gensdofeom"><span class="math display">\[
+\genm \ddgengct + \genk \gengct = 0
+\qquad(2.38)\]</span></span> The similarity of this final equation with the standard equation of motion for the prototypical SDOF model is obvious, but we feel that the notational difference involving the superscript asterisk is worthwhile to emphasize that the generalized SDOF approach involves significant further approximations compared with the more conventional SDOF models.</p>
+<p>An estimate for the natural frequency of the system is now given by <span id="eq-gensdoffreq"><span class="math display">\[
+  \genfreq = \sqrt{\frac{\genk}{\genm}}
+\qquad(2.39)\]</span></span> which may be shown to provide an <em>upperbound for the lowest frequency</em> of the real system.<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> The approximation would get better as the assumed shape <span class="math inline">\(\shpf\)</span> resembles more and more the actual shape the structure oscillates with. While it may not be possible to perfectly estimate the true shape, it is possible to improve the estimates; one could, for example, try a few alternative proposals for <span class="math inline">\(\shpf\)</span> and take the minimum of the estimated frequencies obtained via each shape.</p>
+<p>For historical reasons it should be mentioned that this approach is sometimes referred to as <em>Rayleigh’s method</em>, wherein an approximating function defined over the whole domain is used to estimate the frequency of a complex system. One could use a set of approximating functions, defined again over the whole domain, which may be used to estimate multiple frequencies, and this approach is generally called the <em>Rayleigh-Ritz method</em>. One could also divide the domain and use approximating functions in each of the sub-domains, leading to what is commonly referred to as the <em>finite element method</em> of analysis, which is very suitable for computer based analysis of structures.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="8">
+<li id="fn8"><p>Recall from basic strength of materials that the bending rigidity of a homogeneous linear elastic bar is the product of the material’s modulus of elasticity <span class="math inline">\(E\)</span> and the cross sectional area’s second moment <span class="math inline">\(I\)</span> about the bending axis.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>To clarify this statement: when free body diagrams are sketched, we consider an instant at which <span class="math inline">\(\gc\)</span> and its time derivatives are (considered to be) positive valued, and sketch all the forces in accordance with this setup. This ensures compatibility with assumed sign convention: when the sign of <span class="math inline">\(\gc\)</span> or its derivatives change, so do automatically the directions of the associated forces, and there is no need for explicit corrections.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Reminder: virtual displacements are some non-zero patterns that are imposed on the structure in a fashion that is independent of time, as if time was frozen at that particular instant at which the system attained a state of static equilibrium. A virtual displacement hypothetical, a thought experiment if you wish, and not an actually imposed displacement.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p><em>Elastic curve</em> is a name given to the deformed shape of a beam’s longitudinal axis.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>Here we have considered only bending deformations to keep the discussion relatively simple. It is possible to include the contributions of other deformations, including for example shear and axial deformations, in the calculation of virtual work as well.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>Although the details are to be provided in latter chapters, it should be mentioned here that while a single DOF system has only a single frequency with which it freely vibrates, multi DOF systems have multiple frequencies with which they may freely vibrate. The lowest of those frequencies is often the one that is most significant in the vibrations of such structures and so a good estimate of that lowest frequency is quite helpful.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="discrete-systems" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" data-anchor-id="discrete-systems"><span class="header-section-number">2.5.2</span> Discrete Systems</h3>
+<p><em>Discrete</em> systems refers in dynamics to those systems which may have distributed flexibility but their mass is assumed to be concentrated at a finite number of points on the system. This concentration leads to a finite number of degrees of freedom, as opposed to the uncountable number in continuous systems, so that these systems are generally referred to as <em>multi degree of freedom</em> (MDOF) systems. An MDOF system is governed by a set of coupled ordinary differential equations, as many as the number of degrees of freedom, and many frequencies with which it may oscillate. The analysis of motion is therefore much more involved compared to the analysis of an SDOF system. On the other hand, it may be possible also for MDOF systems to obtain acceptable estimates for the fundamental (lowest) frequency of the system using the generalized SDOF approach.</p>
+<div id="fig-gensdofframe" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/gensdofframe.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.15: A three story shear building.</figcaption><p></p>
+</figure>
+</div>
+<p>To again proceed with an example, let us consider a simple three story structure with rigid floors, represented as three single bay frames vertically stacked as shown in <a href="#fig-gensdofframe">Figure&nbsp;<span>2.15</span></a>(a), with masses concentrated at the floor levels. It is assumed that the structure is symmetric so that translation along one horizontal direction is uncoupled from rotation of the floor plates in their own plane and translation along the orthogonal horizontal direction; axial deformations are altogether ignored. This is called the <em>shear building</em> model, and it is frequently used for buildings of different heights.<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> The deformation pattern is prescribed by the lateral translations of the floors, denoted here by <span class="math inline">\(\gc_1=\gc_1(t)\)</span>, <span class="math inline">\(\gc_2=\gc_2(t)\)</span> and <span class="math inline">\(\gc_3=\gc_3(t)\)</span>. Generalization of the approach is much easier is matrix notation is used, so let us define a displacement matrix <span class="math inline">\(\gcvec=\gcvec(t)\)</span> as <span class="math display">\[
+\gcvec \equiv \left\{ \begin{array}{c} \gc_1 \\ \gc_2 \\ \gc_3 \end{array} \right\}
+\]</span> where it should be obvious that if there were <span class="math inline">\(N\)</span>-many floors, the dimension of <span class="math inline">\(\gcvec\)</span> would be <span class="math inline">\(N \times 1\)</span>. Lateral translation of the floors are resisted by deformations in the structural load bearing members, most importantly the columns, in such a way that the cumulative <em>lateral story stiffness</em> (including all contributions) is assumed to be equal to <span class="math inline">\(k_i\)</span> for the <span class="math inline">\(i\)</span>th story, and the force-displacement relationship is assumed to be linear. The internal forces that develop as a result of the motion of the floor masses is in general much more complicated, including axial forces and bending moments at the ends of the columns in addition to lateral shear forces, and the structural behavior will most probably nonlinear under significant displacements. When axial deformations are neglected and the floors are assumed to be rigid, however, the axial forces and moments in the columns are not associated with any inertial action and hence they are not explicitly treated in the dynamic analysis. When they need to be determined, they may be calculated using standard structural analyses methods once the dynamic response is evaluated.</p>
+<p>The generalized SDOF approximation for discrete systems is based on assuming a time independent displacement pattern with an unknown amplitude, as was done for continuous systems, with the displacement pattern defined not by a shape function <span class="math inline">\(\shpf (s)\)</span> defined over the whole domain but rather by a <em>shape matrix</em> <span class="math inline">\(\vshpf\)</span> such that <span id="eq-gensdofdisc"><span class="math display">\[
+\gcvec (t) = \vshpf \gengct
+\qquad(2.40)\]</span></span> which, when written out explicitly for an <span class="math inline">\(N\)</span>-DOF model, may be expressed as <span id="eq-gensdofdisc2"><span class="math display">\[
+  \left\{ \begin{array}{c} \gc_1 (t) \\ \gc_2 (t) \\ \vdots \\ \gc_N (t) \end{array} \right\}  = \left\{ \begin{array}{c} \pvshpf{1} \\ \pvshpf{2} \\ \vdots \\ \pvshpf{N} \end{array} \right\} \gengc (t)
+\qquad(2.41)\]</span></span> The time dependent variable <span class="math inline">\(\gengc\)</span> is generally defined to be the amplitude of response that would be observed at one of the degrees of freedom. For our three story frame, for example, we could choose <span class="math inline">\(\gengc \equiv \gc_3\)</span>; in this case, the shape matrix may be chosen as <span class="math display">\[
+\vshpf = \left\{ \begin{array}{c} 1/3 \\ 2/3 \\ 1 \end{array}\right\}
+\]</span> if we foresee a linear increase with height, or perhaps as <span class="math display">\[
+\vshpf = \left\{ \begin{array}{c} 5/10 \\ 8/10 \\ 1 \end{array}\right\}
+\]</span> if relatively larger deformations are expected in the lower stories. Obviously the choices are endless, and the only guide is an estimate of how such a structure would possibly behave. In any case, once the shape matrix is fixed, the virtual displacements are obtained only through a variation in <span class="math inline">\(\gengc\)</span> so that <span class="math display">\[
+\virt \gcvec = \vshpf \vgengc
+\]</span></p>
+<p>By virtue of the shear building model’s inherent assumptions, the internal virtual work done through the virtual displacements will comprise the work done by the end shear of the columns alone. Consider two consecutive floors, floor <span class="math inline">\(i\)</span> and <span class="math inline">\(i-1\)</span>, with the <span class="math inline">\(i\)</span>th story columns between them, as shown in <a href="#fig-genfloorshear">Figure&nbsp;<span>2.16</span></a>. The cumulative shear force obtained by summing the shear forces at one end of the columns is called the <em>story shear</em> <span class="math inline">\(V_{i}\)</span>, which is the total force transmitted by the story. If the stiffness of the story is <span class="math inline">\(k_{i}\)</span>, then this shear force is given by <span class="math inline">\(V_{i} = k_{i} (\gc_{i} - \gc_{i-1})\)</span> since the difference <span class="math inline">\(\gc_{i} - \gc_{i-1}\)</span> is the deformation which the columns of that story suffer;<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> this relative displacement is also called the <em>interstory drift</em>. The work done by <span class="math inline">\(V_{i}\)</span> as the floors go through virtual displacements <span class="math inline">\(\vgc_i\)</span> and <span class="math inline">\(\vgc_{i-1}\)</span> is given by <span class="math display">\[
+V_{i} \vgc_{i} - V_{i} \vgc_{i-1} = V_{i} (\vgc_{i} - \vgc_{i-1}) = V_{i} (\pvshpf{i} - \pvshpf{i-1})\vgengc
+\]</span> which, after substituting in the force-displacement relationship and the generalized SDOF approximation, leads to <span class="math display">\[
+k_{i} (\pvshpf{i} - \pvshpf{i-1})^2 \gengc \vgengc
+\]</span> and the total virtual internal work done will be a summation of all the contributions so that,<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a> <span id="eq-wintshear"><span class="math display">\[
+\vwork_{int} = \left[\sum_{i=1}^{N} k_{i} (\pvshpf{i} - \pvshpf{i-1})^2 \right]\gengc \vgengc
+\qquad(2.42)\]</span></span></p>
+<div id="fig-genfloorshear" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/genfloorshear.png" class="img-fluid figure-img" style="width:65.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.16: Lateral shear forces at column ends.</figcaption><p></p>
+</figure>
+</div>
+<p>The term in the brackets in <a href="#eq-wintshear">Equation&nbsp;<span>2.42</span></a> may be expanded and then rewritten as a matrix equation so that, for example, for our 3-story shear frame, <span class="math display">\[
+\sum_{i=1}^{3} k_{i} (\pvshpf{i} - \pvshpf{i-1})^2 = \begin{Bmatrix} \pvshpf{1} &amp; \pvshpf{1} &amp; \pvshpf{3} \end{Bmatrix} \begin{bmatrix} k_1 + k_2 &amp; -k_2 &amp; 0 \\ -k_2 &amp; k_2 + k_3 &amp; -k_3 \\ 0 &amp; -k_3 &amp; k_3 \end{bmatrix} \begin{Bmatrix} \pvshpf{1} \\ \pvshpf{2} \\ \pvshpf{3} \end{Bmatrix} = \vshpf^T \kmat \vshpf
+\]</span> where the superscript <span class="math inline">\(\mtrx{\cdot}^T\)</span> denotes the transpose of the matrix <span class="math inline">\(\mtrx{\cdot}\)</span> and <span class="math inline">\(\kmat\)</span> is the stiffness matrix of the system, a concept well known from static analysis but written here for dynamic degrees of freedom. The total virtual internal work may finally be expressed as <span class="math display">\[
+\vwork_{int} = \left( \vshpf^T \kmat \vshpf \right) \gengc \vgengc = \genk \gengc \vgengc
+\]</span> where <span class="math display">\[
+\genk = \vshpf^T \kmat \vshpf
+\]</span> is the <em>generalized stiffness</em> of the system.<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></p>
+<p>The external virtual work for the shear frame is relatively easier to calculate. The acceleration of the <span class="math inline">\(i\)</span>-th floor mass is given by <span class="math inline">\(\ddgc_i = \pvshpf{i} \ddgengc\)</span> and the associated d’Alembert forces are shown in <a href="#fig-gensdofframe">Figure&nbsp;<span>2.15</span></a>(c). The work done by the d’Alembert force on the <span class="math inline">\(i\)</span>-th floor as that floor goes through the virtual displacement <span class="math inline">\(\vgc_{i} = \pvshpf{i}\vgengc\)</span> is <span class="math display">\[
+- \left(m_i \pvshpf{i} \ddgengc \right)\pvshpf{i}\vgengc = - m_i \left(\pvshpf{i} \right)^2 \ddgengc \vgengc
+\]</span> and, going through steps similar to those undertaken in derivation of the internal work, the total external virtual work for our 3-story frame may now be evaluated via <span class="math display">\[\begin{align*}
+  \vwork_{ext} &amp; = - \left[ \sum_{i=1}^3 m_i \left(\pvshpf{i} \right)^2 \right] \ddgengc \vgengc = \begin{Bmatrix} \pvshpf{1} &amp; \pvshpf{1} &amp; \pvshpf{3} \end{Bmatrix} \begin{bmatrix} m_1  &amp; 0 &amp; 0 \\ 0 &amp; m_2 &amp; 0 \\ 0 &amp; 0 &amp; m_3 \end{bmatrix} \begin{Bmatrix} \pvshpf{1} \\ \pvshpf{2} \\ \pvshpf{3} \end{Bmatrix}  \ddgengc \vgengc \\
+  &amp; = - \left(\vshpf^T \mmat \vshpf \right) \ddgengc \vgengc = - \genm \ddgengc \vgengc
+\end{align*}\]</span> where <span class="math inline">\(\mmat\)</span> is called the <em>mass matrix</em> of the system, and <span class="math display">\[
+\genm = \vshpf^T \mmat \vshpf
+\]</span> is its <em>generalized mass</em>.</p>
+<p>The by-now-familiar steps follow: principle of virtual work demands we must have <span class="math display">\[
+\vwork_{ext} =  -  \genm \ddgengc \vgengc = \genk \gengc \vgengc = \vwork_{int} \quad \rightarrow \quad \left[\genm \ddgengc + \genk \gengc \right] \vgengc = 0
+\]</span> and since this condition must be satisfied for all admissible virtual displacements it must be true that <span class="math display">\[
+\genm \ddgengct + \genk \gengct = 0
+\]</span> which is identical to <a href="#eq-gensdofeom">Equation&nbsp;<span>2.38</span></a>. Once again, an estimate for the fundamental frequency of the system is provided by: <span class="math display">\[
+\genfreq = \sqrt{\frac{\genk}{\genm}}
+\]</span></p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="14">
+<li id="fn14"><p>This is essentially a model comprising masses in series, each executing one dimensional motion, connected to each other by springs that deform under relative motion of the neighboring masses.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>For ease of discussion we define <span class="math inline">\(\gc_{0} \equiv 0\)</span> which corresponds to the base of the first story columns.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p>Again we are defining <span class="math inline">\(\pvshpf{0} \equiv 0\)</span> for ease of presentation, which is of course consistent with the previous definition <span class="math inline">\(\gc_{0} = 0 = \pvshpf{0} \gengc\)</span> since the shape approximation should satisfy the geometric boundary conditions as in the case of continuous systems.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p>Before concluding, we should note that one could consider the free body diagram of each floor mass separately wherein the shear forces would have to be considered as external forces acting on the mass and the whole virtual work would be written as that due to external forces alone. This has no bearing on the final outcome since then the forces would change direction and the end result would not alter by one bit.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="damping-and-external-forces" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" data-anchor-id="damping-and-external-forces"><span class="header-section-number">2.5.3</span> Damping and External Forces</h3>
+<p>Having established the basic approach, we may begin to include additional complexities in our model. To this end let us consider again the chimney and the shear frame, but with some dampers and external forces acting on them as shown in <a href="#fig-gensdofboth">Figure&nbsp;<span>2.17</span></a>.</p>
+<div id="fig-gensdofboth" class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/gensdofboth.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.17: (a) Chimney with external loads and dampers, (b) free body diagram of the chimney, (c) shear frame with dampers, (d) story shears due to dampers.</figcaption><p></p>
+</figure>
+</div>
+<p>Let us start with the chimney shown in <a href="#fig-gensdofboth">Figure&nbsp;<span>2.17</span></a>(a). The displacement field is once again <span class="math inline">\(\gc=\gc (s,t)\)</span>, and the generalized SDOF approximation is given by <span class="math inline">\(\gc (s,t) = \shpf (s) \gengc (t)\)</span>. In addition to our previous investigation, this chimney is acted upon by a distributed external force <span class="math inline">\(\extforce = \extforce(s,t)\)</span> <em>defined per unit length</em>, and two external damping devices connected to a rigid frame, with damping coefficients <span class="math inline">\(c_1\)</span> and <span class="math inline">\(c_2\)</span>. These externally connected dampers are possibly not common applications but here they simply serve the discussion; more on this will be said later on. We have already shown that the internal work done by the bending moments during a virtual displacement is given by <span class="math display">\[
+\genk \gengc \vgengc = \left[\int_{0}^{\ell} EI (\shpf'')^2 \diff s \right] \gengc \vgengc
+\]</span> and the external work done by the d’Alembert forces is given by <span class="math display">\[
+-\genm \ddgengc \vgengc = \left[\int_{0}^{\ell} \mlen \shpf^2 \diff s\right] \ddgengc \vgengc
+\]</span> so that we need only derive the contributions of the new components.</p>
+<p>The external force acting on the section at <span class="math inline">\(s\)</span> is <span class="math inline">\(f \diff s\)</span>. When the chimney goes through virtual displacement <span class="math inline">\(\vgc = \shpf \vgengc\)</span>, this force does work of amount <span class="math display">\[
+\left[\extforce \diff s \right]\left[\shpf \vgengc \right]
+\]</span> so that the total work done by the distributed force may be evaluated by integrating the contributions along the height as <span class="math display">\[
+\left[\int_{0}^{\ell} \extforce \shpf \diff s\right] \vgengc = \genf \vgengc
+\]</span> where <span class="math inline">\(\genf = \genf (t)\)</span> is called the <em>generalized force</em>.<a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a></p>
+<p>The forces acted on the chimney by the dampers are proportional to their velocities of deformation. The velocity of deformation for the damper located at position <span class="math inline">\(s=s_i\)</span> is <span class="math display">\[
+\pardiv{\gc}{t}\biggr|_{s=s_i} = \shpf(s_i) \dgengc
+\]</span> and therefore the force acted upon the chimney by the damper is given by <span class="math display">\[
+c_i \shpf (s_i) \dgengc
+\]</span> with the direction shown in the free body diagram of <a href="#fig-gensdofboth">Figure&nbsp;<span>2.17</span></a>(b). The force acts at <span class="math inline">\(s=s_i\)</span> so that during virtual displacements, the point of application of the force moves by an amount <span class="math inline">\(\shpf (s_i) \vgengc\)</span> so that the virtual work done by this force is equal to <span class="math display">\[
+- [c_i \shpf (s_i) \dgengc][\shpf (s_i) \vgengc] = - c_i \shpf^2 (s_i) \dgengc \vgengc
+\]</span> The cumulative contribution of such dampers to the external virtual work is then calculated by a summation over all the dampers to obtain <span class="math display">\[
+- \left[\sum_{i} c_i \shpf^2 (s_i)\right] \dgengc \vgengc = - \genc \dgengc \vgengc
+\]</span> where <span class="math inline">\(\genc\)</span> is referred to as the <em>generalized damping</em>.<a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a></p>
+<p>The principle of virtual work is the same as always but now with additional terms contributing to the work expressions so that we have, <span class="math display">\[
+\vwork_{int} = \genk \gengc \vgengc = - \genm \ddgengc \vgengc - \genc \dgengc \vgengc + \genf \vgengc = \vwork_{ext}
+\]</span> which may be expressed as <span class="math inline">\(\left[\genm \ddgengc + \genc \dgengc + \genk \gengc - \genf \right] \vgengc = 0\)</span>. Since this condition must be valid for arbitrary <span class="math inline">\(\vgengc\)</span>, it must be true that: <span id="eq-gensdofeomf"><span class="math display">\[
+\genm \ddgengc + \genc \dgengc + \genk \gengc = \genf
+\qquad(2.43)\]</span></span> This is the general equation of motion that governs the dynamics of generalized SDOF systems, and its similarity with the previously discussed equation for the prototype SDOF model is obvious. We may at this point say a few words about the damping term <span class="math inline">\(\genc\)</span>. It has already been mentioned that viscous damping is a phenomenological model that has been found to represent observed behavior acceptably well in most cases; as such, it is almost impossible to define a viscous damping coefficient if there are no actual physical viscous dampers as in this example. What will most probably happen is that there will not be such dampers but the damping coefficient will have to be somehow estimated. As before, it is relatively easier to approach the problem via the damping ratio coefficient so that, by defining <span class="math display">\[
+2 \gendamp \genfreq = \frac{\genc}{\genm}
+\]</span> <a href="#eq-gensdofeomf">Equation&nbsp;<span>2.43</span></a> may be expressed as <span id="eq-gensdofeomf2"><span class="math display">\[
+\ddgengc + 2 \gendamp \genfreq \dgengc+ (\genfreq)^2 \gengc = \frac{1}{\genm} \genf
+\qquad(2.44)\]</span></span> As previously discussed for the prototype SDOF model, estimating <span class="math inline">\(\gendamp\)</span> based on previous experience with similar systems will almost always be much easier than trying to estimate <span class="math inline">\(\genc\)</span> and the equation of motion for the generalized SDOF is most often formulated in the form of <a href="#eq-gensdofeomf2">Equation&nbsp;<span>2.44</span></a>.</p>
+<p>Analogous expressions will be observed while working with discrete systems. Consider for example the three story shear frame of <a href="#fig-gensdofboth">Figure&nbsp;<span>2.17</span></a>(c), acted upon by three forces and stories supplemented with dampers. The floor displacements are once again given by <span class="math inline">\(\gcvec^T = \left\{ \gc_1 \; \gc_2 \; \gc_3\right\}^T\)</span> and the generalized SDOF approximation is defined through <span class="math inline">\(\gcvec^T = \left\{ \pvshpf{1} \; \pvshpf{2} \; \pvshpf{3} \right\}^T \gengc\)</span>. We have already shown that the virtual external work done by the d’Alembert forces is given by <span class="math display">\[
+- \genm \ddgengc \vgengc = - \vshpf^T \mmat \vshpf \ddgengc \vgengc
+\]</span> and now we have to additionally consider the virtual work done by the externally applied forces <span class="math inline">\(\ldvec^T = \left\{ \extforce_1 \; \extforce_2 \; \extforce_3 \right\}^T\)</span>. As the <span class="math inline">\(i\)</span>-th floor moves through the virtual displacement <span class="math inline">\(\vgc_i = \pvshpf{i} \vgengc\)</span>, the virtual work done by the force <span class="math inline">\(\extforce_i\)</span> acting on that floor is simple <span class="math inline">\(\extforce_i \vgc_i = \extforce_i \pvshpf{i} \vgengc\)</span>. The total virtual work done by the applied forces is then given by <span class="math display">\[
+\sum_{i} f_i \pvshpf{i} \vgengc = \left[ \sum_{i} \extforce_i \pvshpf{i} \right] \vgengc = \left[\vshpf^T \ldvec \right] \vgengc = \genf \vgengc
+\]</span> where <span class="math inline">\(\genf\)</span> is called the <em>generalized (external) force</em>. This work will have to be added to that done by the d’Alembert forces.</p>
+<p>As for internal virtual work, it was previously shown that the virtual work done by the lateral load bearing system was equal to: <span class="math display">\[
+\genk \gengc \vgengc = \left(\vshpf^T \kmat \vshpf\right) \gengc \vgengc
+\]</span> The addition of dampers between floors will lead to additional shear forces transmitted via stories. The forces at the two ends of a damper are given by the product of the damping coefficient with the relative velocity across the two ends causing the deformation of the damper, so that the additional interstory shear across the <span class="math inline">\(i\)</span>-th story is given by <span class="math inline">\(c_i (\pdivt{\gc}_i - \pdivt{\gc}_{i-1}) = c_i (\pvshpf{i} - \pvshpf{i-1}) \dgengc\)</span>. The internal virtual work done by these end shears is to be calculated as <span class="math display">\[
+c_i (\pdivt{\gc}_i - \pdivt{\gc}_{i-1}) \vgc_i - c_i (\pdivt{\gc}_i - \pdivt{\gc}_{i-1}) \vgc_{i-1} = c_i (\pvshpf{i} - \pvshpf{i-1})^2 \dgengc \vgengc
+\]</span> and the contribution of the dampers to the internal virtual work is obtained by summing the contributions of all stories: <span class="math display">\[
+\left[\sum_i c_i (\pvshpf{i} - \pvshpf{i-1})^2 \right] \dgengc \vgengc
+\]</span> Similar to the case regarding stiffness terms, the summation in the brackets may be written as a matrix product; e.g.&nbsp;for our three story shear frame, <span class="math display">\[\begin{align*}
+\sum_{i=1}^{3} c_{i} (\pvshpf{i} - \pvshpf{i-1})^2 = \begin{Bmatrix} \pvshpf{1} &amp; \pvshpf{1} &amp; \pvshpf{3} \end{Bmatrix} \begin{bmatrix} c_1 + c_2 &amp; -c_2 &amp; 0 \\ -c_2 &amp; c_2 + c_3 &amp; -c_3 \\ 0 &amp; -c_3 &amp; c_3 \end{bmatrix} \begin{Bmatrix} \pvshpf{1} \\ \pvshpf{2} \\ \pvshpf{3} \end{Bmatrix} = \vshpf^T \cmat \vshpf
+\end{align*}\]</span> so that <span class="math display">\[
+\left[\sum_i c_i (\pvshpf{i} - \pvshpf{i-1})^2 \right] \dgengc \vgengc = \left(\vshpf^T \cmat \vshpf\right) \dgengc \vgengc = \genc \dgengc \vgengc
+\]</span> where <span class="math inline">\(\genc=\vshpf^T \cmat \vshpf\)</span> is called the <em>generalized damping</em>, and <span class="math inline">\(\cmat\)</span>, given in this specific example by <span class="math display">\[
+\cmat = \begin{bmatrix} c_1 + c_2 &amp; -c_2 &amp; 0 \\ -c_2 &amp; c_2 + c_3 &amp; -c_3 \\ 0 &amp; -c_3 &amp; c_3 \end{bmatrix}
+\]</span> is called the (viscous) <em>damping matrix</em> of the system.</p>
+<p>With these additions, principle of virtual work yields <span class="math display">\[
+\vwork_{int} = \genk \gengc \vgengc + \genc \dgengc \vgengc = - \genm \ddgengc \vgengc + \genf \vgengc = \vwork_{ext}
+\]</span> which may be expressed as <span class="math inline">\(\left[ \genm \ddgengc + \genc \dgengc + \genk \gengc - \genf \right] \vgengc = 0\)</span>. Since this condition must be valid for arbitrary <span class="math inline">\(\vgengc\)</span>, it must be true that <span id="eq-137"><span class="math display">\[
+\genm \ddgengc + \genc \dgengc + \genk \gengc = \genf
+\qquad(2.45)\]</span></span> which, as expected, is identical in form to <a href="#eq-gensdofeomf">Equation&nbsp;<span>2.43</span></a>. Damping again deserves a special mention: It is rare to find buildings equipped with such dampers as investigated in the discussion above, and the concept of generalized damping will most often refer to a conceptual mechanism, as referred to previously in the analysis of the chimney.</p>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-section" role="doc-endnotes">
+<hr>
+<ol start="18">
+<li id="fn18"><p>There may be many components of the external force and the generalized force will then be the superposition of all the contributions; it is essentially the coefficient that multiplies <span class="math inline">\(\vgengc\)</span> in the calculation of the work done by all external forces.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn19"><p>Again, there may be other contributions to the damping, and at the end of the day generalized (viscous) damping is the name given to the coefficient of the velocity in the virtual work expression.<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<section id="epilogue" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" data-anchor-id="epilogue"><span class="header-section-number">2.5.4</span> Epilogue</h3>
+<p>The introduction of the generalized SDOF approximation has been via examples, and we agree that there are advantages and disadvantages associated with this choice of presentation. The discussion may be considered to lack a generality that could be reached through a more rigorous theoretical introduction, a shortcoming we have tried to alleviate by referring along the way to what the formulations would look like if we were to consider more general cases. We believe, however, that the generalized SDOF approximation is essentially very much dependent on intuition regarding structural behavior, and that its introduction through examples helps to establish a better understanding of the step-by-step procedure while presenting the fundamental issues. For quick reference, we present in <a href="#tbl-gensdof">Table&nbsp;<span>2.1</span></a> the fundamental equations that will most probably be encountered while developing and analyzing generalized SDOF models for relatively simpler systems.</p>
+<div id="tbl-gensdof">
+<table class="table">
+<caption>Table&nbsp;2.1: A summary of expressions commonly used in generalized SDOF approximations.</caption>
+<colgroup>
+<col style="width: 38%">
+<col style="width: 32%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Beam (1-D, bending)</th>
+<th style="text-align: center;">Discrete (N-DOF)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Approximation</td>
+<td style="text-align: center;"><span class="math inline">\(\gc (s,t) = \shpf (s) \gengc (t)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\gcvec (t) = \vshpf \gengc (t)\)</span></td>
+</tr>
+<tr class="even">
+<td>Generalized mass <span class="math inline">\(\genm\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\int \mlen \shpf^2 \diff s\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\vshpf^T \mmat \vshpf\)</span></td>
+</tr>
+<tr class="odd">
+<td>Generalized stiffness <span class="math inline">\(\genk\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\int EI (\shpf'')^2 \diff s\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\vshpf^T \kmat \vshpf\)</span></td>
+</tr>
+<tr class="even">
+<td>Generalized force <span class="math inline">\(\genf\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\int \extforce \shpf \diff s\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\vshpf^T \ldvec\)</span></td>
+</tr>
+<tr class="odd">
+<td>Frequency <span class="math inline">\(\genfreq\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\genfreq = \sqrt{{\genk}/{\genm}}\)</span></td>
+<td style="text-align: center;">same</td>
+</tr>
+<tr class="even">
+<td>Generalized damping <span class="math inline">\(\genc\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2 \gendamp \genfreq \genm\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(2 \gendamp \genfreq \genm\)</span> or <span class="math inline">\(\vshpf^T \cmat \vshpf\)</span></td>
+</tr>
+<tr class="odd">
+<td>Equation of motion</td>
+<td style="text-align: center;"><span class="math inline">\(\genm \ddgengct + \genc \dgengct + \genk \gengct = \genf(t)\)</span></td>
+<td style="text-align: center;">same</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- 
+\begin{table}\label{tbl:gensdof}
+\centering
+\begin{tabular}{lcc}
+\hline
+ & \multicolumn{2}{c}{System} \\
+ & Beam & Discrete \\ 
+ & (1-D, bending) & (N-DOF) \\ \hline
+ Approximation & $u(s,t) = \shpf (s) \gengct$ & $\nvec{u}(t) = \vshpf \gengct$ \\
+ Generalized mass $\genm$ & $\int \mlen \shpf^2 \diff s $ & $\vshpf^T \mmat \vshpf$ \\
+ Generalized stiffness $\genk$ & $\int EI (\shpf'')^2 \diff s $ & $\vshpf^T \kmat \vshpf$ \\
+ Generalized force $\genf$ & $\int f \shpf \diff s$ & $\vshpf^T \extf$ \\
+ Frequency $\genfreq$ & \multicolumn{2}{c}{$\genfreq = \sqrt{{\genk}/{\genm}}$}\\
+ Generalized damping $\genc$ & $2 \gendamp \genfreq \genm$ & $2 \gendamp \genfreq \genm$ or $\vshpf^T \cmat \vshpf$ \\
+ Equation of motion & \multicolumn{2}{c}{$\genm \ddgengct + \genc \dgengct + \genk \gengct = \genf(t)$} \\
+ \hline
+\end{tabular}
+\caption{}
+\end{table} -->
+<p>There are of course still many cases that one could concoct which we have not explicitly addressed here. That being said, we hope the discussions have been detailed enough so that should such new challenges arise, the fundamental tools and techniques discussed above will suffice to help the reader deal with those challenges. An immediate question is whether or not this method could be extended to two or three dimensions in continuous systems, as for example the case would be for analysis of plate vibrations. It should be somewhat straightforward to assume that the extension would be possible by defining shape functions in two or three dimensions, but the expressions we derived for the relatively simple beam (chimney) would have to be modified since force-deformation mechanisms will in general have additional complexities . It is not feasible within the confines of this books to analyze deformation patterns of all possible structural elements, but relevant information may be accessed in texts dealing with advanced strength of materials and structural analysis. The main flow of the generalized SDOF approximation, however, would still be that presented herein.</p>
+<p>The generalized SDOF approximation is a powerful tool although its usefulness these days may be questioned since, with the increase in computational power and the strict performance criteria established in more recent decades, analyses of structural dynamics problems are almost exclusively executed with specialized software tailored to handle large numbers of degrees of freedom. Still, we feel that the generalized SDOF model is a very good teaching tool, forcing the applier to think about dynamic behavior and various concepts at a relatively early stage. Many of the more advanced analytical and numerical methods used for analyses of complex structures may be better appreciated with an understanding of the generalized SDOF approximation. It is also important for experienced engineers in that it provides an easy to apply tool for sanity checks when evaluating numerical results obtained via other tools.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./fundamentals.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Fundamentals of Dynamics</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./singledofforced.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Forced Vibrations of Single Degree of Freedom Systems</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
